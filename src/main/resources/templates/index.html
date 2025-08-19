@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: css}">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>집에서 심부름을 콕! 집콕!</title>
+</head>
+
+<body>
+    <!-- =============== nav =============== -->
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <!-- =============== header =============== -->
+    <header>
+      <!-- =============== container =============== -->
+        <div class="container">
+            <div class="header-content row">
+                <div class="col-xs-12 col-sm-5 col-md-5">
+                </div>
+                <div class="col-xs-12 col-sm-7 col-md-7 wow slideInLeft animated">
+                    <img th:src="@{/resources/img/phones.png}" alt="phones" style="bottom: 100px;" />
+                </div>
+            </div>
+        </div>
+      <!-- =============== container end =============== -->
+    </header>
+
+    <!-- =============== About =============== -->
+    <section id="about" class="">
+      <!-- =============== container =============== -->
+        <div class="container">
+            <span class="angle2"></span>
+            <span class="angle"></span>
+            <span></span>
+            <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-3 wow fadeInLeft animated"  data-wow-delay=".5s">
+                    <h1>HELLO!
+                    <br><span>'집콕'</span>을
+                    <br> 소개합니다.</h1>
+                  </div>
+
+                  <div class="col-xs-12 col-sm-7 col-md-9 wow fadeInRight animated" style="padding-left: 130px" data-wow-delay=".5s">
+                  <h2 style="color: #ff4c00">최근 3년 연속 국내 배달앱 시장 중</h2>
+                  <h2 style="color: #ff4c00">주문상품 대비 고객 포인트 적립율 1위!</h2>
+                  <br />
+                  <h4>우리집 안방 10km 내 유통된 모든 물건을 집앞까지 콕!!!</h4>
+                  <br />
+                     <h4>배달의 시작과 끝을 책임지는 실시간 위치 서비스로 한눈에 콕!!!</h4>
+                  <br />
+                    <h4>심부름꾼 후기 열람 기능을 통한 선순환 배달 안전 서비스 보장 콕!!!</h4>
+                  </div>
+            </div>
+        </div>
+      <!-- =============== container end =============== -->
+    </section>
+
+    <!-- =============== how it works =============== -->
+    <section id="Cock" class="parallax">
+   <!-- =============== container =============== -->
+    <div class="container">
+     <span class="angle2"></span>
+    <span class="angle"></span>
+    <style>
+    button img{
+        margin-top: 40px;
+    }
+    </style>
+    <form method="get" th:action="@{/mission/select}">
+     <div class="row">
+
+       <div class="col-xs-12 col-sm-12 col-md-12 wow bounceIn animated headding" data-wow-delay=".5s">
+           <br /><br />
+           <h2>심부름 <span>요청하기</span></h2>
+           <br /><br /><br />
+       </div>
+
+
+      <div class="col-xs-12 col-sm-4 col-md-4">
+         <div class="row">
+          <div class="col-xs-10 col-sm-10 col-md-10 wow fadeInLeft animated textright" data-wow-delay=".5s">
+            <h3>배달, 장보기</h3>
+              <p></p>
+          </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 wow fadeInRight animated" data-wow-delay=".5s">
+                <button type="submit" name="flag" value="배달,장보기"> <img alt="배달,장보기" th:src="@{/resources/img/1.delivery.png}"> </button>
+          </div>
+        </div>
+        <div class="row">
+         <div class="col-xs-10 col-sm-10 col-md-10 wow fadeInLeft animated textright" data-wow-delay=".6s">
+            <h3>청소, 집안일</h3>
+              <p></p>
+          </div>
+           <div class="col-xs-2 col-sm-2 col-md-2 wow fadeInRight animated" data-wow-delay=".6s">
+                <button type="submit" name="flag" value="청소,집안일"> <img alt="청소,집안일" th:src="@{/resources/img/2.clean.png}"> </button>
+          </div>
+        </div>
+        <div class="row">
+         <div class="col-xs-10 col-sm-10 col-md-10 wow fadeInLeft animated textright" data-wow-delay=".6s">
+            <h3>설치, 운반</h3>
+              <p></p>
+          </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 wow fadeInRight animated" data-wow-delay=".6s">
+                <button type="submit" name="flag" value="설치,운반"> <img alt="설치,운반" th:src="@{/resources/img/3.installation.png}"> </button>
+          </div>
+        </div>
+        <div class="row">
+         <div class="col-xs-10 col-sm-10 col-md-10 wow fadeInLeft animated textright" data-wow-delay=".7s">
+            <h3>동행, 돌봄</h3>
+              <p></p>
+          </div>
+          <div class="col-xs-2 col-sm-2 col-md-2 wow fadeInRight animated" data-wow-delay=".7s">
+                <button type="submit" name="flag" value="동행,돌봄"> <img alt="동행,돌봄" th:src="@{/resources/img/4.together.png}"> </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-4 col-md-4 wow bounceIn animated textcenter" data-wow-delay=".4s">
+       <img th:src="@{/resources/img/slide-bg.png}" alt="slide-bg" />
+      </div>
+
+      <div class="col-xs-12 col-sm-4 col-md-4">
+         <div class="row" style="height: 90px;" >
+          <div class="col-xs-2 col-sm-2 col-md-2 wow fadeInLeft animated" data-wow-delay=".5s">
+                <button type="submit" name="flag" value="벌레,쥐잡기"> <img alt="벌레,쥐잡기" th:src="@{/resources/img/5.bug.png}"> </button>
+          </div>
+          <div class="col-xs-10 col-sm-10 col-md-10 wow fadeInRight animated textleft" data-wow-delay=".5s">
+            <h3>&nbsp;&nbsp;벌레, 쥐잡기</h3>
+              <p></p>
+          </div>
+        </div>
+        <div class="row" style="height: 90px;">
+        <div class="col-xs-2 col-sm-2 col-md-2 wow fadeInLeft animated" data-wow-delay=".6s">
+                <button type="submit" name="flag" value="역할대행"> <img alt="역할대행" th:src="@{/resources/img/6.role.png}"> </button>
+          </div>
+          <div class="col-xs-10 col-sm-10 col-md-10 wow fadeInRight animated textleft" data-wow-delay=".6s">
+            <h3>&nbsp;&nbsp;역할대행</h3>
+              <p></p>
+          </div>
+        </div>
+        <div class="row" style="height: 90px;">
+        <div class="col-xs-2 col-sm-2 col-md-2 wow fadeInLeft animated" data-wow-delay=".6s">
+                <button type="submit" name="flag" value="과외,알바"> <img alt="과외,알바" th:src="@{/resources/img/7.lesson.png}"> </button>
+          </div>
+          <div class="col-xs-10 col-sm-10 col-md-10 wow fadeInRight animated textleft" data-wow-delay=".6s">
+            <h3>&nbsp;&nbsp;과외, 알바</h3>
+              <p></p>
+          </div>
+        </div>
+        <div class="row" style="height: 90px;">
+        <div class="col-xs-2 col-sm-2 col-md-2 wow fadeInLeft animated" data-wow-delay=".7s">
+               <button type="submit" name="flag" value="기타"> <img alt="기타" th:src="@{/resources/img/8.etc.png}"> </button>
+          </div>
+          <div class="col-xs-10 col-sm-10 col-md-10 wow fadeInRight animated textleft" data-wow-delay=".7s">
+            <h3>&nbsp;&nbsp;기타</h3>
+              <p></p>
+          </div>
+        </div>
+      </div>
+    </div>
+   </form>
+    </div>
+   <!-- =============== container end =============== -->
+    </section>
+
+    <!-- =============== Price =============== -->
+    <section id="Notice" class="">
+   <!-- =============== container =============== -->
+     <div class="container">
+     <span class="angle2"></span>
+     <div class="row">
+       <div class="col-xs-12 col-sm-12 col-md-12 wow zoomIn animated headding" data-wow-delay=".1s">
+       <section class="cusMainFaqList">
+          <h3 class="subTitle4C">&nbsp;&nbsp;&nbsp;&nbsp;NOTICE</h3>
+       <div class="container">
+	      <h2>공지사항</h2>
+
+	      <table border="1" width="100%">
+	         <tr>
+	            <td align="center" style="background-color: lightgray;">
+	               집에서 심부름을 콕! 집콕!
+	            </td>
+	         </tr>
+	      </table>
+
+	      <table class="table table-bordered" id="dataTable" width="90%" cellspacing="0" >
+	         <tr style="background-color: #ffc654">
+	            <th width="10%" style="text-align: center">번호</th>
+	            <th width="*" >제목</th>
+	            <th width="15%" style="text-align: center">작성자</th>
+	            <th width="10%" style="text-align: center">작성일</th>
+	            <th width="15%" style="text-align: center">조회수</th>
+	         </tr>
+
+	         <tr th:if="${#lists.isEmpty(listRows)}">
+	            <td colspan="6" class="text-center">
+	               등록된 게시물이 없습니다 ^^*
+	            </td>
+	         </tr>
+
+	         <tr th:each="row, iterStat : ${listRows}">
+	            <td class="text-center" th:text="${row.virtualNum}"></td>
+	            <td class="text-left">
+	               <a th:href="@{/notice/view(num=${row.mboardNum}, nowPage=${nowPage})}" th:text="${row.mboardTitle}"></a>
+	            </td>
+	            <td class="text-center" th:text="${row.mboardId}"></td>
+	            <td class="text-center" th:text="${row.mboardDate}"></td>
+	            <td class="text-center" th:text="${row.mboardCount}"></td>
+	         </tr>
+
+	         <table border="1" width="100%">
+	            <tr>
+	               <td align="center" style="background-color: lightgray;">
+	                  집에서 심부름을 콕! 집콕!
+	               </td>
+	            </tr>
+	         </table>
+	      <!-- 페이지 번호 -->
+	         <table border="0" width="100%">
+	            <tr>
+	               <td align="center">
+	               <button type="button" style="background-color: #ffc654; font-weight: bold"
+	                  onclick="location.href='/notice'">더 보기</button>
+	               </td>
+	            </tr>
+	            <br />
+	         </table>
+	      </table>
+      	</div>
+        </section>
+        </div>
+        </div>    <!-- =============== container end =============== -->
+     </div>
+    </section>
+
+    <!-- =============== Screenshots =============== -->
+    <section id="Screenshots" class="">
+   <!-- =============== container =============== -->
+    <div class="container">
+    <span class="angle2"></span>
+     <div class="row">
+
+       <div class="col-xs-12 col-sm-12 col-md-12 wow bounceIn animated headding" data-wow-delay=".1s">
+           <h2>Screen <span>Shots</span></h2>
+           <p>집콕은 아래처럼 어플로도 사용가능합니다.<br>
+           집콕 앱으로 더 편하게 심부름을 요청해보세요!</p>
+       </div>
+
+      <div class="col-xs-12 col-sm-12 col-md-12">
+         <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-12 wow zoomIn animated textright" data-wow-delay=".1s">
+               <div class="span12">
+                      <div id="owl-demo" class="owl-carousel">
+                        <div class="item">
+                            <div class="imghover" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">
+                                <img th:src="@{/resources/img/owl1.jpg}" alt="Owl Image">
+                                <div class="hover-bg"><i class="fa fa-camera camera"></i></div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="imghover" data-toggle="modal" data-target="#exampleModa2" data-whatever="@mdo">
+                            <img th:src="@{/resources/img/owl2.jpg}" alt="Owl Image">
+                             <div class="hover-bg"><i class="fa fa-camera camera"></i></div>
+                            </div>
+                        </div>
+                       <div class="item">
+                            <div class="imghover" data-toggle="modal" data-target="#exampleModa3" data-whatever="@mdo">
+                            <img th:src="@{/resources/img/owl3.jpg}" alt="Owl Image">
+                             <div class="hover-bg"><i class="fa fa-camera camera"></i></div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="imghover" data-toggle="modal" data-target="#exampleModa4" data-whatever="@mdo">
+                            <img th:src="@{/resources/img/owl4.jpg}" alt="Owl Image">
+                             <div class="hover-bg"><i class="fa fa-camera camera"></i></div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+        	</div>
+          <!-- =============== popup large image =============== -->
+          <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+          <div class="modal-dialog" role="document">
+            <img th:src="@{/resources/img/owl1.jpg}" alt="Owl Image">
+          </div>
+         </div>
+
+         <div class="modal fade" id="exampleModa2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabe2">
+          <div class="modal-dialog" role="document">
+            <img th:src="@{/resources/img/owl2.jpg}" alt="Owl Image">
+          </div>
+         </div>
+
+         <div class="modal fade" id="exampleModa3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabe3">
+          <div class="modal-dialog" role="document">
+            <img th:src="@{/resources/img/owl3.jpg}" alt="Owl Image">
+          </div>
+         </div>
+
+         <div class="modal fade" id="exampleModa4" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabe4">
+          <div class="modal-dialog" role="document">
+            <img th:src="@{/resources/img/owl4.jpg}" alt="Owl Image">
+          </div>
+         </div>
+       <!-- =============== popup large image end =============== -->
+      </div>
+    </div>
+   </div>
+</div><!-- =============== container end =============== -->
+</section>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <!-- 챗봇 코드 - 별도 include 필요 -->
+    <section th:replace="~{fragments/chatBot :: chatBot}"></section>
+
+</body>
+</html>

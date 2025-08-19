@@ -1,0 +1,39 @@
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <p class="copyright">
+                    &copy; 2021 zipkok
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script th:src="@{/resources/js/jquery.js}"></script>
+
+<!-- Bootstrap -->
+<script th:src="@{/resources/js/bootstrap.min.js}"></script>
+
+<!-- Plugin JS -->
+<script th:src="@{/resources/js/jquery.easing.min.js}"></script>
+<script th:src="@{/resources/js/jquery.fittext.js}"></script>
+<script th:src="@{/resources/js/wow.min.js}"></script>
+
+<!-- Custom Theme JS -->
+<script th:src="@{/resources/js/creative.js}"></script>
+
+<!-- Owl Carousel -->
+<script th:src="@{/resources/js/owl.carousel.js}"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#owl-demo").owlCarousel({
+            autoPlay: 3000,
+            items: 3,
+            itemsDesktop: [1199, 3],
+            itemsDesktopSmall: [979, 3]
+        });
+    });
+</script>

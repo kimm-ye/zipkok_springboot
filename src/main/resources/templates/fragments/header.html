@@ -1,0 +1,74 @@
+<!-- CSS Fragment -->
+<th:block th:fragment="css">
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" th:href="@{/resources/css/bootstrap.min.css}" type="text/css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Oswald:400,300" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet" type="text/css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" th:href="@{/resources/css/font-awesome.min.css}" type="text/css">
+
+    <!-- Plugin CSS -->
+    <link rel="stylesheet" th:href="@{/resources/css/animate.min.css}" type="text/css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/resources/css/style.css}" type="text/css">
+
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" th:href="@{/resources/css/owl.carousel.css}">
+    <link rel="stylesheet" th:href="@{/resources/css/owl.theme.css}">
+</th:block>
+
+<!-- Navbar Fragment -->
+<nav th:fragment="navbar" id="mainNav" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#"><img th:src="@{/resources/img/logo.png}" alt="Logo"></a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a class="page-scroll" href="#about">About</a></li>
+                    <li><a class="page-scroll" href="#Notice">Notice</a></li>
+                    <li><a class="page-scroll" href="#Screenshots">Screenshots</a></li>
+                    <li><a class="page-scroll" th:href="@{/HList}">Cock</a></li>
+                    <li><a class="page-scroll" th:href="@{/resources/build/index.html}">Q&A</a></li>
+
+                    <!-- 로그인 유무에 따른 join/logout -->
+                    <th:block th:if="${session.siteUserInfo == null}">
+                        <li><a class="page-scroll" th:href="@{/member/login}">Login</a></li>
+                        <li><a class="page-scroll" th:href="@{/member/join}">Join</a></li>
+                    </th:block>
+
+                    <!-- 사용자로 로그인 시 헬퍼 회원가입 가능 -->
+                    <th:block th:if="${session.siteUserInfo != null and session.siteUserInfo.memberStatus == 1}">
+                        <li><a class="page-scroll" th:href="@{/member/join}">Join</a></li>
+                        <li><a class="page-scroll" th:href="@{/member/logout}">Logout</a></li>
+                        <li><a class="page-scroll" th:href="@{/mypage}">MyPage</a></li>
+                    </th:block>
+
+                    <!-- 일반 사용자 로그인 -->
+                    <th:block th:if="${session.siteUserInfo != null and session.siteUserInfo.memberStatus != 1}">
+                        <li><a class="page-scroll" th:href="@{/member/logout}">Logout</a></li>
+                        <li><a class="page-scroll" th:href="@{/mypage}">MyPage</a></li>
+                    </th:block>
+
+                    <!-- 관리자 권한 -->
+                    <th:block th:if="${session.siteUserInfo != null and session.siteUserInfo.memberStatus == 0}">
+                        <li><a class="page-scroll" th:href="@{/admin}" target="_blank">Admin</a></li>
+                    </th:block>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
