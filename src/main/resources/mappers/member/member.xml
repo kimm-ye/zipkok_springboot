@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//com.kosmo.zipkok.mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kosmo.zipkok.dao.MemberDAO">
+	
+	<select id="selectEmail" parameterType="java.lang.String" resultType="boolean">
+		SELECT
+		    CASE
+				WHEN COUNT(MEMBER_SEQ) > 0 THEN 1
+			ELSE 0
+			END AS exists_flag
+		FROM
+		    MEMBER
+		WHERE
+		    MEMBER_EMAIL = #{member_email}
+	</select>
+
+	<select id="selectMemberById" parameterType="java.lang.String" resultType="MemberDTO">
+		SELECT
+			member_id,
+			member_pass,
+            member_name,
+            member_email,
+            member_status
+		FROM
+		    MEMBER
+		WHERE
+		    MEMBER_ID = #{memberId}
+	</select>
+
+	<select id="idCheck" resultType="java.lang.String">
+		SELECT
+			member_id
+		FROM
+			member
+		WHERE
+			member_id = #{memberId}
+	</select>
+
+	<select id="login" resultType="com.kosmo.zipkok.dto.MemberDTO">
+		SELECT * FROM member WHERE member_id=#{0} and member_pass=#{1}
+	</select>
+
+	<select id="findId" parameterType="Map" resultType="java.lang.String">
+		SELECT
+			member_id
+		FROM
+			member
+		WHERE
+			member_name = #{name}
+		AND member_email = #{email}
+	</select>
+
+	<select id="findPwd" parameterType="Map" resultType="java.lang.String">
+		SELECT
+			member_pass
+		FROM
+			member
+		WHERE
+			member_id = #{mid}
+		  AND member_name = #{name}
+		  AND member_email = #{email}
+	</select>
+
+
+	<insert id="insertMember" parameterType="MemberDTO">
+		INSERT INTO MEMBER
+		    (
+		    	MEMBER_ID,
+		     	MEMBER_PASS,
+		     	MEMBER_NAME,
+		     	MEMBER_EMAIL,
+		     	MEMBER_AGE,
+		     	MEMBER_SEX,
+		     	MEMBER_PHONE,
+		     	MEMBER_STATUS
+			)
+		VALUES
+		    (
+				#{member_id},
+		    	#{member_pass},
+		    	#{member_name},
+		    	#{member_email},
+				#{member_age},
+		    	#{member_sex},
+				#{member_phone},
+				#{member_status}
+			)
+	</insert>
+	
+
+	
+	<insert id="insertHelper" parameterType="HelperDTO">
+		INSERT INTO HELPER
+			(
+				MEMBER_BANK,
+			 	MEMBER_ACCOUNT,
+			 	MEMBER_VEHICLE,
+				MEMBER_INTRODUCE,
+			 	MEMBER_OFILE
+				MEMBER_SFILE
+			)
+		VALUES
+		    (
+				#{member_bank},
+		    	#{member_account},
+		    	#{member_vehicle},
+				#{member_introduce}
+			<if test="member_ofile != null and member_sfile !=null">
+				, #{member_ofile},
+		    	#{member_sfile}
+			</if>
+			)
+	</insert>
+	
+
+	<!-- 정보수정 조회 -->
+	<select id="getMemberInfo" resultType="com.kosmo.zipkok.dto.MemberDTO">
+		SELECT * FROM member WHERE member_id=#{0}
+	</select>
+	
+	<!-- 정보수정 (헬퍼) -->
+	<update id="helperMyPage">
+		UPDATE member
+			SET member_email=#{member_email}, member_age=#{member_age}, member_pass=#{member_pass}, member_phone=#{member_phone},	
+				member_bank=#{member_bank}, member_account=#{member_account}, member_vehicle=#{member_vehicle}, 
+				member_introduce=#{member_introduce}
+				<if test="member_ofile != null and member_sfile !=null">
+					, member_ofile=#{member_ofile}, member_sfile=#{member_sfile}
+				</if>
+			
+				
+			WHERE member_id=#{member_id} AND member_status=#{member_status}
+	</update>
+	
+	<!-- 정보수정 (사용자) -->
+	<update id="userMyPage">
+		UPDATE member
+			SET member_email=#{member_email}, member_pass=#{member_pass}
+				, member_age=#{member_age}, member_phone=#{member_phone}
+			
+			WHERE member_id=#{member_id} AND member_status=#{member_status}
+	</update>
+	
+	<!-- 카카오로그인시 가입여부 -->
+	<select id="kakaoLogin" resultType="com.kosmo.zipkok.dto.MemberDTO">
+		SELECT * FROM member WHERE member_id=#{0}
+	</select>
+	
+	<!-- 회원탈퇴 -->
+	<delete id="memberDelete" >
+		DELETE FROM member
+			WHERE member_id=#{param1} 
+	</delete>
+
+</mapper>
+

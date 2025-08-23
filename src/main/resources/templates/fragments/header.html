@@ -1,24 +1,24 @@
 <!-- CSS Fragment -->
 <th:block th:fragment="css">
     <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" th:href="@{/resources/css/bootstrap.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Oswald:400,300" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet" type="text/css">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" th:href="@{/resources/css/font-awesome.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}" type="text/css">
 
     <!-- Plugin CSS -->
-    <link rel="stylesheet" th:href="@{/resources/css/animate.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/animate.min.css}" type="text/css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" th:href="@{/resources/css/style.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
 
     <!-- Owl Carousel -->
-    <link rel="stylesheet" th:href="@{/resources/css/owl.carousel.css}">
-    <link rel="stylesheet" th:href="@{/resources/css/owl.theme.css}">
+    <link rel="stylesheet" th:href="@{/css/owl.carousel.css}">
+    <link rel="stylesheet" th:href="@{/css/owl.theme.css}">
 </th:block>
 
 <!-- Navbar Fragment -->
@@ -33,7 +33,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#"><img th:src="@{/resources/img/logo.png}" alt="Logo"></a>
+                <a class="navbar-brand" href="#"><img th:src="@{/img/logo.png}" alt="Logo"></a>
             </div>
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -42,7 +42,7 @@
                     <li><a class="page-scroll" href="#Notice">Notice</a></li>
                     <li><a class="page-scroll" href="#Screenshots">Screenshots</a></li>
                     <li><a class="page-scroll" th:href="@{/HList}">Cock</a></li>
-                    <li><a class="page-scroll" th:href="@{/resources/build/index.html}">Q&A</a></li>
+                    <li><a class="page-scroll" th:href="@{/build/index.html}">Q&A</a></li>
 
                     <!-- 로그인 유무에 따른 join/logout -->
                     <th:block th:if="${session.siteUserInfo == null}">

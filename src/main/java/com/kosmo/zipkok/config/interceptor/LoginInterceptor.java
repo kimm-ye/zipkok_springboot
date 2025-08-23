@@ -19,6 +19,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         String redisSessionId = (String) request.getSession().getAttribute("redisSession");
 
         System.out.println("인터셉테ㅓㅓㅓㅓㅓㅓㅓㅓ redisSessionId : " + redisSessionId);
+        System.out.println("요청 URL: " + request.getRequestURL());
 
         if (redisSessionId == null) {
             response.sendRedirect(request.getContextPath() + "/member/login");

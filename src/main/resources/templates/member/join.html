@@ -1,10 +1,269 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>회원가입</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/joinmember.css}">
+    <script type="text/javascript" th:src="@{/js/member/join.js}"></script>
+    <script type="text/javascript" th:src="@{/js/member/login.js}"></script>
 </head>
 <body>
+
+<div class="container">
+    <!-- header -->
+    <div id="header">
+        <h1 class="join_title">
+            <label><strong>회원가입</strong></label>
+        </h1>
+        <h3>Welcome! 집콕에 오신 것을 환영합니다.</h3>
+    </div>
+
+    <!-- wrapper in -->
+    <div id="wrapper">
+
+        <!-- content in -->
+        <div id="content">
+
+            <!-- form in -->
+            <form name="joinForm" method="post" onsubmit="return joinValidate(this);" enctype="multipart/form-data" th:action="@{/member/join}">
+
+                <!-- 회원 유형 선택 -->
+                <div style="margin-bottom: 30px; text-align: center; padding: 20px; border: 2px solid #ddd; border-radius: 10px;">
+                    <h3 class="join_title" style="margin-bottom: 20px;">가입 유형을 선택해주세요</h3>
+                    <label style="margin-right: 30px; font-size: 18px;">
+                        <input type="radio" name="member_status" value="1" onchange="toggleMemberType()" checked>
+                        &nbsp;<strong>일반 사용자</strong>
+                    </label>
+                    <label style="font-size: 18px;">
+                        <input type="radio" name="member_status" value="2" onchange="toggleMemberType()">
+                        &nbsp;<strong>셔틀콕 (헬퍼)</strong>
+                    </label>
+                </div>
+
+                <!-- NAME -->
+                <div>
+                    <h3 class="join_title">
+                        <label for="name">이름</label>
+                    </h3>
+                    <span class="box int_name">
+                        <input type="text" id="name" class="join_H" maxlength="20" name="member_name" required>
+                    </span> <span class="error_next_box"></span>
+                </div>
+
+                <!-- ID -->
+                <div>
+                    <h3 class="join_title">
+                        <label>아이디</label>
+                    </h3>
+                    <span class="box int_id">
+                        <input type="text" id="member_id" class="join_H" maxlength="30" name="member_id" required>
+                        <button type="button" class="doubleCheck" onclick="id_check_person(this.form);">
+                            <img th:src="@{/img/login/m_icon_danger.png}" alt="중복확인" class="passImg">
+                        </button>
+                    </span>
+
+                    <input type="hidden" name="idDuplication" value="idUncheck">
+                    <span class="error_next_box"></span>
+                </div>
+
+                <!-- pass1 -->
+                <div>
+                    <h3 class="join_title">
+                        <label for="pass1">비밀번호</label>
+                    </h3>
+                    <span class="box int_pass">
+                        <input type="password" id="pass1" class="join_H" maxlength="16" name="member_pass" required>
+                        <span id="alertTxt">사용불가</span>
+                        <img th:src="@{/img/login/m_icon_pass.png}" id="pass1_img" class="passImg">
+                    </span> <span class="error_next_box"></span>
+                </div>
+
+                <!-- pass2 -->
+                <div>
+                    <h3 class="join_title">
+                        <label for="pass2">비밀번호 확인</label>
+                    </h3>
+                    <span class="box int_pass_check">
+                        <input type="password" id="pass2" class="join_H" maxlength="16" name="password2" required>
+                        <img th:src="@{/img/login/m_icon_check_disable.png}" id="pass2_img" class="passImg">
+                    </span> <span class="error_next_box"></span>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <h3 class="join_title">
+                        <label>이메일</label>
+                    </h3>
+                    <span class="box_email">
+                        <input type="text" id="member_email_1" class="join_email" maxlength="20" name="member_email_1" value="" required>
+                    </span>
+                    &nbsp;@
+                    <span class="box_email">
+                        <input type="text" id="member_email_2" class="join_email" maxlength="20" name="member_email_2" value="" style="width:20%" readonly required>
+                    </span>
+                    &nbsp;
+                    <span class="box_email">
+                        <select name="email_check" onchange="email_input(this.form);" class="join_email" id="email_check" style="width:20%" required>
+                            <option selected="" value="">-선택-</option>
+                            <option value="1">직접입력</option>
+                        </select>
+                    </span> <span class="error_next_box"></span>
+                </div>
+
+                <!-- age -->
+                <div>
+                    <h3 class="join_title">
+                        <label for="age">나이 / 성별</label>
+                    </h3>
+                    <div id="age_wrap">
+
+                        <div id="age">
+                            <span class="box">
+                                <select id="age_check" class="sel" name="member_age" required>
+                                    <option value="">나이</option>
+                                    <option value="10">10대</option>
+                                    <option value="20">20대</option>
+                                    <option value="30">30대</option>
+                                    <option value="40">40대</option>
+                                    <option value="50">50대</option>
+                                    <option value="60">60대</option>
+                                    <option value="0">기타</option>
+                                </select>
+                            </span>
+                        </div>
+
+                        <!-- GENDER -->
+                        <div id="gender">
+                            <span class="box gender_code">
+                                <select id="gender" class="sel" name="member_sex" required>
+                                    <option value="">성별</option>
+                                    <option value="0">남자</option>
+                                    <option value="1">여자</option>
+                                </select>
+                            </span>
+                            <span class="error_next_box">필수 정보입니다.</span>
+                        </div>
+
+                    </div>
+
+                    <span class="error_next_box"></span>
+                </div>
+
+                <!-- phone -->
+                <div>
+                    <h3 class="join_title">
+                        <label for="phone">휴대전화</label>
+                    </h3>
+                    <span class="box int_phone">
+                        <input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="phone" class="join_H" maxlength="11" placeholder="휴대전화 입력" name="member_phone" required>
+                        <span class="step_url">'-' 생략</span>
+                    </span> <span class="error_next_box"></span>
+                </div>
+
+                <!-- 헬퍼 전용 필드들 -->
+                <div id="helper_fields" style="display: none;">
+
+                    <!-- bank -->
+                    <div>
+                        <h3 class="join_title">
+                            <label for="bank">입금계좌 은행</label>
+                        </h3>
+                        <div id="bank_wrap">
+                            <div id="bank">
+                                <span class="box">
+                                    <select id="bank_check" class="sel" name="member_bank" onchange="input_bank(this.form)">
+                                        <option value="">은행선택</option>
+                                        <option value="기업은행">기업은행</option>
+                                        <option value="국민은행">국민은행</option>
+                                        <option value="우리은행">우리은행</option>
+                                        <option value="신한은행">신한은행</option>
+                                        <option value="하나은행">하나은행</option>
+                                        <option value="농협은행">농협은행</option>
+                                        <option value="SC은행">SC은행</option>
+                                        <option value="카카오뱅크">카카오뱅크</option>
+                                    </select>
+                                </span> <span class="error_next_box">하나는 필수 선택.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- account -->
+                    <div>
+                        <h3 class="join_title">
+                            <label for="account">계좌번호</label>
+                        </h3>
+                        <span class="box int_phone">
+                            <input type="text" id="account" class="join_H" maxlength="30" placeholder="계좌번호 입력" name="member_account">
+                            <span class="step_url">'-' 생략</span>
+                        </span> <span class="error_next_box"></span>
+                    </div>
+
+                    <!-- vehicle -->
+                    <div>
+                        <h3 class="join_title">
+                            <label for="vehicle">보유중인 주요 이동수단</label>
+                        </h3>
+                        <div id="vehicle_wrap">
+                            <div id="vehicle">
+                                <span class="box">
+                                    <label><input type="radio" value="0" name="member_vehicle" checked>&nbsp;자동차&nbsp;</label>
+                                    <label><input type="radio" value="1" name="member_vehicle">&nbsp;오토바이&nbsp;</label>
+                                    <label><input type="radio" value="2" name="member_vehicle">&nbsp;자전거&nbsp;</label>
+                                    <label><input type="radio" value="3" name="member_vehicle">&nbsp;도보&nbsp;</label>
+                                    <label><input type="radio" value="4" name="member_vehicle">&nbsp;기타&nbsp;</label>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- introduce -->
+                    <div>
+                        <h3 class="join_title">
+                            <label for="introduce">자기소개</label>
+                        </h3>
+                        <span class="box int_address">
+                            <input type="text" id="introduce" class="join_H" maxlength="20" placeholder="20자 이내 입력" name="member_introduce">
+                        </span> <span class="error_next_box"></span>
+                    </div>
+
+                    <!-- picture -->
+                    <div>
+                        <h3 class="join_title"><label>프로필사진</label></h3>
+                        <span class="box int_picture">
+                            <input type="file" name="ofile" id="pictureInput" accept="image/png, image/jpeg">
+                        </span>
+                    </div>
+
+                </div>
+                <!-- 헬퍼 전용 필드 끝 -->
+
+                <!-- CSRF 토큰 -->
+                <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
+
+                <!-- JOIN BTN-->
+                <div class="btn_area">
+                    <button type="submit" class="joinBtn">
+                        <span>가입하기</span>
+                    </button>
+                </div>
+
+            </form>
+            <!-- form out -->
+
+        </div>
+        <!-- content-->
+
+    </div>
+    <!-- wrapper -->
+
+</div>
+
+<script>
+// HTML 내부의 기본 함수들을 제거하고 외부 JS 파일 사용
+// join.js 파일에서 모든 함수를 처리합니다.
+</script>
 
 </body>
 </html>

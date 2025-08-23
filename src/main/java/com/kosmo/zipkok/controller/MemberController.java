@@ -68,13 +68,13 @@ public class MemberController {
 		return mv;
 	}
 
-	@PostMapping("/idCheck.do")
+	@PostMapping("/member/join/check")
 	public ModelAndView idCheck(@RequestParam("memberId") String memberId) {
 		String mId = memberService.idCheck(memberId);
 		boolean result = (mId != null);
 		System.out.println(result);
 
-		ModelAndView mv = new ModelAndView("member/U_idCheckProcess");
+		ModelAndView mv = new ModelAndView("member/idCheck");
 		mv.addObject("idCheckResult", result);
 		mv.addObject("id", memberId);
 
@@ -220,7 +220,7 @@ public class MemberController {
 
 	}
 
-	@PostMapping("/findId.do")
+	@PostMapping("/member/find/id")
 	public String findId(@RequestParam Map<String, String> param) {
 
 		String name = param.get("name");
@@ -233,12 +233,10 @@ public class MemberController {
 		return memberService.findId(info);
 	}
 
-	@PostMapping("/findPwd.do")
+	@PostMapping("/member/find/pw")
 	public String findPwd( @RequestBody Map<String, String> param) {
-		System.out.println("param : " + param);
 
 		String email = param.get("email_1")+"@"+param.get("email_2");
-		log.info("이메일 : {}", email);
 
 		Map<String, String> info = new HashMap<>();
 		info.put("mid", param.get("id"));

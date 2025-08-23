@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class LoginController {
 
 	//사용자로 가입할지 헬퍼로 가입할지
-	@RequestMapping("/memberRegist.do")
-	public String memberRegist() {
-		
+	@RequestMapping("/member/join")
+	public String join() {
 		return "member/join";
 	}
 
@@ -22,9 +21,8 @@ public class LoginController {
 	}
 	
 	//로그인
-	@RequestMapping("/memberLogin.do")
-	public String memberLogin() {
-		
+	@RequestMapping("/member/login")
+	public String login() {
 		return "member/login";
 	}
 	
@@ -42,9 +40,8 @@ public class LoginController {
     }
 	
 	//아이디/비밀번호 찾기
-	@RequestMapping("/findIdpw.do")
-	public String findmember() {
-		
-		return "member/find_Idpw";
+	@RequestMapping("/member/find")
+	public String find() {
+		return "member/find";
 	}
 }

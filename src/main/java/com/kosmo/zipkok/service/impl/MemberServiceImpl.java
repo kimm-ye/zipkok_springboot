@@ -13,11 +13,10 @@ import java.util.Map;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
 	@Autowired
-	private final MemberDAO memberDao;  // final 필드
+	private MemberDAO memberDao;  // final 필드
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;

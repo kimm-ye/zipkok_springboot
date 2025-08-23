@@ -9,10 +9,10 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 
-@Service  // ✅ 반드시 추가!
+@Service
 public class SessionService {
 
-    @Autowired  // ✅ setter 방식 대신 필드 주입
+    @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
     // === 세션 생성 ===

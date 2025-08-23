@@ -22,11 +22,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:3000");
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/resources/**")
-                .addResourceLocations("classpath:/static/");
-    }
 
     @Override
         public void addInterceptors(InterceptorRegistry registry) {
@@ -35,12 +30,13 @@ public class WebConfig implements WebMvcConfigurer {
                     .excludePathPatterns(
                         "/",
                         "/member/login",
-                        "/member/join",
+                        "/member/join/**",
+                        "/member/find/**",
                         "/memberLoginAction.do",
                         "/resources/**",
                         "/css/**",
                         "/js/**",
-                        "/images/**",
+                        "/img/**",
                         "/webjars/**",
                         "/favicon.ico",
                         "/error",
