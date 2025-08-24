@@ -1,18 +1,15 @@
 package com.kosmo.zipkok.dto;
 
 import lombok.Data;
-
 @Data
 public class MemberDTO {
-
-	private String member_id; //아이디
-	private String member_pass; //패스워드
-	private String member_name; //이름
-	private String member_email; //이메일
-	private String member_age; //연령대
-	private int member_sex; // 성별
-	private String member_phone; //연락처
-
-	private int member_missionN;
-	private int member_status; // 구분 : 관리자(0) / 일반사용자(1) / 헬퍼(2) / 블랙리스트(3)
+	private String memberId; //아이디
+	private String memberPass; //패스워드
+	private String memberName; //이름
+	private String memberEmail; //이메일
+	private String memberAge; //연령대
+	private int memberSex; // 성별
+	private String memberPhone;
+	private int memberMissionN;
+	private int memberStatus;  // 구분 : 관리자(0) / 일반사용자(1) / 헬퍼(2) / 블랙리스트(3)
 }

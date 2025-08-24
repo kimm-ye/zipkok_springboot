@@ -1,6 +1,5 @@
 package com.kosmo.zipkok.controller;
 
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -25,7 +24,7 @@ public class LoginController {
 	public String login() {
 		return "member/login";
 	}
-	
+
 	//로그아웃
 	@RequestMapping("/logout.do")
 	public String memberLogout() {

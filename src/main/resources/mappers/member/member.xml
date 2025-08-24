@@ -123,7 +123,7 @@
 	</select>
 	
 	<!-- 정보수정 (헬퍼) -->
-	<update id="helperMyPage">
+<!--	<update id="helperMyPage">
 		UPDATE member
 			SET member_email=#{member_email}, member_age=#{member_age}, member_pass=#{member_pass}, member_phone=#{member_phone},	
 				member_bank=#{member_bank}, member_account=#{member_account}, member_vehicle=#{member_vehicle}, 
@@ -135,7 +135,7 @@
 				
 			WHERE member_id=#{member_id} AND member_status=#{member_status}
 	</update>
-	
+	-->
 	<!-- 정보수정 (사용자) -->
 	<update id="userMyPage">
 		UPDATE member

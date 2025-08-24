@@ -109,3 +109,54 @@ function email_input(form) {
         form.email_2.readOnly = true;
     }
 }
+
+// 로그인 폼 유효성 검사
+function validateLoginForm(form) {
+    const id = form.id.value.trim();
+    const pass = form.pass.value.trim();
+
+    console.log(id);
+    console.log(pass);
+
+    if (!id) {
+        alert('아이디를 입력해주세요.');
+        form.id.focus();
+        return false;
+    }
+
+    if (!pass) {
+        alert('비밀번호를 입력해주세요.');
+        form.pass.focus();
+        return false;
+    }
+
+    const data = {
+        memberId : id,
+        memberPass : pass,
+        kakaoemail : form.kakaoemail.value,
+        kakaoname : form.kakaoname.value
+    }
+
+    $.ajax({
+        type: 'post',
+        url: './login/action',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(data) {
+            if(data === '') {
+                alert("일치하는 회원이 없습니다.");
+            } else {
+                alert("패스워드는 '" + data + "'입니다.");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', {
+                status: status,
+                error: error,
+                responseText: xhr.responseText,
+                statusCode: xhr.status
+            });
+            alert('오류가 발생하였습니다: ' + xhr.status + ' ' + error + '\n동일한 증상 발생 시 관리자에게 문의바랍니다.');
+        }
+    });
+}

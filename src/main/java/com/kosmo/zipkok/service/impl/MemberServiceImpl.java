@@ -30,12 +30,15 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public MemberDTO authenticate(String inputId, String inputPwd) {
 	    try {
+
 	        MemberDTO member = memberDao.selectMemberById(inputId);
+
+			System.out.println("member : " + member);
 
 	        if (member != null) {
 
 	            // 비밀번호 비교: 원본 vs 암호화된 비밀번호
-	            boolean isMatch = passwordEncoder.matches(inputPwd, member.getMember_pass());
+	            boolean isMatch = passwordEncoder.matches(inputPwd, member.getMemberPass());
 
 	            if (isMatch) {
 	                System.out.println("로그인 성공: " + inputId);
@@ -63,7 +66,8 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public MemberDTO login(String id, String pass) {
-		return null;
+		// 기존 authenticate 메서드 활용
+		return authenticate(id, pass);
 	}
 
 	@Override
@@ -82,8 +86,8 @@ public class MemberServiceImpl implements MemberService {
 
 		try {
 			// 패스워드 security 사용해서 BCrypt 암호화 (고정 60자)
-			String encryptPwd = passwordEncoder.encode(dto.getMember_pass());
-			dto.setMember_pass(encryptPwd);
+			String encryptPwd = passwordEncoder.encode(dto.getMemberPass());
+			dto.setMemberPass(encryptPwd);
 
 			memberDao.insertMember(dto);
 		} catch (Exception e){

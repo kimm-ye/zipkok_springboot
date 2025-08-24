@@ -4,7 +4,18 @@
     <meta charset="UTF-8"/>
     <title>ID Check</title>
     <script>
+        // 팝업창이 닫힐 때 부모창 상태 복원
+        window.onbeforeunload = function() {
+            if (opener && opener.document && opener.document.joinForm) {
+                opener.document.joinForm.idDuplication.value = "";
+                opener.document.joinForm.member_id.readOnly = false;
+            }
+        }
+
         function idUse(userid) {
+            // 정상적인 사용이므로 onbeforeunload 이벤트 비활성화
+            window.onbeforeunload = null;
+
             opener.document.joinForm.idDuplication.value = "idCheck";
             opener.document.joinForm.member_id.value = userid;
             self.close();
@@ -62,7 +73,7 @@
         <fieldset>
             <div align="center">
                 <h2 th:text="'[' + ${id} + ']는 사용 가능한 아이디 입니다.'"></h2>
-                <button type="button" th:onclick="'idUse(\'' + ${id} + '\');'">아이디 사용</button>
+                <button type="button" th:data-id="${id}" onclick="idUse(this.dataset.id);">아이디 사용</button>
             </div>
         </fieldset>
     </div>

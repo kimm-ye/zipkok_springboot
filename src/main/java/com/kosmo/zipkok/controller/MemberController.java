@@ -31,50 +31,47 @@ public class MemberController {
 	@Autowired
     SessionService sessionService;
 
-	@PostMapping(value="/member.do")
-	public ModelAndView member(HttpServletRequest req, MemberDTO dto) throws Exception {
-
-		ModelAndView mv = new ModelAndView();
+	// 회원가입
+	@PostMapping(value="/member/join")
+	public Map<String, Object> member(MemberDTO dto) throws Exception {
+		Map<String, Object> result = new HashMap<>();
 
 		try{
-			dto.setMember_email(req.getParameter("member_email_1") + "@" + req.getParameter("member_email_2"));
 			System.out.println("memberDTO : " + dto);
 
 			// 1. 해당하는 이메일이 존재하는지 체크
-			boolean hasEmail = memberService.selectEmail(dto.getMember_email());
+			boolean hasEmail = memberService.selectEmail(dto.getMemberEmail());
 			System.out.println("hasEmail : " + hasEmail);
 
 			// 2. 있으면 return 없으면 비밀번호 암호화해서 insert
 			if(hasEmail) {
-				mv.addObject("msg", "해당 이메일이 이미 존재합니다. 다른 이메일을 사용해주세요.");
-				mv.addObject("url", "memberRegist.do"); // 회원가입 폼으로 돌아가기
-				mv.addObject("memberData", dto); // 입력 데이터 유지
-				mv.setViewName("common/alertAndMove");
+				result.put("success", false);
+				result.put("message", "해당 이메일이 이미 존재합니다.");
 			} else {
 				memberService.insertMember(dto);
-				mv.addObject("msg", "가입완료! 집콕에 오신것을 환영합니다^^");
-				mv.addObject("url", "zipkok.do"); // 메인 페이지로
-				mv.setViewName("common/alertAndMove");
+				result.put("success", true);
+				result.put("message", "가입완료! 집콕에 오신것을 환영합니다^^");
+				result.put("redirectUrl", "/zipkok");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			mv.addObject("msg", "회원가입을 진행하는 도중 오류가 발생하였습니다.\\n관리자에게 문의 바랍니다.");
-			mv.addObject("url", "memberRegist.do"); // 회원가입 폼으로 돌아가기
-			mv.addObject("memberData", dto); // 입력 데이터 유지
-			mv.setViewName("common/alertAndMove");
+			result.put("success", false);
+			result.put("message", "회원가입 중 오류가 발생하였습니다.\\n관리자에게 문의 바랍니다.");
 		}
 
-		return mv;
+		return result;
 	}
 
+	// 아이디 중복체크
 	@PostMapping("/member/join/check")
 	public ModelAndView idCheck(@RequestParam("memberId") String memberId) {
 		String mId = memberService.idCheck(memberId);
 		boolean result = (mId != null);
 		System.out.println(result);
 
-		ModelAndView mv = new ModelAndView("member/idCheck");
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("member/idCheck");
 		mv.addObject("idCheckResult", result);
 		mv.addObject("id", memberId);
 
@@ -124,7 +121,7 @@ public class MemberController {
 			e.printStackTrace();
 		}
 
-		memberDTO.setMember_email(req.getParameter("member_email_1") + "@" + req.getParameter("member_email_2"));
+		memberDTO.setMemberEmail(req.getParameter("email_1") + "@" + req.getParameter("email_2"));
 //		sqlSession.getMapper(MemberImpl.class).helper(memberDTO);
 
 		return "redirect:welcomAlert.do";
@@ -138,50 +135,55 @@ public class MemberController {
 		return uuid;
 	}
 
-	@PostMapping("/memberLoginAction.do")
-	public ModelAndView memberLoginAction (
+	// 로그인
+	@PostMapping("/member/login/action")
+	public Map<String, Object> login (@RequestBody Map<String, String> param,
             HttpServletRequest req, HttpSession session, HttpServletResponse resp) throws IOException {
+
+		System.out.println("111 로그인 접근!!!");
+		System.out.println(param);
+
+		Map<String, Object> result = new HashMap<>();
 
 		// 입력한 id, pass값을 비교해서 사용자자 정보 조회
 		MemberDTO dto = memberService.authenticate(
-				req.getParameter("id"),
-				req.getParameter("pass")
+				param.get("memberId"),
+				param.get("memberPass")
 		);
 
 		// 성공시 Redis 세션 생성
-		ModelAndView mv = new ModelAndView();
 
-		if (dto == null && req.getParameter("kakaoemail").equals("")) {
+		if (dto == null && "".equals(param.get("kakaoemail"))) {
 			// 로그인 실패
-			mv.addObject("LoginNG", "아이디/비밀번호가 틀렸습니다.");
-			mv.setViewName("member/login");
-			return mv;
+			result.put("false", false);
+			result.put("message", "아이디/비밀번호가 틀렸습니다.");
 		}
-		else if(dto != null && req.getParameter("kakaoemail").equals("")) {
+		else if(dto != null && "".equals(param.get("kakaoemail"))) {
 			// 로그인 성공
 			String redisSession = sessionService.createSession(dto);
 			System.out.println("로그인 성공 - Redis 세션 생성: " + redisSession);
 
+
+			result.put("true", false);
+			result.put("message", "아이디/비밀번호가 틀렸습니다.");
 			// Redis 세션 ID 저장
 			session.setAttribute("redisSession", redisSession);
-			session.setAttribute("Id", dto.getMember_id());
-			session.setAttribute("UserName", dto.getMember_name());
-			session.setAttribute("UserStatus", dto.getMember_status());
+			session.setAttribute("Id", dto.getMemberId());
+			session.setAttribute("UserName", dto.getMemberName());
+			session.setAttribute("UserStatus", dto.getMemberStatus());
 
-			mv.setViewName("index");
-			return mv;
 		}
 
 		// ==================== 카카오 로그인 ========================
-		else if (!req.getParameter("kakaoemail").equals("")) {
+		else if (!"".equals(param.get("kakaoemail"))) {
 
 			// kakaoemail을 kakaoid에 저장
-			String kakaoid = req.getParameter("kakaoemail");
+			String kakaoid = param.get("kakaoemail");
 			//System.out.println("kakaoid : "+kakaoid);
 
 			// 카카오계정으로 로그인한 적이 있는지 없는지
 //			MemberDTO result = sqlSession.getMapper(MemberImpl.class).kakaoLogin(req.getParameter("kakaoemail"));
-			MemberDTO result = new MemberDTO();
+//			MemberDTO result = new MemberDTO();
 			//System.out.println(result);
 
 			if (result == null) { // 회원이 아닌경우 (카카오 계정으로 처음 방문한 경우) 카카오 회원정보 설정 창으로 이동
@@ -195,29 +197,24 @@ public class MemberController {
 				req.setAttribute("kakaoemail", req.getParameter("kakaoemail"));
 				req.setAttribute("kakaoname", req.getParameter("kakaoname"));
 
-				mv.setViewName("member/join_Kakao");
-				return mv;
+				//mv.setViewName("member/join_Kakao");
+				//return mv;
 
 			} else { // 이미 카카오로 로그인한 적이 있을 때 (최초 1회 로그인때 회원가입된 상태)
 				// id를 세션에 저장
-				session.setAttribute("siteUserInfo", result);
-				session.setAttribute("Id", result.getMember_id());
-				session.setAttribute("UserName", result.getMember_name());
-				session.setAttribute("UserStatus", result.getMember_status());
 
-				mv.setViewName("member/login");
-				return mv;
+				String redisSession = sessionService.createSession(dto);
+				System.out.println("로그인 성공 - Redis 세션 생성: " + redisSession);
+
+				session.setAttribute("redisSession", redisSession);
+				session.setAttribute("Id", dto.getMemberId());
+				session.setAttribute("UserName", dto.getMemberName());
+				session.setAttribute("UserStatus", dto.getMemberStatus());
+
 			}
 		}
 
-		String backUrl = req.getParameter("backUrl");
-		if (backUrl==null || backUrl.equals("")) {
-			mv.setViewName("member/login");
-		} else {
-			mv.setViewName(backUrl);
-		}
-		return mv;
-
+		return result;
 	}
 
 	@PostMapping("/member/find/id")
@@ -257,7 +254,7 @@ public class MemberController {
 		ArrayList<MemberDTO> memberList = new ArrayList<>();
 		for(MemberDTO dto : memberList) {
 
-			String email = dto.getMember_email();
+			String email = dto.getMemberEmail();
 
 			int idx = email.indexOf("@");
 
@@ -323,9 +320,9 @@ public class MemberController {
 		}
 
 
-		memberDTO.setMember_id(id);
-		memberDTO.setMember_status(status);
-		memberDTO.setMember_email(req.getParameter("email_1") + "@" + req.getParameter("email_2"));
+		memberDTO.setMemberId(id);
+		memberDTO.setMemberStatus(status);
+		memberDTO.setMemberEmail(req.getParameter("email_1") + "@" + req.getParameter("email_2"));
 
 //		sqlSession.getMapper(MemberImpl.class).helperMyPage(memberDTO);
 
@@ -341,9 +338,9 @@ public class MemberController {
 		String id = (String)session.getAttribute("Id");
 		int status = (Integer)session.getAttribute("UserStatus");
 
-		memberDTO.setMember_id(id);
-		memberDTO.setMember_status(status);
-		memberDTO.setMember_email(req.getParameter("email_1") + "@" + req.getParameter("email_2"));
+		memberDTO.setMemberId(id);
+		memberDTO.setMemberStatus(status);
+		memberDTO.setMemberEmail(req.getParameter("email_1") + "@" + req.getParameter("email_2"));
 
 
 //		sqlSession.getMapper(MemberImpl.class).userMyPage(memberDTO);

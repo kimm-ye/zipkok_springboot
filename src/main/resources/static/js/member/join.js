@@ -69,7 +69,6 @@ function joinValidate(form) {
 // ID 중복 확인
 function id_check_person(form) {
     try {
-        console.log("ID 중복 확인 시작");
 
         if (form.member_id.value === "") {
             console.error("아이디가 비어있음");
@@ -117,12 +116,9 @@ function id_check_person(form) {
             return false;
         }
 
-        console.log("팝업 창 열기 성공");
-
         // 폼 제출 시도
         try {
             popupForm.submit();
-            console.log("폼 제출 성공");
         } catch (submitError) {
             console.error("폼 제출 실패:", submitError);
             alert("중복 확인 요청 중 오류가 발생했습니다: " + submitError.message);
@@ -132,7 +128,6 @@ function id_check_person(form) {
 
         // 폼 제거
         document.body.removeChild(popupForm);
-        console.log("임시 폼 제거 완료");
 
     } catch (error) {
         console.error("ID 중복 확인 중 오류 발생:", error);
@@ -159,6 +154,45 @@ function input_bank(frm) {
     }
 }
 
+// 폼 제출을 fetch로 처리하는 공통 함수
+async function submitFormWithFetch(form, url) {
+    if (!joinValidate(form)) {
+        return false;
+    }
+
+    try {
+        const formData = new FormData(form);
+
+        const email1 = formData.get('email_1');
+        const email2 = formData.get('email_2');
+        if (email1 && email2) {
+            formData.set('member_email', email1 + '@' + email2);
+            formData.delete('email_1');
+            formData.delete('email_2');
+        }
+
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert(result.message);
+            if (result.redirectUrl) {
+                window.location.href = result.redirectUrl;
+            }
+        } else {
+            alert(result.message);
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('처리 중 오류가 발생했습니다.');
+    }
+}
+
 // 회원 유형 변경시 폼 표시/숨김 처리 (통합 폼용)
 function toggleMemberType() {
     var memberStatusInput = document.querySelector('input[name="member_status"]:checked');
@@ -170,7 +204,12 @@ function toggleMemberType() {
 
     if (memberStatus == "2") { // 헬퍼 선택
         if (helperFields) helperFields.style.display = 'block';
-        form.action = '/zipkok/helper.do';
+
+        // 헬퍼 폼 제출 처리
+        form.onsubmit = async function(event) {
+            event.preventDefault();
+            await submitFormWithFetch(form, '/zipkok/helper.do');
+        };
 
         // 헬퍼 필수 필드 설정
         if (form.member_bank) form.member_bank.required = true;
@@ -179,7 +218,12 @@ function toggleMemberType() {
 
     } else { // 일반 사용자 선택 (memberStatus == "1")
         if (helperFields) helperFields.style.display = 'none';
-        form.action = '/zipkok/member.do';
+
+        // 일반 사용자 폼 제출 처리
+        form.onsubmit = async function(event) {
+            event.preventDefault();
+            await submitFormWithFetch(form, './join');
+        };
 
         // 헬퍼 필드 필수 해제
         if (form.member_bank) form.member_bank.required = false;
@@ -201,6 +245,8 @@ function toggleMemberType() {
         }
     }
 }
+
+
 
 // 아이디 중복확인 후 사용하기 버튼 클릭시 호출되는 함수 (팝업창용)
 function useThisId(memberId) {

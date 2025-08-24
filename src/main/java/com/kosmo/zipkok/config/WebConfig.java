@@ -23,24 +23,25 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
 
+    // 2. SecurityFilterChain을 통과한 요청을 받아서 세션 확인이나 추가 로직 수행.
     @Override
-        public void addInterceptors(InterceptorRegistry registry) {
-            registry.addInterceptor(new LoginInterceptor(sessionService))
-                    .addPathPatterns("/**")
-                    .excludePathPatterns(
-                        "/",
-                        "/member/login",
-                        "/member/join/**",
-                        "/member/find/**",
-                        "/memberLoginAction.do",
-                        "/resources/**",
-                        "/css/**",
-                        "/js/**",
-                        "/img/**",
-                        "/webjars/**",
-                        "/favicon.ico",
-                        "/error",
-                        "/actuator/**"
-                    );
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new LoginInterceptor(sessionService))
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                    "/",
+                    "/member/login/**",
+                    "/member/join/**",
+                    "/member/find/**",
+                    "/resources/**",
+                    "/css/**",
+                    "/js/**",
+                    "/img/**",
+                    "/webjars/**",
+                    "/favicon.ico",
+                    "/error",
+                    "/actuator/**"
+                );
         }
+
 }
