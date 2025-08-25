@@ -10,32 +10,32 @@ document.addEventListener('DOMContentLoaded', function() {
 // 회원가입 유효성 검사
 function joinValidate(form) {
     // ID 길이 체크
-    if (!(form.member_id.value.length >= 4 && form.member_id.value.length <= 12)) {
+    if (!(form.memberId.value.length >= 4 && form.memberId.value.length <= 12)) {
         alert("4자 이상 12자 이내의 값만 입력하세요");
-        form.member_id.value = '';
-        form.member_id.focus();
+        form.memberId.value = '';
+        form.memberId.focus();
         return false;
     }
 
     // ID 영문/숫자 체크
-    var whatType = form.member_id.value;
+    var whatType = form.memberId.value;
     for (var i = 0; i < whatType.length; i++) {
         if (!((whatType[i] >= 'a' && whatType[i] <= 'z') ||
             (whatType[i] >= 'A' && whatType[i] <= 'Z') ||
             (whatType[i] >= '0' && whatType[i] <= '9'))) {
             alert("아이디는 숫자랑 영문자만 입력가능합니다");
-            form.member_id.value = '';
-            form.member_id.focus();
+            form.memberId.value = '';
+            form.memberId.focus();
             return false;
         }
     }
 
     // 패스워드 일치 체크
-    if (form.pass1.value !== form.pass2.value) {
+    if (form.memberPass.value !== form.memberPass2.value) {
         alert('입력한 패스워드가 일치하지 않습니다.');
-        form.pass1.value = "";
-        form.pass2.value = "";
-        form.pass1.focus();
+        form.memberPass.value = "";
+        form.memberPass2.value = "";
+        form.memberPass.focus();
         return false;
     }
 
@@ -46,17 +46,17 @@ function joinValidate(form) {
     }
 
     // 통합 폼에서 헬퍼 선택시 추가 유효성 검사
-    var memberStatusInput = document.querySelector('input[name="member_status"]:checked');
+    var memberStatusInput = document.querySelector('input[name="memberStatus"]:checked');
     if (memberStatusInput && memberStatusInput.value === "2") {
-        if (form.member_bank && !form.member_bank.value) {
+        if (form.memberBank && !form.memberBank.value) {
             alert("은행을 선택해주세요.");
             return false;
         }
-        if (form.member_account && !form.member_account.value) {
+        if (form.memberAccount && !form.memberAccount.value) {
             alert("계좌번호를 입력해주세요.");
             return false;
         }
-        if (form.member_introduce && !form.member_introduce.value) {
+        if (form.memberIntroduce && !form.memberIntroduce.value) {
             alert("자기소개를 입력해주세요.");
             return false;
         }
@@ -70,22 +70,22 @@ function joinValidate(form) {
 function id_check_person(form) {
     try {
 
-        if (form.member_id.value === "") {
+        if (form.memberId.value === "") {
             console.error("아이디가 비어있음");
             alert("아이디를 입력후 중복확인을 누르세요");
-            form.member_id.focus();
+            form.memberId.focus();
             return false;
         }
 
-        if (!(form.member_id.value.length >= 4 && form.member_id.value.length <= 12)) {
-            console.error("아이디 길이 오류: " + form.member_id.value.length);
+        if (!(form.memberId.value.length >= 4 && form.memberId.value.length <= 12)) {
+            console.error("아이디 길이 오류: " + form.memberId.value.length);
             alert("4자 이상 12자 이내의 값만 입력하세요");
-            form.member_id.value = '';
-            form.member_id.focus();
+            form.memberId.value = '';
+            form.memberId.focus();
             return false;
         }
 
-        form.member_id.readOnly = true;
+        form.memberId.readOnly = true;
 
         // 팝업 창 중앙 정렬
         var popupX = (window.screen.width / 2) - (250);
@@ -100,7 +100,7 @@ function id_check_person(form) {
         var input = document.createElement("input");
         input.type = "hidden";
         input.name = "memberId";
-        input.value = form.member_id.value;
+        input.value = form.memberId.value;
         popupForm.appendChild(input);
 
         document.body.appendChild(popupForm);
@@ -111,7 +111,7 @@ function id_check_person(form) {
         if (!popup) {
             console.error("팝업이 차단되었습니다");
             alert("팝업이 차단되었습니다. 팝업을 허용해주세요.");
-            form.member_id.readOnly = false;
+            form.memberId.readOnly = false;
             document.body.removeChild(popupForm);
             return false;
         }
@@ -123,7 +123,7 @@ function id_check_person(form) {
             console.error("폼 제출 실패:", submitError);
             alert("중복 확인 요청 중 오류가 발생했습니다: " + submitError.message);
             popup.close();
-            form.member_id.readOnly = false;
+            form.memberId.readOnly = false;
         }
 
         // 폼 제거
@@ -134,23 +134,23 @@ function id_check_person(form) {
         alert("중복 확인 중 오류가 발생했습니다: " + error.message);
 
         // 오류 시 상태 복구
-        if (form.member_id) {
-            form.member_id.readOnly = false;
+        if (form.memberId) {
+            form.memberId.readOnly = false;
         }
     }
 }
 
 // 은행 선택시 계좌번호 입력 활성화 (통합 폼용)
 function input_bank(frm) {
-    var bank = frm.member_bank.value;
+    var bank = frm.memberBank.value;
 
     if (bank == "") {
-        frm.member_account.readOnly = true;
-        frm.member_account.value = '';
+        frm.memberAccount.readOnly = true;
+        frm.memberAccount.value = '';
     }
     else {
-        frm.member_account.readOnly = false;
-        frm.member_account.focus();
+        frm.memberAccount.readOnly = false;
+        frm.memberAccount.focus();
     }
 }
 
@@ -166,7 +166,7 @@ async function submitFormWithFetch(form, url) {
         const email1 = formData.get('email_1');
         const email2 = formData.get('email_2');
         if (email1 && email2) {
-            formData.set('member_email', email1 + '@' + email2);
+            formData.set('memberEmail', email1 + '@' + email2);
             formData.delete('email_1');
             formData.delete('email_2');
         }
@@ -195,7 +195,7 @@ async function submitFormWithFetch(form, url) {
 
 // 회원 유형 변경시 폼 표시/숨김 처리 (통합 폼용)
 function toggleMemberType() {
-    var memberStatusInput = document.querySelector('input[name="member_status"]:checked');
+    var memberStatusInput = document.querySelector('input[name="memberStatus"]:checked');
     if (!memberStatusInput) return; // 통합 폼이 아닌 경우 실행하지 않음
 
     var memberStatus = memberStatusInput.value;
@@ -212,9 +212,9 @@ function toggleMemberType() {
         };
 
         // 헬퍼 필수 필드 설정
-        if (form.member_bank) form.member_bank.required = true;
-        if (form.member_account) form.member_account.required = true;
-        if (form.member_introduce) form.member_introduce.required = true;
+        if (form.memberBank) form.memberBank.required = true;
+        if (form.memberAccount) form.memberAccount.required = true;
+        if (form.memberIntroduce) form.memberIntroduce.required = true;
 
     } else { // 일반 사용자 선택 (memberStatus == "1")
         if (helperFields) helperFields.style.display = 'none';
@@ -222,21 +222,21 @@ function toggleMemberType() {
         // 일반 사용자 폼 제출 처리
         form.onsubmit = async function(event) {
             event.preventDefault();
-            await submitFormWithFetch(form, './join');
+            await submitFormWithFetch(form, '/zipkok/member/join/action');
         };
 
         // 헬퍼 필드 필수 해제
-        if (form.member_bank) form.member_bank.required = false;
-        if (form.member_account) form.member_account.required = false;
-        if (form.member_introduce) form.member_introduce.required = false;
+        if (form.memberBank) form.memberBank.required = false;
+        if (form.memberAccount) form.memberAccount.required = false;
+        if (form.memberIntroduce) form.memberIntroduce.required = false;
 
         // 헬퍼 필드 값 초기화
-        if (form.member_bank) form.member_bank.value = '';
-        if (form.member_account) form.member_account.value = '';
-        if (form.member_introduce) form.member_introduce.value = '';
+        if (form.memberBank) form.memberBank.value = '';
+        if (form.memberAccount) form.memberAccount.value = '';
+        if (form.memberIntroduce) form.memberIntroduce.value = '';
 
         // 차량 라디오 버튼 초기화
-        var vehicleRadios = document.querySelectorAll('input[name="member_vehicle"]');
+        var vehicleRadios = document.querySelectorAll('input[name="memberVehicle"]');
         if (vehicleRadios.length > 0) {
             vehicleRadios.forEach(function(radio) {
                 radio.checked = false;
@@ -256,8 +256,8 @@ function useThisId(memberId) {
         window.opener.document.forms['Ujoin'];
 
     if (parentForm) {
-        parentForm.member_id.value = memberId;
-        parentForm.member_id.readOnly = true;
+        parentForm.memberId.value = memberId;
+        parentForm.memberId.readOnly = true;
         parentForm.idDuplication.value = "idCheck";
 
         // 팝업 창 닫기
@@ -278,9 +278,9 @@ function reInputId() {
         window.opener.document.forms['Ujoin'];
 
     if (parentForm) {
-        parentForm.member_id.readOnly = false;
-        parentForm.member_id.value = '';
-        parentForm.member_id.focus();
+        parentForm.memberId.readOnly = false;
+        parentForm.memberId.value = '';
+        parentForm.memberId.focus();
         parentForm.idDuplication.value = "idUncheck";
 
         // 팝업 창 닫기

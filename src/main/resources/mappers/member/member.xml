@@ -61,8 +61,8 @@
 			member
 		WHERE
 			member_id = #{mid}
-		  AND member_name = #{name}
-		  AND member_email = #{email}
+		AND member_name = #{name}
+		AND member_email = #{email}
 	</select>
 
 
@@ -80,14 +80,14 @@
 			)
 		VALUES
 		    (
-				#{member_id},
-		    	#{member_pass},
-		    	#{member_name},
-		    	#{member_email},
-				#{member_age},
-		    	#{member_sex},
-				#{member_phone},
-				#{member_status}
+				#{memberId},
+		    	#{memberPass},
+		    	#{memberName},
+		    	#{memberEmail},
+				#{memberAge},
+		    	#{memberSex},
+				#{memberPhone},
+				#{memberStatus}
 			)
 	</insert>
 	

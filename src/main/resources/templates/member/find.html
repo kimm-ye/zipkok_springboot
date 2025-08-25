@@ -28,14 +28,14 @@
                         <input type="radio" name="idpw" value="id" onchange="setDisplay()" checked> 아이디 찾기
                         <input type="radio" name="idpw" value="pw" onchange="setDisplay()"> 비밀번호 찾기
 
-                        <form name="findForm" th:action="@{/member/find-process}" method="post" onsubmit="return handleSubmit();">
+                        <form name="findForm"  method="post" onsubmit="return handleSubmit();">
                             <!-- 비밀번호 찾기 전용: 아이디 -->
                             <div class="id_field" style="display: none;">
                                 <h3 class="join_title" style="width: 50px;">
-                                    <label for="member_id">아이디</label>
+                                    <label for="memberId">아이디</label>
                                 </h3>
                                 <span class="box int_id">
-                                    <input type="text" id="member_id" class="join_H" maxlength="30" name="member_id">
+                                    <input type="text" id="memberId" class="join_H" maxlength="30" name="memberId">
                                     <button type="button" class="doubleCheck" onclick="id_check_person(this.form);">
                                         <img th:src="@{/img/login/m_icon_danger.png}" alt="중복확인" class="passImg">
                                     </button>
@@ -47,10 +47,10 @@
                             <!-- 공통: 이름 -->
                             <div>
                                 <h3 class="join_title" style="width: 50px;">
-                                    <label for="member_name">이름</label>
+                                    <label for="memberName">이름</label>
                                 </h3>
                                 <span class="box int_name">
-                                    <input type="text" id="member_name" class="join_H" maxlength="20" name="member_name" required>
+                                    <input type="text" id="memberName" class="join_H" maxlength="20" name="memberName" required>
                                 </span>
                                 <span class="error_next_box"></span>
                             </div>

@@ -32,7 +32,7 @@ public class MemberController {
     SessionService sessionService;
 
 	// 회원가입
-	@PostMapping(value="/member/join")
+	@PostMapping(value="/member/join/action")
 	public Map<String, Object> member(MemberDTO dto) throws Exception {
 		Map<String, Object> result = new HashMap<>();
 
@@ -57,7 +57,7 @@ public class MemberController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.put("success", false);
-			result.put("message", "회원가입 중 오류가 발생하였습니다.\\n관리자에게 문의 바랍니다.");
+			result.put("message", "회원가입 중 오류가 발생하였습니다.\n관리자에게 문의 바랍니다.");
 		}
 
 		return result;

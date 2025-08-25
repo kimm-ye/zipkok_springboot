@@ -27,17 +27,17 @@
         <div id="content">
 
             <!-- form in -->
-            <form name="joinForm" method="post" onsubmit="return joinValidate(this);" enctype="multipart/form-data" th:action="@{/member/join}">
+            <form name="joinForm" method="post" onsubmit="return joinValidate(this);" enctype="multipart/form-data" th:action="@{/member/join/action}">
 
                 <!-- 회원 유형 선택 -->
                 <div style="margin-bottom: 30px; text-align: center; padding: 20px; border: 2px solid #ddd; border-radius: 10px;">
                     <h3 class="join_title" style="margin-bottom: 20px;">가입 유형을 선택해주세요</h3>
                     <label style="margin-right: 30px; font-size: 18px;">
-                        <input type="radio" name="member_status" value="1" onchange="toggleMemberType()" checked>
+                        <input type="radio" name="memberStatus" value="1" onchange="toggleMemberType()" checked>
                         &nbsp;<strong>일반 사용자</strong>
                     </label>
                     <label style="font-size: 18px;">
-                        <input type="radio" name="member_status" value="2" onchange="toggleMemberType()">
+                        <input type="radio" name="memberStatus" value="2" onchange="toggleMemberType()">
                         &nbsp;<strong>셔틀콕 (헬퍼)</strong>
                     </label>
                 </div>
@@ -48,7 +48,7 @@
                         <label for="name">이름</label>
                     </h3>
                     <span class="box int_name">
-                        <input type="text" id="name" class="join_H" maxlength="20" name="member_name" required>
+                        <input type="text" id="name" class="join_H" maxlength="20" name="memberName" required>
                     </span> <span class="error_next_box"></span>
                 </div>
 
@@ -58,7 +58,7 @@
                         <label>아이디</label>
                     </h3>
                     <span class="box int_id">
-                        <input type="text" id="member_id" class="join_H" maxlength="30" name="member_id" required>
+                        <input type="text" id="memberId" class="join_H" maxlength="30" name="memberId" required>
                         <button type="button" class="doubleCheck" onclick="id_check_person(this.form);">
                             <img th:src="@{/img/login/m_icon_danger.png}" alt="중복확인" class="passImg">
                         </button>
@@ -71,10 +71,10 @@
                 <!-- pass1 -->
                 <div>
                     <h3 class="join_title">
-                        <label for="pass1">비밀번호</label>
+                        <label for="memberPass">비밀번호</label>
                     </h3>
                     <span class="box int_pass">
-                        <input type="password" id="pass1" class="join_H" maxlength="16" name="member_pass" required>
+                        <input type="password" id="memberPass" class="join_H" maxlength="16" name="memberPass" required>
                         <span id="alertTxt">사용불가</span>
                         <img th:src="@{/img/login/m_icon_pass.png}" id="pass1_img" class="passImg">
                     </span> <span class="error_next_box"></span>
@@ -83,10 +83,10 @@
                 <!-- pass2 -->
                 <div>
                     <h3 class="join_title">
-                        <label for="pass2">비밀번호 확인</label>
+                        <label for="memberPass2">비밀번호 확인</label>
                     </h3>
                     <span class="box int_pass_check">
-                        <input type="password" id="pass2" class="join_H" maxlength="16" name="password2" required>
+                        <input type="password" id="memberPass2" class="join_H" maxlength="16" name="memberPass2" required>
                         <img th:src="@{/img/login/m_icon_check_disable.png}" id="pass2_img" class="passImg">
                     </span> <span class="error_next_box"></span>
                 </div>
@@ -121,7 +121,7 @@
 
                         <div id="age">
                             <span class="box">
-                                <select id="age_check" class="sel" name="member_age" required>
+                                <select id="age_check" class="sel" name="memberAge" required>
                                     <option value="">나이</option>
                                     <option value="10">10대</option>
                                     <option value="20">20대</option>
@@ -137,7 +137,7 @@
                         <!-- GENDER -->
                         <div id="gender">
                             <span class="box gender_code">
-                                <select id="gender" class="sel" name="member_sex" required>
+                                <select id="memberSex" class="sel" name="memberSex" required>
                                     <option value="">성별</option>
                                     <option value="0">남자</option>
                                     <option value="1">여자</option>
@@ -157,7 +157,7 @@
                         <label for="phone">휴대전화</label>
                     </h3>
                     <span class="box int_phone">
-                        <input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="phone" class="join_H" maxlength="11" placeholder="휴대전화 입력" name="member_phone" required>
+                        <input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="phone" class="join_H" maxlength="11" placeholder="휴대전화 입력" name="memberPhone" required>
                         <span class="step_url">'-' 생략</span>
                     </span> <span class="error_next_box"></span>
                 </div>
@@ -173,7 +173,7 @@
                         <div id="bank_wrap">
                             <div id="bank">
                                 <span class="box">
-                                    <select id="bank_check" class="sel" name="member_bank" onchange="input_bank(this.form)">
+                                    <select id="memberBank" class="sel" name="memberBank" onchange="input_bank(this.form)">
                                         <option value="">은행선택</option>
                                         <option value="기업은행">기업은행</option>
                                         <option value="국민은행">국민은행</option>
@@ -195,7 +195,7 @@
                             <label for="account">계좌번호</label>
                         </h3>
                         <span class="box int_phone">
-                            <input type="text" id="account" class="join_H" maxlength="30" placeholder="계좌번호 입력" name="member_account">
+                            <input type="text" id="account" class="join_H" maxlength="30" placeholder="계좌번호 입력" name="memberAccount">
                             <span class="step_url">'-' 생략</span>
                         </span> <span class="error_next_box"></span>
                     </div>
@@ -208,11 +208,11 @@
                         <div id="vehicle_wrap">
                             <div id="vehicle">
                                 <span class="box">
-                                    <label><input type="radio" value="0" name="member_vehicle" checked>&nbsp;자동차&nbsp;</label>
-                                    <label><input type="radio" value="1" name="member_vehicle">&nbsp;오토바이&nbsp;</label>
-                                    <label><input type="radio" value="2" name="member_vehicle">&nbsp;자전거&nbsp;</label>
-                                    <label><input type="radio" value="3" name="member_vehicle">&nbsp;도보&nbsp;</label>
-                                    <label><input type="radio" value="4" name="member_vehicle">&nbsp;기타&nbsp;</label>
+                                    <label><input type="radio" value="0" name="memberVehicle" checked>&nbsp;자동차&nbsp;</label>
+                                    <label><input type="radio" value="1" name="memberVehicle">&nbsp;오토바이&nbsp;</label>
+                                    <label><input type="radio" value="2" name="memberVehicle">&nbsp;자전거&nbsp;</label>
+                                    <label><input type="radio" value="3" name="memberVehicle">&nbsp;도보&nbsp;</label>
+                                    <label><input type="radio" value="4" name="memberVehicle">&nbsp;기타&nbsp;</label>
                                 </span>
                             </div>
                         </div>
@@ -221,10 +221,10 @@
                     <!-- introduce -->
                     <div>
                         <h3 class="join_title">
-                            <label for="introduce">자기소개</label>
+                            <label for="memberIntroduce">자기소개</label>
                         </h3>
                         <span class="box int_address">
-                            <input type="text" id="introduce" class="join_H" maxlength="20" placeholder="20자 이내 입력" name="member_introduce">
+                            <input type="text" id="memberIntroduce" class="join_H" maxlength="20" placeholder="20자 이내 입력" name="memberIntroduce">
                         </span> <span class="error_next_box"></span>
                     </div>
 

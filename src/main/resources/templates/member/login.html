@@ -96,7 +96,7 @@
             <!-- 로그인된 경우 -->
             <th:block th:if="${session.siteUserInfo != null}">
                 <div style="text-align: center;">
-                    <h4><b th:text="${session.siteUserInfo.member_name}"></b>님 어서오세요!</h4>
+                    <h4><b th:text="${session.siteUserInfo.memberName}"></b>님 어서오세요!</h4>
                     <br><br>
                     <button class="btn btn-success" th:onclick="'location.href=\'/zipkok/member/mypage\''">마이페이지</button>
                     <button class="btn btn-danger" th:onclick="'location.href=\'/zipkok/member/logout\''">로그아웃</button>

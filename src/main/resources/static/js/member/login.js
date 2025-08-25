@@ -22,12 +22,12 @@ function setDisplay() {
     if (isIdMode) {
         $('.id_field').hide();
         $('#btnText').text('아이디 찾기');
-        $('#member_id').removeAttr('required');
-        $('#member_id').val('');
+        $('#memberId').removeAttr('required');
+        $('#memberId').val('');
     } else {
         $('.id_field').show();
         $('#btnText').text('비밀번호 찾기');
-        $('#member_id').attr('required', true);
+        $('#memberId').attr('required', true);
     }
 }
 
@@ -50,7 +50,7 @@ function findIdRequest() {
     $.ajax({
         type: 'post',
         url: './find/id',
-        data: { 'name': form.member_name.value, 'email_1': form.email_1.value, 'email_2': form.email_2.value },
+        data: { 'name': form.memberName.value, 'email_1': form.email_1.value, 'email_2': form.email_2.value },
         success: function(data) {
             if(data === '') {
                 alert("일치하는 회원이 없습니다.");
@@ -71,8 +71,8 @@ function findPwd() {
     const form = document.querySelector("form[name='findForm']");
 
     const data = {
-        id : form.member_id.value,
-        name : form.member_name.value,
+        id : form.memberId.value,
+        name : form.memberName.value,
         email_1 : form.email_1.value,
         email_2 : form.email_2.value
     }

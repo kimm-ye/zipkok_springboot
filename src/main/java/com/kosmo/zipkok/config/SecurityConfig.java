@@ -18,7 +18,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/member/login/**", "/member/join/**",
+                        .requestMatchers("/", "/member/login/**", "/member/join/**", "/member/find/**",
                                 "/resources/**", "/css/**", "/js/**", "/img/**", "/webjars/**", "/favicon.ico", "/error").permitAll() // 특정 경로 접근 허용
                         //.anyRequest().permitAll() // 나머지 요청 모두 허용 (.anyRequest().permitAll()로 설정했으니 모든 요청이 인증 없이 통과하지만, 실제로는 .authenticated()로 바꾸면 로그인한 사용자만 통과.)
                         .anyRequest().authenticated()
