@@ -15,6 +15,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private SessionService sessionService;
 
+    // 1. WebConfig (CORS) → 2. SecurityConfig (FilterChain) → 3. JwtAuthenticationFilter → 4. Interceptor (preHandle)
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
@@ -23,7 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
 
-    // 2. SecurityFilterChain을 통과한 요청을 받아서 세션 확인이나 추가 로직 수행.
+    // 3. SecurityFilterChain을 통과한 요청을 받아서 세션 확인이나 추가 로직 수행.
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor(sessionService))

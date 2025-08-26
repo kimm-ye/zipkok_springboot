@@ -35,8 +35,8 @@ logging:
     com.kosmo.zipkok: debug
 
 jwt:
-  secret: your-secret-key
-  expiration: 3600000
+  secret: "zipkok-jwt-secret-key-2025-super-secure-random-string-with-at-least-64-characters-for-hmac-sha256-algorithm-security"
+  expiration: 1800000  # 30분 (밀리초)
 
 redis:
   host: localhost

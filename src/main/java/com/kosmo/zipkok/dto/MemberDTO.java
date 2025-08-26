@@ -3,6 +3,7 @@ package com.kosmo.zipkok.dto;
 import lombok.Data;
 @Data
 public class MemberDTO {
+
 	private String memberId; //아이디
 	private String memberPass; //패스워드
 	private String memberName; //이름

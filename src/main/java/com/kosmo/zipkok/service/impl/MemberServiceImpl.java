@@ -80,6 +80,11 @@ public class MemberServiceImpl implements MemberService {
 		return memberDao.findPwd(param);
 	}
 
+	@Override
+	public MemberDTO selectMemberById(String memberId) {
+		return  memberDao.selectMemberById(memberId);
+	}
+
 
 	@Override
 	public void insertMember(MemberDTO dto){

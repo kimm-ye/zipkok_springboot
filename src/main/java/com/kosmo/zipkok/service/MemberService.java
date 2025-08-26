@@ -22,6 +22,7 @@ public interface MemberService {
     String findId (Map<String, String> param);
 
     String findPwd (Map<String, String> param);
+    MemberDTO selectMemberById(String memberId);
 
     // 일반 유저 회원가입
     void insertMember(MemberDTO dto) throws Exception;

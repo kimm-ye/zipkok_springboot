@@ -14,7 +14,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         this.sessionService = sessionService;
     }
 
-    // 3. addInterceptors 의 excludePathPatterns에 없으면 preHandle 실행
+    // 4. addInterceptors 의 excludePathPatterns에 없으면 preHandle 실행
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String redisSessionId = (String) request.getSession().getAttribute("redisSession");

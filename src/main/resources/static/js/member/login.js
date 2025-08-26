@@ -43,56 +43,74 @@ function handleSubmit() {
 }
 
 // 아이디 찾기
-function findIdRequest() {
-
+async function findIdRequest() {
     const form = document.querySelector("form[name='findForm']");
+    
+    const formData = new FormData();
+    formData.append('name', form.memberName.value);
+    formData.append('email_1', form.email_1.value);
+    formData.append('email_2', form.email_2.value);
 
-    $.ajax({
-        type: 'post',
-        url: './find/id',
-        data: { 'name': form.memberName.value, 'email_1': form.email_1.value, 'email_2': form.email_2.value },
-        success: function(data) {
-            if(data === '') {
-                alert("일치하는 회원이 없습니다.");
-            } else {
-                alert("아이디는 '" + data + "'입니다.");
-            }
-        },
-        error: function() {
-            alert("오류가 발생하였습니다. \n동일한 증상 발생시 관리자에게 문의바랍니다.");
+    try {
+        const response = await fetch('./find/id', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    });
+
+        const data = await response.text();
+        
+        if(data === '') {
+            alert("일치하는 회원이 없습니다.");
+        } else {
+            alert("아이디는 '" + data + "'입니다.");
+        }
+    } catch (error) {
+        console.error('아이디 찾기 오류:', error);
+        alert("오류가 발생하였습니다. \n동일한 증상 발생시 관리자에게 문의바랍니다.");
+    }
 }
 
 // 비밀번호 찾기
-function findPwd() {
-    console.log("비번 찾기 실행")
+async function findPwd() {
+    console.log("비번 찾기 실행");
 
     const form = document.querySelector("form[name='findForm']");
 
     const data = {
-        id : form.memberId.value,
-        name : form.memberName.value,
-        email_1 : form.email_1.value,
-        email_2 : form.email_2.value
-    }
+        id: form.memberId.value,
+        name: form.memberName.value,
+        email_1: form.email_1.value,
+        email_2: form.email_2.value
+    };
 
-    $.ajax({
-        type: 'post',
-        url: './find/pw',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function(data) {
-            if(data === '') {
-                alert("일치하는 회원이 없습니다.");
-            } else {
-                alert("패스워드는 '" + data + "'입니다.");
-            }
-        },
-        error: function() {
-            alert("오류가 발생하였습니다. \n 동일한 증상 발생시 관리자에게 문의바랍니다.");
+    try {
+        const response = await fetch('./find/pw', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    });
+
+        const result = await response.text();
+        
+        if(result === '') {
+            alert("일치하는 회원이 없습니다.");
+        } else {
+            alert("패스워드는 '" + result + "'입니다.");
+        }
+    } catch (error) {
+        console.error('비밀번호 찾기 오류:', error);
+        alert("오류가 발생하였습니다. \n 동일한 증상 발생시 관리자에게 문의바랍니다.");
+    }
 }
 
 // 이메일 도메인 선택 처리
@@ -111,7 +129,8 @@ function email_input(form) {
 }
 
 // 로그인 폼 유효성 검사
-function validateLoginForm(form) {
+async function validateLoginForm(form) {
+
     const id = form.id.value.trim();
     const pass = form.pass.value.trim();
 
@@ -131,32 +150,51 @@ function validateLoginForm(form) {
     }
 
     const data = {
-        memberId : id,
-        memberPass : pass,
-        kakaoemail : form.kakaoemail.value,
-        kakaoname : form.kakaoname.value
-    }
+        memberId: id,
+        memberPass: pass,
+        kakaoemail: form.kakaoemail.value,
+        kakaoname: form.kakaoname.value
+    };
 
-    $.ajax({
-        type: 'post',
-        url: './login/action',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function(data) {
-            if(data === '') {
-                alert("일치하는 회원이 없습니다.");
-            } else {
-                alert("패스워드는 '" + data + "'입니다.");
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', {
-                status: status,
-                error: error,
-                responseText: xhr.responseText,
-                statusCode: xhr.status
-            });
-            alert('오류가 발생하였습니다: ' + xhr.status + ' ' + error + '\n동일한 증상 발생 시 관리자에게 문의바랍니다.');
+    try {
+        const response = await fetch('./login/action', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // JWT 토큰을 localStorage에 저장
+            localStorage.setItem('accessToken', result.token);
+            localStorage.setItem('memberId', result.memberId || id);
+            localStorage.setItem('memberName', result.memberName || '');
+            
+            alert(result.message);
+            // 로그인 성공 후 메인 페이지로 이동
+            window.location.href = '/zipkok';
+
+        } else {
+            alert(result.message);
+        }
+    } catch (error) {
+        console.error('catch 블록에서 잡힌 에러:');
+        console.error('에러 타입:', error.constructor.name);
+        console.error('에러 메시지:', error.message);
+        console.error('전체 에러 객체:', error);
+
+        // 네트워크 에러인지 확인
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+            alert('네트워크 연결을 확인해주세요.');
+        } else {
+            alert('요청 처리 중 오류: ' + error.message);
+        }
+    }
 }

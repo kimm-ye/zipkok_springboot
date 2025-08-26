@@ -140,9 +140,6 @@ public class MemberController {
 	public Map<String, Object> login (@RequestBody Map<String, String> param,
             HttpServletRequest req, HttpSession session, HttpServletResponse resp) throws IOException {
 
-		System.out.println("111 로그인 접근!!!");
-		System.out.println(param);
-
 		Map<String, Object> result = new HashMap<>();
 
 		// 입력한 id, pass값을 비교해서 사용자자 정보 조회
@@ -155,27 +152,21 @@ public class MemberController {
 
 		if (dto == null && "".equals(param.get("kakaoemail"))) {
 			// 로그인 실패
-			result.put("false", false);
+			result.put("success", false);
 			result.put("message", "아이디/비밀번호가 틀렸습니다.");
 		}
 		else if(dto != null && "".equals(param.get("kakaoemail"))) {
 			// 로그인 성공
-			String redisSession = sessionService.createSession(dto);
-			System.out.println("로그인 성공 - Redis 세션 생성: " + redisSession);
-
-
-			result.put("true", false);
-			result.put("message", "아이디/비밀번호가 틀렸습니다.");
-			// Redis 세션 ID 저장
-			session.setAttribute("redisSession", redisSession);
-			session.setAttribute("Id", dto.getMemberId());
-			session.setAttribute("UserName", dto.getMemberName());
-			session.setAttribute("UserStatus", dto.getMemberStatus());
-
+			String accessToken = sessionService.createSession(dto);  // JWT 토큰 반환
+			result.put("success", true);
+			result.put("token", accessToken);                       // 응답에 JWT 토큰 포함
+			result.put("memberId", dto.getMemberId());
+			result.put("memberName", dto.getMemberName());
+			result.put("message", "로그인 성공!");
 		}
 
 		// ==================== 카카오 로그인 ========================
-		else if (!"".equals(param.get("kakaoemail"))) {
+		/*else if (!"".equals(param.get("kakaoemail"))) {
 
 			// kakaoemail을 kakaoid에 저장
 			String kakaoid = param.get("kakaoemail");
@@ -201,18 +192,11 @@ public class MemberController {
 				//return mv;
 
 			} else { // 이미 카카오로 로그인한 적이 있을 때 (최초 1회 로그인때 회원가입된 상태)
-				// id를 세션에 저장
-
-				String redisSession = sessionService.createSession(dto);
-				System.out.println("로그인 성공 - Redis 세션 생성: " + redisSession);
-
-				session.setAttribute("redisSession", redisSession);
-				session.setAttribute("Id", dto.getMemberId());
-				session.setAttribute("UserName", dto.getMemberName());
-				session.setAttribute("UserStatus", dto.getMemberStatus());
-
+				String accessToken = sessionService.createSession(dto);  // JWT 토큰 반환
+				result.put("token", accessToken);                       // 응답에 JWT 토큰 포함
+				result.put("message", "로그인 성공");
 			}
-		}
+		}*/
 
 		return result;
 	}
