@@ -1,3 +1,5 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!-- CSS Fragment -->
 <th:block th:fragment="css">
     <!-- Bootstrap Core CSS -->
@@ -45,26 +47,26 @@
                     <li><a class="page-scroll" th:href="@{/build/index.html}">Q&A</a></li>
 
                     <!-- 로그인 유무에 따른 join/logout -->
-                    <th:block th:if="${session.siteUserInfo == null}">
+                    <th:block sec:authorize="isAnonymous()">
                         <li><a class="page-scroll" th:href="@{/member/login}">Login</a></li>
                         <li><a class="page-scroll" th:href="@{/member/join}">Join</a></li>
                     </th:block>
 
-                    <!-- 사용자로 로그인 시 헬퍼 회원가입 가능 -->
-                    <th:block th:if="${session.siteUserInfo != null and session.siteUserInfo.memberStatus == 1}">
+                    <!-- 특정 권한을 가진 사용자 -->
+                    <th:block sec:authorize="hasRole('USER')">
                         <li><a class="page-scroll" th:href="@{/member/join}">Join</a></li>
                         <li><a class="page-scroll" th:href="@{/member/logout}">Logout</a></li>
                         <li><a class="page-scroll" th:href="@{/mypage}">MyPage</a></li>
                     </th:block>
 
-                    <!-- 일반 사용자 로그인 -->
-                    <th:block th:if="${session.siteUserInfo != null and session.siteUserInfo.memberStatus != 1}">
+                    <!-- 일반 사용자 -->
+                    <th:block sec:authorize="hasRole('HELPER')">
                         <li><a class="page-scroll" th:href="@{/member/logout}">Logout</a></li>
                         <li><a class="page-scroll" th:href="@{/mypage}">MyPage</a></li>
                     </th:block>
 
                     <!-- 관리자 권한 -->
-                    <th:block th:if="${session.siteUserInfo != null and session.siteUserInfo.memberStatus == 0}">
+                    <th:block sec:authorize="hasRole('ADMIN')">
                         <li><a class="page-scroll" th:href="@{/admin}" target="_blank">Admin</a></li>
                     </th:block>
                 </ul>

@@ -5,6 +5,7 @@ import com.kosmo.zipkok.service.SessionService;
 import com.kosmo.zipkok.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Lazy // 지연 주입 (사용 시 생성)
     private CustomUserDetailsService userDetailsService;  // 사용자 정보 로드 서비스
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+
+        return path.contains("/css/") ||
+               path.contains("/js/") ||
+               path.contains("/img/") ||
+               path.contains("/favicon.ico") ||
+               path.contains("/resources/") ||
+               path.contains("/webjars/") ||
+               path.endsWith(".css") ||
+               path.endsWith(".js") ||
+               path.endsWith(".png") ||
+               path.endsWith(".jpg");
+    }
+
     /**
      * 모든 HTTP 요청에 대해 실행되는 메서드
      *
@@ -56,6 +73,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 1단계: 요청 헤더에서 JWT 토큰 추출
         String token = extractToken(request);
+        System.out.println("token : " + token);
 
         // 2단계: 토큰이 존재하고 유효한 경우에만 인증 처리
         if (token != null && jwtUtil.validateToken(token)) {
@@ -112,6 +130,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             // "Bearer " 부분을 제거하고 실제 토큰만 반환
             return bearerToken.substring(7);
+        }
+
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("loginCookie".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
         }
 
         return null;

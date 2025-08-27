@@ -9,6 +9,7 @@ import java.util.*;
 import com.kosmo.zipkok.service.SessionService;
 import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.service.MemberService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.WebUtils;
 
 
 @Slf4j
@@ -138,15 +140,12 @@ public class MemberController {
 	// 로그인
 	@PostMapping("/member/login/action")
 	public Map<String, Object> login (@RequestBody Map<String, String> param,
-            HttpServletRequest req, HttpSession session, HttpServletResponse resp) throws IOException {
+            HttpServletRequest req, HttpSession session, HttpServletResponse res) throws IOException {
 
 		Map<String, Object> result = new HashMap<>();
 
 		// 입력한 id, pass값을 비교해서 사용자자 정보 조회
-		MemberDTO dto = memberService.authenticate(
-				param.get("memberId"),
-				param.get("memberPass")
-		);
+		MemberDTO dto = memberService.authenticate(param.get("memberId"), param.get("memberPass"));
 
 		// 성공시 Redis 세션 생성
 
@@ -156,10 +155,19 @@ public class MemberController {
 			result.put("message", "아이디/비밀번호가 틀렸습니다.");
 		}
 		else if(dto != null && "".equals(param.get("kakaoemail"))) {
+
 			// 로그인 성공
 			String accessToken = sessionService.createSession(dto);  // JWT 토큰 반환
+
+
+			Cookie jwtCookie = new Cookie("loginCookie", accessToken);
+			jwtCookie.setHttpOnly(true);
+			jwtCookie.setSecure(false); // HTTPS 환경에서는 true로 설정
+			jwtCookie.setMaxAge(60*60*24); //쿠키 유효 기간: 하루로 설정(60초 * 60분 * 24시간)
+			jwtCookie.setPath("/"); //모든 경로에서 접근 가능하도록 설정
+			res.addCookie(jwtCookie); //response에 Cookie 추가
+
 			result.put("success", true);
-			result.put("token", accessToken);                       // 응답에 JWT 토큰 포함
 			result.put("memberId", dto.getMemberId());
 			result.put("memberName", dto.getMemberName());
 			result.put("message", "로그인 성공!");

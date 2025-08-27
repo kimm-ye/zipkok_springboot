@@ -31,11 +31,30 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	// DB에 User 값이 존재한다면 UserDetails 객체로 만들어서 리턴
 	private UserDetails createUserDetails(MemberDTO member) {
-		GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(Integer.toString(member.getMemberStatus()));
+		String role;
+		switch (member.getMemberStatus()) {
+			case 0:
+				role = "ROLE_ADMIN";
+				break;
+			case 1:
+				role = "ROLE_USER";
+				break;
+			case 2:
+				role = "ROLE_HELPER";
+				break;
+			case 3:
+				role = "ROLE_BLACK";
+				break;
+			default:
+				role = "ROLE_GUEST";
+				break;
+		}
+
+		GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(role);
 
 		return new User(
 				member.getMemberId(),
-				member.getMemberPass(),
+				member.getMemberPass(), // 패스워드가 들어가야 함
 				Collections.singleton(grantedAuthority)
 		);
 	}

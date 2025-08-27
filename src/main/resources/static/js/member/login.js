@@ -172,8 +172,7 @@ async function validateLoginForm(form) {
         const result = await response.json();
 
         if (result.success) {
-            // JWT 토큰을 localStorage에 저장
-            localStorage.setItem('accessToken', result.token);
+
             localStorage.setItem('memberId', result.memberId || id);
             localStorage.setItem('memberName', result.memberName || '');
             
@@ -198,3 +197,4 @@ async function validateLoginForm(form) {
         }
     }
 }
+
