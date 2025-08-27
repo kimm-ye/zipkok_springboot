@@ -23,19 +23,19 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String generateToken(String username) {
+    public String generateToken(String memberId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
         
         return Jwts.builder()
-                .subject(username)     // 토큰 주인 (보통 사용자 ID)
+                .subject(memberId)     // 토큰 주인 (보통 사용자 ID)
                 .issuedAt(now)        // 발행시간
                 .expiration(expiryDate) // 만료시간
                 .signWith(getSigningKey()) // 서명
                 .compact();           // 최종 토큰 문자열 생성
     }
     
-    public String getUsernameFromToken(String token) {
+    public String getMemberIdFromToken(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()

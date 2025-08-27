@@ -79,14 +79,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && jwtUtil.validateToken(token)) {
 
             // 3단계: JWT 토큰에서 사용자명 추출
-            String username = jwtUtil.getUsernameFromToken(token);
+            String memberId = jwtUtil.getMemberIdFromToken(token);
 
             // 4단계: Redis에서 실제 세션 정보 확인 (이중 검증)
             // JWT는 만료되지 않았지만, Redis에서 삭제된 경우를 대비
             if (sessionService.getSession(token) != null) {
 
                 // 5단계: 사용자 상세 정보 로드 (권한 정보 포함)
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(memberId);
 
                 // 6단계: Spring Security 인증 객체 생성
                 // UsernamePasswordAuthenticationToken은 Spring Security가 인증된 사용자로 인식하는 객체
@@ -101,12 +101,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 이렇게 설정하면 @PreAuthorize, @Secured 등의 보안 어노테이션이 작동
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                System.out.println("JWT 인증 성공: " + username);
+                System.out.println("JWT 인증 성공: " + memberId);
             } else {
-                System.out.println("Redis에서 세션 정보를 찾을 수 없음: " + username);
+                System.out.println("Redis에서 세션 정보를 찾을 수 없음: " + memberId);
             }
         } else if (token != null) {
             System.out.println("JWT 토큰이 유효하지 않음");
+
         }
 
         // 8단계: 다음 필터로 요청 전달 (인증 성공/실패와 관계없이)

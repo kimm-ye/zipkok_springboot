@@ -6,19 +6,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class LoginController {
 
-	//사용자로 가입할지 헬퍼로 가입할지
+	// 회원가입
 	@RequestMapping("/member/join")
 	public String join() {
 		return "member/join";
 	}
 
-	//회원정보 변경시 알림창
-	@RequestMapping("/changeAlert.do")
-	public String changeAlter() {
-		
-		return "member/changeAlert";
-	}
-	
 	//로그인
 	@RequestMapping("/member/login")
 	public String login() {
@@ -26,12 +19,11 @@ public class LoginController {
 	}
 
 	//로그아웃
-	@RequestMapping("/logout.do")
+	@RequestMapping("/member/logout")
 	public String memberLogout() {
-		
-		return "member/logout";
+		return "member/logout/action";
 	}
-	
+
 	//회원 탈퇴
     @RequestMapping("/mdelete.do")
     public String memberdelete() {

@@ -159,7 +159,6 @@ public class MemberController {
 			// 로그인 성공
 			String accessToken = sessionService.createSession(dto);  // JWT 토큰 반환
 
-
 			Cookie jwtCookie = new Cookie("loginCookie", accessToken);
 			jwtCookie.setHttpOnly(true);
 			jwtCookie.setSecure(false); // HTTPS 환경에서는 true로 설정
@@ -253,8 +252,6 @@ public class MemberController {
 			String email_1 = email.substring(0, idx);
 			String email_2 = email.substring(idx+1);
 
-			System.out.println(email_1);
-
 			model.addAttribute("email_1", email_1);
 			model.addAttribute("email_2", email_2);
 		}
@@ -344,11 +341,9 @@ public class MemberController {
 	}
 
 
-
     //회원탈퇴
     @RequestMapping("/memberDelete.do")
-    public String delete(HttpServletRequest req, HttpSession session)
-    {
+    public String delete(HttpServletRequest req, HttpSession session) {
         //로그인 확인
         if(session.getAttribute("siteUserInfo")==null){
             return "redirect:login.do";
@@ -359,6 +354,24 @@ public class MemberController {
 //        );
         return "member/memberDelete";
     }
+
+	@PostMapping("/member/logout/action")
+	public ModelAndView logout(HttpServletRequest req, HttpServletResponse res) {
+	    Cookie loginCookie = WebUtils.getCookie(req, "loginCookie");
+
+	    if (loginCookie != null) {
+	        String jwtToken = loginCookie.getValue();
+	        sessionService.deleteSession(jwtToken); // redis까지 잘 삭제됨
+
+	        Cookie cookie = new Cookie("loginCookie", null);
+	        cookie.setMaxAge(0);
+	        cookie.setPath("/");
+	        res.addCookie(cookie);
+	    }
+
+	    return new ModelAndView("redirect:/");
+	}
+
 
   //앱 채팅
 //  	@RequestMapping("/android/chatList.do")
