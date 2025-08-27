@@ -160,7 +160,7 @@ src/main/java/com/kosmo/zipkok/
 
 ### **1. 저장소 클론**
 ```bash
-git clone https://github.com/yourusername/zipkok.git
+git clone https://github.com/kimm-ye/zipkok_springboot.git
 cd zipkok
 ```
 
@@ -255,16 +255,6 @@ redis:
 
 ---
 
-## 👨‍💻 개발자 정보
-
-**개발자**: [Your Name]  
-**이메일**: [your.email@example.com]  
-**GitHub**: [@yourusername](https://github.com/yourusername)
-
-### **개발 기간**
-- **시작일**: 2024년 1월
-- **완료일**: 2024년 12월 (진행 중)
-
 ### **개발 환경**
 - **OS**: Windows 10
 - **IDE**: IntelliJ IDEA / Eclipse
@@ -281,13 +271,12 @@ redis:
 
 ## 🙏 감사의 말
 
-이 프로젝트를 통해 Spring Boot, Spring Security, JWT, Redis 등 다양한 기술을 학습하고 실무에 적용할 수 있었습니다. 특히 보안과 성능 최적화에 대한 깊은 이해를 얻을 수 있었습니다.
+이 프로젝트를 통해 Spring Boot, Spring Security, JWT, Redis 등 다양한 기술을 학습하고 실무에 적용할 수 있었습니다. 
+특히 보안과 성능 최적화에 대한 깊은 이해를 얻을 수 있었습니다.
 
 ---
 
 <div align="center">
-
-**⭐ 이 프로젝트가 도움이 되었다면 Star를 눌러주세요! ⭐**
 
 **집에서 심부름을 콕! 집콕!** 🏠✨
 
