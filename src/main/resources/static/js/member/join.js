@@ -4,7 +4,50 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.forms['joinForm']) {
         toggleMemberType();
     }
+
+    // 아이디 중복확인 검사
+    const memberInput = document.querySelector("#memberId");
+    if (memberInput) {
+        memberInput.addEventListener("input", async function(e) {
+            const memberId = e.target.value.trim();
+
+            // 유효성 검사
+            if (!(memberId.length >= 4 && memberId.length <= 12)) {
+                showMsg("아이디는 4~12자 이내여야 합니다.", "red");
+                return;
+            }
+            if (!/^[a-zA-Z0-9]+$/.test(memberId)) {
+                showMsg("영문자와 숫자만 입력 가능합니다.", "red");
+                return;
+            }
+
+            try {
+                const response = await fetch(`./join/check?memberId=${encodeURIComponent(memberId)}`, {
+                    method: "POST"
+                });
+                const data = await response.json();
+
+                if (data.exists) {
+                    showMsg("이미 사용 중인 아이디입니다 ❌", "red");
+                    document.querySelector("input[name=idDuplication]").value = "idUncheck";
+                } else {
+                    showMsg("사용 가능한 아이디입니다 ✅", "green");
+                    document.querySelector("input[name=idDuplication]").value = "idCheck";
+                }
+            } catch (err) {
+                showMsg("중복 확인 중 오류 발생", "red");
+            }
+        });
+    }
 });
+
+// 아이디 중복체크 여부 메세지 표시
+function showMsg(msg, color) {
+    const msgEl = document.getElementById("idCheckMsg");
+    msgEl.innerText = msg;
+    msgEl.style.display = "block";
+    msgEl.style.color = color;
+}
 
 
 // 회원가입 유효성 검사
@@ -41,7 +84,7 @@ function joinValidate(form) {
 
     // 중복체크 확인
     if (form.idDuplication.value !== "idCheck") {
-        alert("아이디 중복체크를 해주세요.");
+        alert("이미 사용 중인 아이디입니다");
         return false;
     }
 
@@ -66,79 +109,6 @@ function joinValidate(form) {
 }
 
 
-// ID 중복 확인
-function id_check_person(form) {
-    try {
-
-        if (form.memberId.value === "") {
-            console.error("아이디가 비어있음");
-            alert("아이디를 입력후 중복확인을 누르세요");
-            form.memberId.focus();
-            return false;
-        }
-
-        if (!(form.memberId.value.length >= 4 && form.memberId.value.length <= 12)) {
-            console.error("아이디 길이 오류: " + form.memberId.value.length);
-            alert("4자 이상 12자 이내의 값만 입력하세요");
-            form.memberId.value = '';
-            form.memberId.focus();
-            return false;
-        }
-
-        form.memberId.readOnly = true;
-
-        // 팝업 창 중앙 정렬
-        var popupX = (window.screen.width / 2) - (250);
-        var popupY = (window.screen.height / 2) - (150);
-
-        // 동적 폼 생성
-        var popupForm = document.createElement("form");
-        popupForm.method = "post";
-        popupForm.action = "./join/check";
-        popupForm.target = "idover";
-
-        var input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "memberId";
-        input.value = form.memberId.value;
-        popupForm.appendChild(input);
-
-        document.body.appendChild(popupForm);
-
-        // 팝업 창 열기
-        var popup = window.open("", "idover", 'status=no, height=300, width=500, left=' + popupX + ', top=' + popupY);
-
-        if (!popup) {
-            console.error("팝업이 차단되었습니다");
-            alert("팝업이 차단되었습니다. 팝업을 허용해주세요.");
-            form.memberId.readOnly = false;
-            document.body.removeChild(popupForm);
-            return false;
-        }
-
-        // 폼 제출 시도
-        try {
-            popupForm.submit();
-        } catch (submitError) {
-            console.error("폼 제출 실패:", submitError);
-            alert("중복 확인 요청 중 오류가 발생했습니다: " + submitError.message);
-            popup.close();
-            form.memberId.readOnly = false;
-        }
-
-        // 폼 제거
-        document.body.removeChild(popupForm);
-
-    } catch (error) {
-        console.error("ID 중복 확인 중 오류 발생:", error);
-        alert("중복 확인 중 오류가 발생했습니다: " + error.message);
-
-        // 오류 시 상태 복구
-        if (form.memberId) {
-            form.memberId.readOnly = false;
-        }
-    }
-}
 
 // 은행 선택시 계좌번호 입력 활성화 (통합 폼용)
 function input_bank(frm) {
@@ -202,14 +172,13 @@ function toggleMemberType() {
     var helperFields = document.getElementById('helper_fields');
     var form = document.forms['joinForm'];
 
+    form.onsubmit = async function(event) {
+        event.preventDefault();
+        await submitFormWithFetch(form, './join/action');
+    };
+
     if (memberStatus == "2") { // 헬퍼 선택
         if (helperFields) helperFields.style.display = 'block';
-
-        // 헬퍼 폼 제출 처리
-        form.onsubmit = async function(event) {
-            event.preventDefault();
-            await submitFormWithFetch(form, '/zipkok/helper.do');
-        };
 
         // 헬퍼 필수 필드 설정
         if (form.memberBank) form.memberBank.required = true;
@@ -218,12 +187,6 @@ function toggleMemberType() {
 
     } else { // 일반 사용자 선택 (memberStatus == "1")
         if (helperFields) helperFields.style.display = 'none';
-
-        // 일반 사용자 폼 제출 처리
-        form.onsubmit = async function(event) {
-            event.preventDefault();
-            await submitFormWithFetch(form, '/zipkok/member/join/action');
-        };
 
         // 헬퍼 필드 필수 해제
         if (form.memberBank) form.memberBank.required = false;
@@ -247,46 +210,3 @@ function toggleMemberType() {
 }
 
 
-
-// 아이디 중복확인 후 사용하기 버튼 클릭시 호출되는 함수 (팝업창용)
-function useThisId(memberId) {
-    // 부모 창의 폼에서 아이디 필드 찾기
-    var parentForm = window.opener.document.forms['joinForm'] ||
-        window.opener.document.forms['Hjoin'] ||
-        window.opener.document.forms['Ujoin'];
-
-    if (parentForm) {
-        parentForm.memberId.value = memberId;
-        parentForm.memberId.readOnly = true;
-        parentForm.idDuplication.value = "idCheck";
-
-        // 팝업 창 닫기
-        window.close();
-
-        // 부모 창에 포커스
-        window.opener.focus();
-
-        alert("아이디 사용이 확정되었습니다.");
-    }
-}
-
-// 아이디 재입력시 호출되는 함수 (팝업창용)
-function reInputId() {
-    // 부모 창의 폼에서 아이디 필드 찾기
-    var parentForm = window.opener.document.forms['joinForm'] ||
-        window.opener.document.forms['Hjoin'] ||
-        window.opener.document.forms['Ujoin'];
-
-    if (parentForm) {
-        parentForm.memberId.readOnly = false;
-        parentForm.memberId.value = '';
-        parentForm.memberId.focus();
-        parentForm.idDuplication.value = "idUncheck";
-
-        // 팝업 창 닫기
-        window.close();
-
-        // 부모 창에 포커스
-        window.opener.focus();
-    }
-}

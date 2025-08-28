@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지</title>
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+    <link rel="stylesheet" th:href="@{/css/joinmember.css}">
+</head>
+<body>
+    <!-- Header Include (Thymeleaf fragment로 대체 필요) -->
+    <div th:replace="~{commons/header :: header}"></div>
+
+    <div class="container">
+        <div id="header">
+            <h1 class="login_title">
+                <label>MY PAGE</label><br>
+            </h1>
+        </div>
+
+        <div id="wrapper">
+            <div class="summaryContainer">
+                <div class="item">
+                    <div class="number" th:text="${session.siteUserInfo.member_name}"></div>
+                </div>
+
+                <!-- member_status가 1인 경우 (고객) -->
+                <div class="item" th:if="${session.siteUserInfo.member_status == 1}">
+                    <div class="number">
+                        <a href="CInfoAll.do">요청내용보기</a>
+                    </div>
+                </div>
+
+                <!-- member_status가 2인 경우 (헬퍼) -->
+                <div class="item" th:if="${session.siteUserInfo.member_status == 2}">
+                    <div class="number">
+                        <a href="HInfoAll.do">수행내용보기</a>
+                    </div>
+                </div>
+
+                <!-- 헬퍼인 경우 포인트 표시 -->
+                <div class="item" th:if="${session.siteUserInfo.member_status == 2}">
+                    <div class="number" th:text="${session.siteUserInfo.member_point}"></div>
+                    <div>보유포인트</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="listContainer">
+            <a href="myPage.do" class="item">
+                <div class="icon">Ⅰ</div>
+                <div class="text">회원정보수정<span class="circle"></span></div>
+                <div class="right"> > </div>
+            </a>
+
+            <a href="memberDelete.do" class="item">
+                <div class="icon">Ⅱ</div>
+                <div class="text">회원탈퇴<span class="circle"></span></div>
+                <div class="right"> > </div>
+            </a>
+
+            <!-- 고객인 경우 -->
+            <a href="review.do" class="item" th:if="${session.siteUserInfo.member_status == 1}">
+                <div class="icon">Ⅲ</div>
+                <div class="text">내가쓴리뷰관리<span class="circle"></span></div>
+                <div class="right"> > </div>
+            </a>
+
+            <!-- 헬퍼인 경우 -->
+            <a href="review.do" class="item" th:if="${session.siteUserInfo.member_status == 2}">
+                <div class="icon">Ⅲ</div>
+                <div class="text">리뷰보기<span class="circle"></span></div>
+                <div class="right"> > </div>
+            </a>
+        </div>
+
+        <div class="infoContainer">
+            <a href="Notice.do" class="item">
+                <div>공지사항</div>
+            </a>
+            <a href="/zipkok/resources/build/index.html" class="item">
+                <div>Q&A</div>
+            </a>
+            <a href="download.do" class="item">
+                <div>앱 다운로드</div>
+            </a>
+        </div>
+    </div>
+
+    <script src="/zipkok/resources/owl-carousel/owl.carousel.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#owl-demo").owlCarousel({
+                autoPlay: 3000,
+                items: 3,
+                itemsDesktop: [1199, 3],
+                itemsDesktopSmall: [979, 3]
+            });
+        });
+    </script>
+
+    <!-- 챗봇 Include (Thymeleaf fragment로 대체 필요) -->
+    <div th:replace="~{commons/chatBot :: chatBot}"></div>
+</body>
+</html>

@@ -35,6 +35,7 @@ public class WebConfig implements WebMvcConfigurer {
                     "/member/logout/**",
                     "/member/join/**",
                     "/member/find/**",
+                    "/member/mypage/**",
                     "/resources/**",
                     "/css/**",
                     "/js/**",

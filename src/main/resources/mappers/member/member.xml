@@ -65,8 +65,8 @@
 		AND member_email = #{email}
 	</select>
 
-
-	<insert id="insertMember" parameterType="MemberDTO">
+	<!-- 사용자 등록 -->
+	<insert id="insertMember" parameterType="HelperDTO" useGeneratedKeys="true" keyProperty="memberSeq">
 		INSERT INTO MEMBER
 		    (
 		    	MEMBER_ID,
@@ -90,29 +90,43 @@
 				#{memberStatus}
 			)
 	</insert>
-	
 
-	
+	<!-- 헬퍼 등록-->
 	<insert id="insertHelper" parameterType="HelperDTO">
 		INSERT INTO HELPER
 			(
+			 	MEMBER_SEQ,
 				MEMBER_BANK,
 			 	MEMBER_ACCOUNT,
 			 	MEMBER_VEHICLE,
-				MEMBER_INTRODUCE,
-			 	MEMBER_OFILE
-				MEMBER_SFILE
+				MEMBER_INTRODUCE
 			)
 		VALUES
 		    (
-				#{member_bank},
-		    	#{member_account},
-		    	#{member_vehicle},
-				#{member_introduce}
-			<if test="member_ofile != null and member_sfile !=null">
-				, #{member_ofile},
-		    	#{member_sfile}
-			</if>
+		     	#{memberSeq},
+				#{memberBank},
+		    	#{memberAccount},
+		    	#{memberVehicle},
+				#{memberIntroduce}
+			)
+	</insert>
+
+	<insert id="insertHelperImage" parameterType="HelperDTO">
+		INSERT INTO HELPER_IMAGE
+			(
+				MEMBER_SEQ,
+				IMAGE_NAME,
+			 	IMAGE_ETX,
+				IMAGE_FILE,
+				CREATE_DT
+			)
+		VALUES
+			(
+				#{memberSeq},
+				#{imageFileName},
+				#{imageFileEtx},
+				#{imageFile},
+				NOW()
 			)
 	</insert>
 	

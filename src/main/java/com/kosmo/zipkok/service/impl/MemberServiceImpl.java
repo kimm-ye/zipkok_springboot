@@ -1,6 +1,7 @@
 package com.kosmo.zipkok.service.impl;
 
 import com.kosmo.zipkok.dao.MemberDAO;
+import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -87,7 +92,7 @@ public class MemberServiceImpl implements MemberService {
 
 
 	@Override
-	public void insertMember(MemberDTO dto){
+	public void insertMember(HelperDTO dto) throws IOException {
 
 		try {
 			// 패스워드 security 사용해서 BCrypt 암호화 (고정 60자)
@@ -95,6 +100,23 @@ public class MemberServiceImpl implements MemberService {
 			dto.setMemberPass(encryptPwd);
 
 			memberDao.insertMember(dto);
+
+			// 헬퍼인 경우 helper 테이블 저장
+			if(dto.getMemberStatus() == 2) {
+				memberDao.insertHelper(dto);
+
+				if(dto.getAttachFile().getSize() > 0) {
+					String fileName = dto.getAttachFile().getOriginalFilename();
+					String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
+					String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
+
+					dto.setImageFile(dto.getAttachFile().getBytes());
+					dto.setImageFileName(originalName);
+					dto.setImageFileEtx(fileEtx);
+
+					memberDao.insertHelperImage(dto);
+				}
+			}
 		} catch (Exception e){
 			e.printStackTrace();
 			throw e; // 컨트롤러에서 예외처리 하기 위함

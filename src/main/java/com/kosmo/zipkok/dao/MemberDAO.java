@@ -1,5 +1,6 @@
 package com.kosmo.zipkok.dao;
 
+import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.dto.MemberDTO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,6 +14,8 @@ public interface MemberDAO{
 	String findId (Map<String, String> param);
 	String findPwd (Map<String, String> param);
 	String idCheck(String id);
-	void insertMember(MemberDTO dto);
+	void insertMember(HelperDTO dto);
+	void insertHelper(HelperDTO dto);
+	void insertHelperImage(HelperDTO dto);
 
 }

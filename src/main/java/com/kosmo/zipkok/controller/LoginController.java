@@ -24,6 +24,12 @@ public class LoginController {
 		return "member/logout/action";
 	}
 
+	//마이페이지
+	@RequestMapping("/member/mypage")
+	public String mypage() {
+	        return "member/mypage";
+}
+
 	//회원 탈퇴
     @RequestMapping("/mdelete.do")
     public String memberdelete() {

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
+import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.service.SessionService;
 import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.service.MemberService;
@@ -35,7 +36,7 @@ public class MemberController {
 
 	// 회원가입
 	@PostMapping(value="/member/join/action")
-	public Map<String, Object> member(MemberDTO dto) throws Exception {
+	public Map<String, Object> member(HelperDTO dto) throws Exception {
 		Map<String, Object> result = new HashMap<>();
 
 		try{
@@ -43,7 +44,6 @@ public class MemberController {
 
 			// 1. 해당하는 이메일이 존재하는지 체크
 			boolean hasEmail = memberService.selectEmail(dto.getMemberEmail());
-			System.out.println("hasEmail : " + hasEmail);
 
 			// 2. 있으면 return 없으면 비밀번호 암호화해서 insert
 			if(hasEmail) {
@@ -67,67 +67,17 @@ public class MemberController {
 
 	// 아이디 중복체크
 	@PostMapping("/member/join/check")
-	public ModelAndView idCheck(@RequestParam("memberId") String memberId) {
-		String mId = memberService.idCheck(memberId);
-		boolean result = (mId != null);
-		System.out.println(result);
+	public Map<String, Object> idCheck(@RequestParam("memberId") String memberId) {
+	    String mId = memberService.idCheck(memberId);
+	    boolean exists = (mId != null);
 
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("member/idCheck");
-		mv.addObject("idCheckResult", result);
-		mv.addObject("id", memberId);
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("exists", exists);
+	    result.put("id", memberId);
 
-		return mv;
+	    return result;
 	}
 
-	//헬퍼 회원가입(이미지업로드)
-	@RequestMapping(value="/helper.do", method=RequestMethod.POST)
-	public String helper(MemberDTO memberDTO, MultipartHttpServletRequest req, Model model) throws Exception {
-
-		//물리적 경로 얻어오기
-		String path = req.getSession().getServletContext().getRealPath("/resources/upload");
-		MultipartFile mfile = null;
-		// 파일정보를 저장한 Map컬렉션을 2개이상 저장하기 위한 용도의 List컬렉션
-		List<Object> resultList = new ArrayList<Object>();
-
-		try {
-
-			//업로드폼의 file속성의 필드를 가져온다. (여기서는 2개임)
-			Iterator itr = req.getFileNames();
-
-			//갯수만큼 반복
-			while(itr.hasNext()) {
-				//전송된 파일명을 읽어온다.
-				mfile = req.getFile(itr.next().toString());
-
-				//한글깨짐방지 처리 후 전송된 파일명을 가져온다.
-				String originalName = new String(mfile.getOriginalFilename().getBytes(), "UTF-8");
-
-				//서버로 전송된 파일이 없다면 파일없이 서버에 저장
-
-				if("".equals(originalName)) continue;
-
-				String ext = originalName.substring(originalName.lastIndexOf('.'));
-				//UUID를 통해 생성된 문자열과 확장자를 결합해서 파일명을 완성한다.
-				String saveFileName = getUuid()	+ ext;
-
-				//물리적 경로에 새롭게 생성된 파일명으로 파일 저장
-				mfile.transferTo(new File(path + File.separator + saveFileName));
-
-//				memberDTO.setMember_ofile(originalName);
-//				memberDTO.setMember_sfile(saveFileName);
-
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		memberDTO.setMemberEmail(req.getParameter("email_1") + "@" + req.getParameter("email_2"));
-//		sqlSession.getMapper(MemberImpl.class).helper(memberDTO);
-
-		return "redirect:welcomAlert.do";
-	}
 
 	//서버 업로드를 위한 메소드
 	public static String getUuid() {
@@ -162,7 +112,7 @@ public class MemberController {
 			Cookie jwtCookie = new Cookie("loginCookie", accessToken);
 			jwtCookie.setHttpOnly(true);
 			jwtCookie.setSecure(false); // HTTPS 환경에서는 true로 설정
-			jwtCookie.setMaxAge(60*60*24); //쿠키 유효 기간: 하루로 설정(60초 * 60분 * 24시간)
+			jwtCookie.setMaxAge(60*40); //쿠키 유효 기간: Redis 30분 + 여유 10분
 			jwtCookie.setPath("/"); //모든 경로에서 접근 가능하도록 설정
 			res.addCookie(jwtCookie); //response에 Cookie 추가
 

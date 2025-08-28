@@ -71,6 +71,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                   HttpServletResponse response,
                                   FilterChain filterChain) throws ServletException, IOException {
 
+        String requestUri = request.getRequestURI();
+        String method = request.getMethod();
+        System.out.println("요청 URL : " + method + " " + requestUri);
+
         // 1단계: 요청 헤더에서 JWT 토큰 추출
         String token = extractToken(request);
         System.out.println("token : " + token);

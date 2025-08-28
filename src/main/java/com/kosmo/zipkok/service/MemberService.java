@@ -1,7 +1,9 @@
 package com.kosmo.zipkok.service;
 
+import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.dto.MemberDTO;
 
+import java.io.IOException;
 import java.util.Map;
 
 public interface MemberService {
@@ -24,7 +26,7 @@ public interface MemberService {
     String findPwd (Map<String, String> param);
     MemberDTO selectMemberById(String memberId);
 
-    // 일반 유저 회원가입
-    void insertMember(MemberDTO dto) throws Exception;
+    // 회원가입
+    void insertMember(HelperDTO dto) throws IOException;
 
 }

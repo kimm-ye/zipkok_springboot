@@ -134,9 +134,6 @@ async function validateLoginForm(form) {
     const id = form.id.value.trim();
     const pass = form.pass.value.trim();
 
-    console.log(id);
-    console.log(pass);
-
     if (!id) {
         alert('아이디를 입력해주세요.');
         form.id.focus();

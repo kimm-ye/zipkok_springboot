@@ -12,12 +12,6 @@ public class MainController {
         return "index";
     }
 
-    // 마이페이지
-    @GetMapping("/mypage")
-    public String mypage() {
-        return "member/mypage";
-    }
-
     // 심부름 요청 페이지
     @GetMapping("/mission")
     public String missionSelect() {
