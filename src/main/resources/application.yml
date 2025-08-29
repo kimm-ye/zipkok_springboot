@@ -1,47 +1,61 @@
+# 서버 설정
 server:
-  port: 8080
+  port: 9090
   servlet:
     context-path: /zipkok
 
-
+# Spring 프레임워크 설정
 spring:
-  # .env import
+  # .env 파일에서 환경 변수를 가져와 애플리케이션 설정에 적용
   config:
     import: optional:file:.env[.properties]
+
   application:
     name: zipkok
-  # Using MariaDB
+  
+  # 데이터베이스 연결 설정 (MariaDB 사용)
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: ${DB_URL:jdbc:mariadb://localhost:3306/zipkok}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:}
+    driver-class-name: org.mariadb.jdbc.Driver    # MariaDB JDBC 드라이버
+    url: ${DB_URL:jdbc:mariadb://localhost:3306/zipkok}    # 데이터베이스 연결 URL
+    username: ${DB_USERNAME:root}                 # 데이터베이스 사용자명
+    password: ${DB_PASSWORD:}                     # 데이터베이스 비밀번호
+  
+  # Thymeleaf 템플릿 엔진 설정
   thymeleaf:
-    cache: false
-    prefix: classpath:/templates/
-    suffix: .html
-    mode: HTML
-    encoding: UTF-8
+    cache: false              # 개발 환경을 위한 캐시 비활성화
+    prefix: classpath:/templates/    # 템플릿 파일 위치
+    suffix: .html            # 템플릿 파일 확장자
+    mode: HTML               # HTML 모드 사용
+    encoding: UTF-8          # 문자 인코딩
+  
+  # 정적 리소스 설정
   web:
     resources:
       static-locations:
-        - classpath:/static/
+        - classpath:/static/  # CSS, JS, 이미지 등 정적 파일 위치
 
+# MyBatis 설정
 mybatis:
-  mapper-locations: classpath:/mappers/**/*.xml
-  type-aliases-package: com.kosmo.zipkok.dto
+  mapper-locations: classpath:/mappers/**/*.xml    # SQL 매퍼 XML 파일 위치
+  type-aliases-package: com.kosmo.zipkok.dto      # DTO 클래스 패키지
   configuration:
-    map-underscore-to-camel-case: true
+    map-underscore-to-camel-case: true            # 언더스코어를 카멜케이스로 자동 변환
 
+# 로깅 설정
 logging:
   level:
-    root: info
-    com.kosmo.zipkok: debug
+    root: info                                    # 루트 로그 레벨 (정보)
+    com.kosmo.zipkok: debug                      # 애플리케이션 패키지 로그 레벨 (디버그)
 
+# JWT (JSON Web Token) 설정
 jwt:
-  secret: ${JWT_SECRET:default-secret-key}
-  expiration: 1800000  # 30분 (밀리초)
+  secret: ${JWT_SECRET:default-secret-key}       # JWT 서명에 사용할 비밀키
+  access:
+    expiration: 900000                            # Access Token 만료 시간: 15분 (밀리초)
+  refresh:
+    expiration: 604800000                         # Refresh Token 만료 시간: 7일 (밀리초)
 
+# Redis 설정
 redis:
-  host: ${REDIS_HOST:localhost}
-  port: ${REDIS_PORT:6379}
+  host: ${REDIS_HOST:localhost}                   # Redis 서버 호스트
+  port: ${REDIS_PORT:6379}                       # Redis 서버 포트

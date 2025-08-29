@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: css}">
+<head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
     <title>집에서 심부름을 콕! 집콕!</title>
+    <th:block th:replace="~{fragments/header :: header}"></th:block>
 </head>
 
 <body>
     <!-- =============== nav =============== -->
-    <div th:replace="~{fragments/header :: navbar}"></div>
+    <div th:replace="~{fragments/nav :: nav}"></div>
 
     <!-- =============== header =============== -->
     <header>

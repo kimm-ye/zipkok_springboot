@@ -3,14 +3,13 @@ package com.kosmo.zipkok.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 
 import com.kosmo.zipkok.dto.HelperDTO;
-import com.kosmo.zipkok.service.SessionService;
+import com.kosmo.zipkok.service.TokenService;
 import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.service.MemberService;
-import jakarta.servlet.http.Cookie;
+import com.kosmo.zipkok.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.WebUtils;
 
 
 @Slf4j
@@ -32,7 +30,7 @@ public class MemberController {
 	MemberService memberService;
 
 	@Autowired
-    SessionService sessionService;
+	TokenService tokenService;
 
 	// 회원가입
 	@PostMapping(value="/member/join/action")
@@ -107,14 +105,10 @@ public class MemberController {
 		else if(dto != null && "".equals(param.get("kakaoemail"))) {
 
 			// 로그인 성공
-			String accessToken = sessionService.createSession(dto);  // JWT 토큰 반환
+			TokenService.TokenResponse tokens = tokenService.createTokens(dto);  // JWT 토큰 반환
 
-			Cookie jwtCookie = new Cookie("loginCookie", accessToken);
-			jwtCookie.setHttpOnly(true);
-			jwtCookie.setSecure(false); // HTTPS 환경에서는 true로 설정
-			jwtCookie.setMaxAge(60*40); //쿠키 유효 기간: Redis 30분 + 여유 10분
-			jwtCookie.setPath("/"); //모든 경로에서 접근 가능하도록 설정
-			res.addCookie(jwtCookie); //response에 Cookie 추가
+			CookieUtil.createCookie("accessToken", 15 * 60, "/", tokens.getAccessToken(), res); // 15분
+			CookieUtil.createCookie("refreshToken", 7 * 24 * 60 * 60, "/", tokens.getRefreshToken(), res); // 7일
 
 			result.put("success", true);
 			result.put("memberId", dto.getMemberId());
@@ -307,17 +301,9 @@ public class MemberController {
 
 	@PostMapping("/member/logout/action")
 	public ModelAndView logout(HttpServletRequest req, HttpServletResponse res) {
-	    Cookie loginCookie = WebUtils.getCookie(req, "loginCookie");
 
-	    if (loginCookie != null) {
-	        String jwtToken = loginCookie.getValue();
-	        sessionService.deleteSession(jwtToken); // redis까지 잘 삭제됨
-
-	        Cookie cookie = new Cookie("loginCookie", null);
-	        cookie.setMaxAge(0);
-	        cookie.setPath("/");
-	        res.addCookie(cookie);
-	    }
+		CookieUtil.deleteCookie("accessToken", "/", res);
+		CookieUtil.deleteCookie("refreshToken", "/", res);
 
 	    return new ModelAndView("redirect:/");
 	}
