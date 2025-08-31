@@ -1,5 +1,6 @@
 package com.kosmo.zipkok.service;
 
+import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.dto.MemberDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		MemberDTO member = memberService.selectMemberById(username);
+		HelperDTO member = memberService.selectMemberById(username);
 		if (member == null) {
 			throw new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다.");
 		}

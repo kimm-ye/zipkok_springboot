@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지</title>
     <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <script type="text/javascript" th:src="@{/js/member/mypage.js}"></script>
 </head>
 <body>
     <link rel="stylesheet" th:href="@{/css/mypage.css}">
@@ -21,9 +22,9 @@
         </div>
 
         <div class="summaryContainer">
-            <!--<div class="item">
-                <div class="number" th:text="${session.siteUserInfo.member_name}"></div>
-            </div>-->
+            <div class="item">
+                <div class="number" th:text="${#authentication.name}"></div>
+            </div>
 
             <!-- member_status가 1인 경우 (고객) -->
             <th:block sec:authorize="hasAnyRole('USER')">
@@ -50,7 +51,7 @@
         </div>
 
         <div class="listContainer">
-            <a href="myPage.do" class="item">
+            <a href="./mypage/modify" class="item">
                 <div class="icon">Ⅰ</div>
                 <div class="text">회원정보수정<span class="circle"></span></div>
                 <div class="right"> > </div>

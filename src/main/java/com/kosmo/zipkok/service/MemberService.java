@@ -17,14 +17,12 @@ public interface MemberService {
     //아이디 중복체크
     String idCheck(String id);
 
-    //로그인
-    MemberDTO login (String id, String pass);
 
     //아이디찾기
     String findId (Map<String, String> param);
 
     String findPwd (Map<String, String> param);
-    MemberDTO selectMemberById(String memberId);
+    HelperDTO selectMemberById(String memberId);
 
     // 회원가입
     void insertMember(HelperDTO dto) throws IOException;

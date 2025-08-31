@@ -1,7 +1,7 @@
 package com.kosmo.zipkok.config;
 
 import com.kosmo.zipkok.config.interceptor.LoginInterceptor;
-import com.kosmo.zipkok.service.TokenService;
+import com.kosmo.zipkok.service.RedisService;
 import com.kosmo.zipkok.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -29,23 +29,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    /**
-     * Redis 토큰 관리 서비스
-     * LoginInterceptor에서 토큰 블랙리스트 확인에 사용됩니다.
-     */
-    @Autowired
-    private TokenService tokenService;
-    
-    /**
-     * JWT 토큰 생성 및 검증을 위한 유틸리티
-     * LoginInterceptor에서 JWT 토큰 유효성 검사에 사용됩니다.
-     */
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    /**
-     * CORS (Cross-Origin Resource Sharing) 설정
-     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
@@ -66,8 +49,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // LoginInterceptor 등록
-        // sessionService와 jwtUtil을 생성자로 주입하여 의존성 주입
-        registry.addInterceptor(new LoginInterceptor(tokenService, jwtUtil))
+        registry.addInterceptor(new LoginInterceptor())
                 .addPathPatterns("/**")        // 모든 경로에 인터셉터 적용
                 .excludePathPatterns(          // 인터셉터를 적용하지 않을 경로들
                     "/",                       // 메인 페이지
@@ -75,6 +57,9 @@ public class WebConfig implements WebMvcConfigurer {
                     "/member/logout/**",       // 로그아웃 관련 페이지
                     "/member/join/**",         // 회원가입 관련 페이지
                     "/member/find/**",         // 아이디/비밀번호 찾기 페이지
+                    "/error",
+                    "/403",
+                    "/404",
                     "/resources/**",           // 정적 리소스
                     "/css/**",                 // CSS 파일
                     "/js/**",                  // JavaScript 파일

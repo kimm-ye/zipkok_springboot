@@ -23,7 +23,7 @@ CREATE TABLE member (
     member_name VARCHAR(50) NOT NULL,
     member_email VARCHAR(50) NOT NULL,
     member_age VARCHAR(10) NOT NULL,
-    member_sex INT NOT NULL,
+    member_gender INT NOT NULL,
     member_phone VARCHAR(20) NOT NULL,
     member_missionN INT,
     member_status INT DEFAULT 1 NOT NULL -- 관리자(0) / 일반사용자(1) / 헬퍼(2) / 블랙리스트(3)
@@ -58,18 +58,18 @@ CREATE TABLE helper_image (
 
 
 -- 관리자
-INSERT INTO member (member_id, member_pass, member_name, member_email, member_age, member_sex, member_phone, member_status)
+INSERT INTO member (member_id, member_pass, member_name, member_email, member_age, member_gender, member_phone, member_status)
 VALUES ('admin', '1234', '관리자', 'tigsnor@naver.com', '0', 1, '010-1111-2222', 0);
 
 -- 일반사용자 데이터
-INSERT INTO member (member_id, member_pass, member_name, member_email, member_age, member_sex, member_phone, member_status)
+INSERT INTO member (member_id, member_pass, member_name, member_email, member_age, member_gender, member_phone, member_status)
 VALUES ('hong', '1234', '홍길동', 'hong@naver.com', '0', 1, '01022223333', 1);
 
-INSERT INTO member (member_id, member_pass, member_name, member_email, member_age, member_sex, member_phone, member_status)
+INSERT INTO member (member_id, member_pass, member_name, member_email, member_age, member_gender, member_phone, member_status)
 VALUES ('sim', '1234', '심청이', 'sim@naver.com', '0', 2, '01033334444', 1);
 
 -- 헬퍼 기본 정보
-INSERT INTO member (member_id, member_pass, member_name, member_email, member_age, member_sex, member_phone, member_status)
+INSERT INTO member (member_id, member_pass, member_name, member_email, member_age, member_gender, member_phone, member_status)
 VALUES ('helper', '1234', '이태우', 'helper@naver.com', '24', 1, '01055556666', 2);
 
 -- 헬퍼 추가 정보 (helper의 member_seq는 4번이 됩니다)
@@ -77,7 +77,7 @@ INSERT INTO helper (member_seq, member_bank, member_account, member_vehicle, mem
 VALUES (4, '국민은행', '12341241242', 0, '최선을다하겠습니다.', 4, 10, 2000);
 
 -- 블랙리스트 회원
-INSERT INTO member (member_id, member_pass, member_name, member_email, member_age, member_sex, member_phone, member_status)
+INSERT INTO member (member_id, member_pass, member_name, member_email, member_age, member_gender, member_phone, member_status)
 VALUES ('black', '1234', '악', 'black@naver.com', '0', 1, '01066667777', 3);
 
 ------------------------------------------------------------------------------------------------------------

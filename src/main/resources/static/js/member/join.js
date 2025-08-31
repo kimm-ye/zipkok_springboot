@@ -1,9 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // 통합 회원가입 폼이 있는 경우 초기 설정
-    if (document.forms['joinForm']) {
-        toggleMemberType();
-    }
+    toggleMemberType();
 
     // 아이디 중복확인 검사
     const memberInput = document.querySelector("#memberId");
@@ -52,40 +49,54 @@ function showMsg(msg, color) {
 
 // 회원가입 유효성 검사
 function joinValidate(form) {
-    // ID 길이 체크
-    if (!(form.memberId.value.length >= 4 && form.memberId.value.length <= 12)) {
-        alert("4자 이상 12자 이내의 값만 입력하세요");
-        form.memberId.value = '';
-        form.memberId.focus();
-        return false;
-    }
 
-    // ID 영문/숫자 체크
-    var whatType = form.memberId.value;
-    for (var i = 0; i < whatType.length; i++) {
-        if (!((whatType[i] >= 'a' && whatType[i] <= 'z') ||
-            (whatType[i] >= 'A' && whatType[i] <= 'Z') ||
-            (whatType[i] >= '0' && whatType[i] <= '9'))) {
-            alert("아이디는 숫자랑 영문자만 입력가능합니다");
+    const isModifyMode = window.memberData && window.memberData.isModify;
+    if (!isModifyMode) {
+        // ID 길이 체크
+        if (!(form.memberId.value.length >= 4 && form.memberId.value.length <= 12)) {
+            alert("4자 이상 12자 이내의 값만 입력하세요");
             form.memberId.value = '';
             form.memberId.focus();
             return false;
         }
+
+        // ID 영문/숫자 체크
+        var whatType = form.memberId.value;
+        for (var i = 0; i < whatType.length; i++) {
+            if (!((whatType[i] >= 'a' && whatType[i] <= 'z') ||
+                (whatType[i] >= 'A' && whatType[i] <= 'Z') ||
+                (whatType[i] >= '0' && whatType[i] <= '9'))) {
+                alert("아이디는 숫자랑 영문자만 입력가능합니다");
+                form.memberId.value = '';
+                form.memberId.focus();
+                return false;
+            }
+        }
+
+        // 중복체크 확인
+        if (form.idDuplication.value !== "idCheck") {
+            alert("이미 사용 중인 아이디입니다");
+            return false;
+        }
     }
 
-    // 패스워드 일치 체크
-    if (form.memberPass.value !== form.memberPass2.value) {
-        alert('입력한 패스워드가 일치하지 않습니다.');
-        form.memberPass.value = "";
-        form.memberPass2.value = "";
-        form.memberPass.focus();
-        return false;
-    }
+    // 패스워드 검사 (수정 모드에서는 입력했을 때만)
+    const hasPassword = form.memberPass.value || form.memberPass2.value;
+    if (!isModifyMode || hasPassword) {
+        if (form.memberPass.value !== form.memberPass2.value) {
+            alert('입력한 패스워드가 일치하지 않습니다.');
+            form.memberPass.value = "";
+            form.memberPass2.value = "";
+            form.memberPass.focus();
+            return false;
+        }
 
-    // 중복체크 확인
-    if (form.idDuplication.value !== "idCheck") {
-        alert("이미 사용 중인 아이디입니다");
-        return false;
+        // 신규 가입시에는 비밀번호 필수
+        if (!isModifyMode && !form.memberPass.value) {
+            alert("비밀번호를 입력해주세요");
+            form.memberPass.focus();
+            return false;
+        }
     }
 
     // 통합 폼에서 헬퍼 선택시 추가 유효성 검사

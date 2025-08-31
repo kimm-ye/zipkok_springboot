@@ -27,11 +27,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/", "/member/login/**", "/member/logout/**", "/member/join/**", "/member/find/**",
                             "/resources/**", "/css/**", "/js/**", "/img/**", "/webjars/**",
-                            "/favicon.ico", "/error").permitAll()
-                    .anyRequest().authenticated() // 나머지는 인증 필요
+                            "/favicon.ico", "/error", "/403", "/404").permitAll()
+                    .anyRequest().authenticated() // 나머지는 인증 필요 (인증정보 없으면 403)
             )
             .sessionManagement(session -> session
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT 를 사용하기 위한 설정
+            // exceptionHandling 설정 없음 → 자동으로 ErrorController로 이동!
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

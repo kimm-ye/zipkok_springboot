@@ -70,12 +70,6 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public MemberDTO login(String id, String pass) {
-		// 기존 authenticate 메서드 활용
-		return authenticate(id, pass);
-	}
-
-	@Override
 	public String findId(Map<String, String> param) {
 		return memberDao.findId(param);
 	}
@@ -86,10 +80,9 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public MemberDTO selectMemberById(String memberId) {
+	public HelperDTO selectMemberById(String memberId) {
 		return  memberDao.selectMemberById(memberId);
 	}
-
 
 	@Override
 	public void insertMember(HelperDTO dto) throws IOException {

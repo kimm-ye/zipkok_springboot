@@ -10,7 +10,7 @@ public class MemberDTO {
 	private String memberName; //이름
 	private String memberEmail; //이메일
 	private String memberAge; //연령대
-	private int memberSex; // 성별
+	private int memberGender; // 성별
 	private String memberPhone;
 	private int memberMissionN;
 	private int memberStatus;  // 구분 : 관리자(0) / 일반사용자(1) / 헬퍼(2) / 블랙리스트(3)

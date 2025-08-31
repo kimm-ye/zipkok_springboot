@@ -1,7 +1,7 @@
 package com.kosmo.zipkok.config;
 
 import com.kosmo.zipkok.service.CustomUserDetailsService;
-import com.kosmo.zipkok.service.TokenService;
+import com.kosmo.zipkok.service.RedisService;
 import com.kosmo.zipkok.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -44,16 +44,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * 토큰 블랙리스트 확인과 Refresh Token 관리를 담당합니다.
      */
     @Autowired
-    private TokenService tokenService;
+    private RedisService redisService;
 
-    /**
-     * 사용자 상세 정보를 로드하는 서비스
-     * 데이터베이스에서 사용자 정보와 권한을 가져옵니다.
-     * 
-     * @Lazy 어노테이션을 사용하여 순환 참조 문제를 방지합니다.
-     */
     @Autowired
-    @Lazy 
+    @Lazy //  @Lazy 어노테이션을 사용하여 순환 참조 임시 방지
     private CustomUserDetailsService userDetailsService;  
 
     // 필터를 적용하지 않을 경로를 정의
@@ -93,8 +87,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && jwtUtil.validateToken(token) && jwtUtil.isAccessToken(token)) {
 
             // 3단계: Redis 블랙리스트에서 토큰 확인 (로그아웃된 토큰인지)
-            // Access Token은 JWT만으로 검증하지만, 로그아웃된 토큰은 무효화
-            if (!tokenService.isAccessTokenBlacklisted(token)) {
+            // Access Token은 JWT만으로 검증하지만, 로그아웃된 토큰은 무효화 => 이걸 블랙리스트라고 한다.
+            if (!redisService.isAccessTokenBlacklisted(token)) {
 
                 // 4단계: JWT Access Token에서 사용자명과 권한 추출
                 // JWT 자체에 포함된 정보를 사용하므로 Redis 조회 불필요
@@ -112,6 +106,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         null,                  // 비밀번호 (JWT에서는 불필요하므로 null)
                         userDetails.getAuthorities()  // 사용자 권한 목록 (ROLE_ADMIN, ROLE_USER 등)
                     );
+
+                System.out.println("authentication : " + authentication);
 
                 // 7단계: Spring Security 컨텍스트에 인증 정보 설정
                 // 이렇게 설정하면 @PreAuthorize, @Secured 등의 보안 어노테이션이 작동
@@ -138,16 +134,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    /**
-     * HTTP 요청에서 JWT Access Token을 추출하는 메서드
-     *
-     * 토큰 추출 우선순위:
-     * 1. Authorization 헤더: "Bearer {token}" 형식
-     * 2. 쿠키: "accessToken" 이름의 쿠키 값
-     *
-     * @param request HTTP 요청 객체
-     * @return JWT Access Token 문자열 (토큰이 없으면 null)
-     */
+    // JWT Access Token을 추출
     private String extractToken(HttpServletRequest request) {
         // 1순위: Authorization 헤더
         String bearerToken = request.getHeader("Authorization");

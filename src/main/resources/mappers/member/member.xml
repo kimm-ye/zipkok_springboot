@@ -18,35 +18,51 @@
 		    MEMBER_EMAIL = #{member_email}
 	</select>
 
-	<select id="selectMemberById" parameterType="java.lang.String" resultType="MemberDTO">
+	<select id="selectMemberById" parameterType="java.lang.String" resultType="HelperDTO">
 		SELECT
-			member_id,
-			member_pass,
-            member_name,
-            member_email,
-            member_status
+			M.member_seq AS memberSeq,
+			M.member_id AS memberId,
+			M.member_pass AS memberPass,
+			M.member_name AS memberName,
+			M.member_email AS memberEmail,
+			M.member_age AS memberAge,
+			M.member_gender AS memberGender,
+			M.member_phone AS memberPhone,
+			NVL(M.member_missionN, 0) AS memberMissionN,
+			M.member_status AS memberStatus,
+			H.member_bank AS memberBank,
+			H.member_account AS memberAccount,
+			H.member_vehicle AS memberVehicle,
+			H.member_introduce AS memberIntroduce,
+			H.member_review AS memberReview,
+			NVL(H.member_missionC, 0) AS memberMissionC,
+			NVL(H.member_point, 0) AS memberPoint,
+			IMG.image_name AS imageFileName,
+			IMG.image_etx AS imageFileEtx,
+			IMG.image_file AS imageFile
 		FROM
-		    MEMBER
+			MEMBER M
+		LEFT JOIN HELPER H
+		ON M.member_seq = H.member_seq
+		LEFT JOIN HELPER_IMAGE IMG
+		ON H.member_seq = IMG.member_seq
 		WHERE
-		    MEMBER_ID = #{memberId}
+		    MEMBER_ID =#{memberId}
 	</select>
+
 
 	<select id="idCheck" resultType="java.lang.String">
 		SELECT
-			member_id
+			member_id AS memberId
 		FROM
 			member
 		WHERE
 			member_id = #{memberId}
 	</select>
 
-	<select id="login" resultType="com.kosmo.zipkok.dto.MemberDTO">
-		SELECT * FROM member WHERE member_id=#{0} and member_pass=#{1}
-	</select>
-
 	<select id="findId" parameterType="Map" resultType="java.lang.String">
 		SELECT
-			member_id
+			member_id AS memberId
 		FROM
 			member
 		WHERE
@@ -56,7 +72,7 @@
 
 	<select id="findPwd" parameterType="Map" resultType="java.lang.String">
 		SELECT
-			member_pass
+			member_pass AS memberPass
 		FROM
 			member
 		WHERE
@@ -74,7 +90,7 @@
 		     	MEMBER_NAME,
 		     	MEMBER_EMAIL,
 		     	MEMBER_AGE,
-		     	MEMBER_SEX,
+		     	MEMBER_GENDER,
 		     	MEMBER_PHONE,
 		     	MEMBER_STATUS
 			)
@@ -85,7 +101,7 @@
 		    	#{memberName},
 		    	#{memberEmail},
 				#{memberAge},
-		    	#{memberSex},
+		    	#{memberGender},
 				#{memberPhone},
 				#{memberStatus}
 			)

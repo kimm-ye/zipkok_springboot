@@ -23,4 +23,26 @@ public class HelperDTO extends MemberDTO{
 	private byte[] imageFile; // 실제 파일 내용을 바이트 배열로 읽어옴
 	private String imageFileName;
 	private String imageFileEtx;
+
+	public String getFullImageName() {
+		if (imageFileName != null && imageFileEtx != null) {
+			return imageFileName + "." + imageFileEtx;
+		}
+
+		// 기본 이미지 처리
+		switch (getMemberGender()) {
+			case 0:
+				return "default_male.png";
+			case 1:
+				return "default_female.png";
+			default:
+				return "default.png";
+		}
+	}
+
+
+	public String getImageUrl() {
+		return "/img/profile/" + getFullImageName();
+	}
+
 }

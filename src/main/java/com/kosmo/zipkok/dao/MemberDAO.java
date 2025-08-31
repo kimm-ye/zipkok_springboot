@@ -10,7 +10,7 @@ import java.util.Map;
 public interface MemberDAO{
 
 	boolean selectEmail(String email);
-	MemberDTO selectMemberById(String memberId);
+	HelperDTO selectMemberById(String memberId);
 	String findId (Map<String, String> param);
 	String findPwd (Map<String, String> param);
 	String idCheck(String id);

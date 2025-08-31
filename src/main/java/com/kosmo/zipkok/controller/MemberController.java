@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.util.*;
 
 import com.kosmo.zipkok.dto.HelperDTO;
-import com.kosmo.zipkok.service.TokenService;
+import com.kosmo.zipkok.dto.TokenDTO;
+import com.kosmo.zipkok.service.RedisService;
 import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.service.MemberService;
+import com.kosmo.zipkok.service.TokenService;
 import com.kosmo.zipkok.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,6 +30,9 @@ public class MemberController {
 
 	@Autowired
 	MemberService memberService;
+
+	@Autowired
+	RedisService redisService;
 
 	@Autowired
 	TokenService tokenService;
@@ -87,8 +92,7 @@ public class MemberController {
 
 	// 로그인
 	@PostMapping("/member/login/action")
-	public Map<String, Object> login (@RequestBody Map<String, String> param,
-            HttpServletRequest req, HttpSession session, HttpServletResponse res) throws IOException {
+	public Map<String, Object> login (@RequestBody Map<String, String> param, HttpServletResponse res) throws IOException {
 
 		Map<String, Object> result = new HashMap<>();
 
@@ -105,7 +109,7 @@ public class MemberController {
 		else if(dto != null && "".equals(param.get("kakaoemail"))) {
 
 			// 로그인 성공
-			TokenService.TokenResponse tokens = tokenService.createTokens(dto);  // JWT 토큰 반환
+			TokenDTO tokens = redisService.saveTokenRedis(dto);  // JWT 토큰 생성 및 redis 저장
 
 			CookieUtil.createCookie("accessToken", 15 * 60, "/", tokens.getAccessToken(), res); // 15분
 			CookieUtil.createCookie("refreshToken", 7 * 24 * 60 * 60, "/", tokens.getRefreshToken(), res); // 7일
@@ -152,6 +156,7 @@ public class MemberController {
 		return result;
 	}
 
+	// 아이디 찾기
 	@PostMapping("/member/find/id")
 	public String findId(@RequestParam Map<String, String> param) {
 
@@ -165,6 +170,7 @@ public class MemberController {
 		return memberService.findId(info);
 	}
 
+	// 패스워드 찾기
 	@PostMapping("/member/find/pw")
 	public String findPwd( @RequestBody Map<String, String> param) {
 
@@ -178,32 +184,21 @@ public class MemberController {
 		return memberService.findPwd(info);
 	}
 
-	//회원정보 수정(입장)
-	@RequestMapping("/myPage.do")
-	public String change(HttpServletRequest req, Model model, HttpSession session) {
+	//회원정보 수정 페이지 이동
+	@GetMapping("/member/mypage/modify")
+	public ModelAndView modify(HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView();
 
+		HelperDTO dto = tokenService.getMemberFromAccessToken(request);
 
-		String id = (String)session.getAttribute("Id");
-
-		// ArrayList<MemberDTO> memberList = sqlSession.getMapper(MemberImpl.class).getMemberInfo(id);
-		ArrayList<MemberDTO> memberList = new ArrayList<>();
-		for(MemberDTO dto : memberList) {
-
-			String email = dto.getMemberEmail();
-
-			int idx = email.indexOf("@");
-
-			String email_1 = email.substring(0, idx);
-			String email_2 = email.substring(idx+1);
-
-			model.addAttribute("email_1", email_1);
-			model.addAttribute("email_2", email_2);
+		if(dto != null) {
+			mv.addObject("info", dto);
+			mv.addObject("isModify", true);      // 수정 모드 플래그
+			mv.setViewName("member/join");
+		} else {
+			mv.setViewName("member/login");
 		}
-
-		model.addAttribute("dto", memberList);
-
-
-		return "member/memberInfo";
+		return mv;
 	}
 
 
@@ -299,8 +294,9 @@ public class MemberController {
         return "member/memberDelete";
     }
 
+	// 로그아웃시 토큰 초기화
 	@PostMapping("/member/logout/action")
-	public ModelAndView logout(HttpServletRequest req, HttpServletResponse res) {
+	public ModelAndView logout(HttpServletResponse res) {
 
 		CookieUtil.deleteCookie("accessToken", "/", res);
 		CookieUtil.deleteCookie("refreshToken", "/", res);
