@@ -6,7 +6,6 @@ server:
 
 # Spring 프레임워크 설정
 spring:
-<<<<<<< HEAD
   # .env 파일에서 환경 변수를 가져와 애플리케이션 설정에 적용
   config:
     import: optional:file:.env[.properties]

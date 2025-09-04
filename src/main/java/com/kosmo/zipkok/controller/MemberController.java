@@ -10,7 +10,6 @@ import com.kosmo.zipkok.dto.TokenDTO;
 import com.kosmo.zipkok.service.RedisService;
 import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.service.MemberService;
-<<<<<<< HEAD
 import com.kosmo.zipkok.service.TokenService;
 import com.kosmo.zipkok.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.WebUtils;
 
 
 @Slf4j
