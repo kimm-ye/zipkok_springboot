@@ -59,3 +59,4 @@ jwt:
 redis:
   host: ${REDIS_HOST:localhost}                   # Redis 서버 호스트
   port: ${REDIS_PORT:6379}                       # Redis 서버 포트
+

@@ -51,10 +51,8 @@ public class LoginController {
 
 	//마이페이지
 	@RequestMapping("/member/mypage")
-	public String mypage(HttpServletRequest request, Model model) {
-		// 계속 변하는 정보이므로 토큰에 담지 않고 조회
-		// MemberDTO dto = tokenService.getMemberFromAccessToken(request);
-		// model.addAttribute("missionCnt", dto.getMemberMissionN());
+	public String mypage() {
+
 		return "member/mypage";
 	}
 

@@ -42,7 +42,27 @@ public class HelperDTO extends MemberDTO{
 
 
 	public String getImageUrl() {
+		if (imageFile != null && imageFile.length > 0) {
+			String base64 = java.util.Base64.getEncoder().encodeToString(imageFile);
+			String contentType = getContentType(imageFileEtx);
+			return "data:" + contentType + ";base64," + base64;
+		}
+
 		return "/img/profile/" + getFullImageName();
+	}
+
+
+	private String getContentType(String extension) {
+		if (extension == null) return "image/png";
+
+		switch (extension.toLowerCase()) {
+			case "jpg":
+			case "jpeg": return "image/jpeg";
+			case "png": return "image/png";
+			case "gif": return "image/gif";
+			case "webp": return "image/webp";
+			default: return "image/png";
+		}
 	}
 
 }

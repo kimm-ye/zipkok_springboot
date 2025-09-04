@@ -19,6 +19,7 @@
 
     <script type="text/javascript" th:src="@{/js/member/join.js}"></script>
     <script type="text/javascript" th:src="@{/js/member/login.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
 </head>
 <body>
 
@@ -39,10 +40,8 @@
 
             <!-- form in -->
             <form name="joinForm"
-                  method="post"
-                  onsubmit="return joinValidate(this);"
-                  enctype="multipart/form-data"
-                  th:action="${isModify} ? '@{/member/modify/action}' : '@{/member/join/action}'">
+                  onsubmit="return submitFormWithFetch(this);"
+                  enctype="multipart/form-data">
 
                 <!-- 회원 유형 선택 (수정 모드에서는 숨김) -->
                 <div th:unless="${isModify}"
@@ -79,6 +78,7 @@
                                class="join_H"
                                maxlength="20"
                                name="memberName"
+                               th:readonly="${isModify}"
                                th:value="${info?.memberName}"
                                required>
                     </span> <span class="error_next_box"></span>
@@ -177,10 +177,6 @@
                                 required>
                             <option value="">-선택-</option>
                             <option value="1">직접입력</option>
-                            <option value="gmail.com" th:selected="${info?.memberEmail != null and #strings.contains(info.memberEmail, 'gmail.com')}">gmail.com</option>
-                            <option value="naver.com" th:selected="${info?.memberEmail != null and #strings.contains(info.memberEmail, 'naver.com')}">naver.com</option>
-                            <option value="daum.net" th:selected="${info?.memberEmail != null and #strings.contains(info.memberEmail, 'daum.net')}">daum.net</option>
-                            <option value="kakao.com" th:selected="${info?.memberEmail != null and #strings.contains(info.memberEmail, 'kakao.com')}">kakao.com</option>
                         </select>
                     </span> <span class="error_next_box"></span>
                 </div>
@@ -245,7 +241,7 @@
 
                 <!-- 헬퍼 전용 필드들 -->
                 <div id="helper_fields"
-                     th:style="${info?.memberStatus == 2} ? 'display: block;' : 'display: none;'">
+                     th:style="${info?.memberStatus == 2} ? 'display: block; height: 550px;' : 'display: none;'">
 
                     <!-- bank -->
                     <div>
@@ -324,10 +320,10 @@
                     </div>
 
                     <!-- picture -->
-                    <div>
+                    <!--<div>
                         <h3 class="join_title"><label>프로필사진</label></h3>
                         <span class="box int_picture">
-                            <!-- 기존 프로필 사진 표시 (수정 모드) -->
+                            &lt;!&ndash; 기존 프로필 사진 표시 (수정 모드) &ndash;&gt;
                             <div th:if="${isModify and info.getFullImageName != null}" class="current-image">
                                 <img th:src="@{${info.imageUrl}}"
                                      alt="현재 프로필"
@@ -340,6 +336,38 @@
                                    accept="image/png, image/jpeg">
                             <small th:if="${isModify}">새 이미지를 선택하면 기존 이미지가 교체됩니다.</small>
                         </span>
+                    </div>-->
+                    <div>
+                        <h3 class="join_title"><label>프로필사진</label></h3>
+                        <span class="box int_picture">
+
+
+                        <!-- 새 이미지 업로드 -->
+                        <input type="file"
+                               name="attachFile"
+                               id="attachFile"
+                               accept="image/png, image/jpeg"
+                               onchange="previewImage(event)">
+                        <small th:if="${isModify}">새 이미지를 선택하면 기존 이미지가 교체됩니다.</small>
+
+                            <!-- 기존 프로필 사진 표시 (수정 모드) -->
+                        <div th:if="${isModify}" class="current-image" id="currentProfileContainer">
+                            <img th:src="@{${info.imageUrl}}"
+                                 id="currentProfileImage"
+                                 alt="현재 프로필"
+                                 style="max-width: 100px; max-height: 100px; margin-bottom: 10px;">
+                            <p>현재 프로필: <span th:text="${info.fullImageName}"></span></p>
+                        </div>
+
+                        <!-- 미리보기 영역 -->
+                        <div id="previewContainer" style="margin-top: 10px; display: none;">
+                            <img id="previewImage"
+                                 alt="미리보기"
+                                 style="max-width: 100px; max-height: 100px; border: 1px solid #ccc;"
+                                 onerror="this.src='/img/profile/default.png'"/> <!-- 기본 이미지마저 로딩 실패할 경우 무한 루프 방지-->
+                            <p style="font-size: 12px; color: #666;">선택한 이미지 미리보기</p>
+                        </div>
+                    </span>
                     </div>
 
                     <!-- 헬퍼 통계 정보 (수정 모드에서만 표시) -->
@@ -388,32 +416,5 @@
     <!-- wrapper -->
 
 </div>
-
-<script>
-    function cancelModify() {
-        if (confirm('수정을 취소하고 마이페이지로 돌아가시겠습니까?')) {
-            window.location.href = '/zipkok/member/mypage';
-        }
-    }
-
-    // 수정 모드일 때 추가 설정
-    document.addEventListener('DOMContentLoaded', function() {
-        if (window.memberData && window.memberData.isModify) {
-            // 회원 유형에 따른 헬퍼 필드 표시
-            const memberStatus = window.memberData.info.memberStatus;
-            if (memberStatus === 2) {
-                document.getElementById('helper_fields').style.display = 'block';
-            }
-
-            // 은행이 선택되어 있으면 계좌번호 입력 활성화
-            const bankSelect = document.getElementById('memberBank');
-            const accountInput = document.getElementById('account');
-            if (bankSelect && bankSelect.value && accountInput) {
-                accountInput.readOnly = false;
-            }
-        }
-    });
-</script>
-
 </body>
 </html>

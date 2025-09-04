@@ -1,18 +1,3 @@
-document.addEventListener('DOMContentLoaded', function() {
-
-    // 이메일 주소 세팅
-    const emailSelects = document.getElementsByName('email_check');
-
-    const domains = ['gmail.com', 'kakao.net', 'naver.com', 'nate.com'];
-
-    for (let i = 0; i < emailSelects.length; i++) {
-        domains.forEach(domain => {
-            const option = new Option(domain, domain);
-            emailSelects[i].add(option);
-        });
-    }
-});
-
 function setDisplay() {
     // 화면 무조건 초기화
     document.forms['findForm'].reset();
@@ -110,21 +95,6 @@ async function findPwd() {
     } catch (error) {
         console.error('비밀번호 찾기 오류:', error);
         alert("오류가 발생하였습니다. \n 동일한 증상 발생시 관리자에게 문의바랍니다.");
-    }
-}
-
-// 이메일 도메인 선택 처리
-function email_input(form) {
-    const domain = form.email_check.value;
-    if (domain === '') {
-        form.email_2.value = '';
-    } else if (domain === '1') {
-        form.email_2.readOnly = false;
-        form.email_2.value = '';
-        form.email_2.focus();
-    } else {
-        form.email_2.value = domain;
-        form.email_2.readOnly = true;
     }
 }
 

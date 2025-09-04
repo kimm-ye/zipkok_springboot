@@ -1,39 +1,69 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    // 수정인 경우 thymeleaf로 정보 전달
+    if (window.memberData && window.memberData.isModify) {
+        // 회원 유형에 따른 헬퍼 필드 표시
+        const memberStatus = window.memberData.info.memberStatus;
+        if (memberStatus === 2) {
+            document.getElementById('helper_fields').style.display = 'block';
+        }
+
+        // 은행이 선택되어 있으면 계좌번호 입력 활성화
+        const bankSelect = document.getElementById('memberBank');
+        const accountInput = document.getElementById('account');
+        if (bankSelect && bankSelect.value && accountInput) {
+            accountInput.readOnly = false;
+        }
+
+        document.getElementById("attachFile").addEventListener("change", previewImage);
+    }
+
+    // 타입 토글설정
     toggleMemberType();
 
     // 아이디 중복확인 검사
+    let debounceTimer = null;
+    let currentController = null;
+
     const memberInput = document.querySelector("#memberId");
     if (memberInput) {
-        memberInput.addEventListener("input", async function(e) {
+        memberInput.addEventListener("input", function(e) {
             const memberId = e.target.value.trim();
 
-            // 유효성 검사
-            if (!(memberId.length >= 4 && memberId.length <= 12)) {
-                showMsg("아이디는 4~12자 이내여야 합니다.", "red");
-                return;
-            }
-            if (!/^[a-zA-Z0-9]+$/.test(memberId)) {
-                showMsg("영문자와 숫자만 입력 가능합니다.", "red");
+            // 이전 요청들 정리
+            clearTimeout(debounceTimer);
+            if (currentController) currentController.abort();
+
+            // 4글자 미만이면 체크 안함
+            if (memberId.length < 4) {
+                showMsg("아이디는 4글자 이상 입력하세요", "gray");
                 return;
             }
 
-            try {
-                const response = await fetch(`./join/check?memberId=${encodeURIComponent(memberId)}`, {
-                    method: "POST"
-                });
-                const data = await response.json();
+            // 유효성 검사...
 
-                if (data.exists) {
-                    showMsg("이미 사용 중인 아이디입니다 ❌", "red");
-                    document.querySelector("input[name=idDuplication]").value = "idUncheck";
-                } else {
-                    showMsg("사용 가능한 아이디입니다 ✅", "green");
-                    document.querySelector("input[name=idDuplication]").value = "idCheck";
+            // 500ms 후 중복체크 (디바운싱)
+            debounceTimer = setTimeout(async () => {
+                try {
+                    currentController = new AbortController();
+
+                    const response = await fetch(`./join/check?memberId=${memberId}`, {
+                        method: "POST",
+                        signal: currentController.signal
+                    });
+                    const data = await response.json();
+
+                    if (data.exists) {
+                        showMsg("이미 사용 중인 아이디입니다 ❌", "red");
+                    } else {
+                        showMsg("사용 가능한 아이디입니다 ✅", "green");
+                    }
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        showMsg("중복 확인 중 오류 발생", "red");
+                    }
                 }
-            } catch (err) {
-                showMsg("중복 확인 중 오류 발생", "red");
-            }
+            }, 500);
         });
     }
 });
@@ -136,7 +166,9 @@ function input_bank(frm) {
 }
 
 // 폼 제출을 fetch로 처리하는 공통 함수
-async function submitFormWithFetch(form, url) {
+async function submitFormWithFetch(form) {
+    event.preventDefault(); // 기본 submit 방지
+
     if (!joinValidate(form)) {
         return false;
     }
@@ -152,12 +184,21 @@ async function submitFormWithFetch(form, url) {
             formData.delete('email_2');
         }
 
+        // ✅ isModify 여부에 따라 url 분기
+        let url = "/zipkok/member/join/action"; // 신규가입
+        let method = "POST";
+        if (window.memberData && window.memberData.isModify) {
+            url = "/zipkok/member/mypage/modify/action"; // 수정
+            method = "PATCH"
+        }
+
         const response = await fetch(url, {
-            method: 'POST',
+            method: method,
             body: formData
         });
 
         const result = await response.json();
+        console.log(result)
 
         if (result.success) {
             alert(result.message);
@@ -171,6 +212,7 @@ async function submitFormWithFetch(form, url) {
     } catch (error) {
         console.error('Error:', error);
         alert('처리 중 오류가 발생했습니다.');
+        alert('error :' + error);
     }
 }
 
@@ -182,11 +224,6 @@ function toggleMemberType() {
     var memberStatus = memberStatusInput.value;
     var helperFields = document.getElementById('helper_fields');
     var form = document.forms['joinForm'];
-
-    form.onsubmit = async function(event) {
-        event.preventDefault();
-        await submitFormWithFetch(form, './join/action');
-    };
 
     if (memberStatus == "2") { // 헬퍼 선택
         if (helperFields) helperFields.style.display = 'block';
@@ -219,5 +256,34 @@ function toggleMemberType() {
         }
     }
 }
+
+// 취소버튼 클릭
+function cancelModify() {
+    if (confirm('수정을 취소하고 마이페이지로 돌아가시겠습니까?')) {
+        window.location.href = '/zipkok/member/mypage';
+    }
+}
+
+// 프로필 이미지 사진 미리보기
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById('previewImage');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+
+        const container = document.getElementById('previewContainer');
+        container.style.display = 'block';
+
+
+        const current = document.getElementById('currentProfileContainer');
+        if (current) current.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
 
 

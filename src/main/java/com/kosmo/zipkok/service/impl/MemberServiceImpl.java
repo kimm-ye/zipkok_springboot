@@ -116,5 +116,42 @@ public class MemberServiceImpl implements MemberService {
 		}
 	}
 
+	@Override
+	public void updateMember(HelperDTO dto) throws IOException {
+		try{
+			System.out.println("memberDTO : " + dto);
+
+			if(!"".equals(dto.getMemberPass()) && dto.getMemberPass() != null) {
+				// 패스워드 security 사용해서 BCrypt 암호화 (고정 60자)
+				String encryptPwd = passwordEncoder.encode(dto.getMemberPass());
+				dto.setMemberPass(encryptPwd);
+			}
+			memberDao.updateMember(dto);
+
+			// 헬퍼인 경우 helper 테이블 수정
+			if(dto.getMemberStatus() == 2) {
+				memberDao.updateHelper(dto);
+
+				if(dto.getAttachFile().getSize() > 0) {
+					String fileName = dto.getAttachFile().getOriginalFilename();
+					String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
+					String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
+
+					dto.setImageFile(dto.getAttachFile().getBytes());
+					dto.setImageFileName(originalName);
+					dto.setImageFileEtx(fileEtx);
+
+					int updateCnt = memberDao.updateHelperImage(dto);
+					if (updateCnt < 1) {
+						memberDao.insertHelperImage(dto);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e; // 컨트롤러에서 예외처리 하기 위함
+		}
+	}
 
 }

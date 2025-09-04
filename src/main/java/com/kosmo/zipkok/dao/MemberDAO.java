@@ -4,6 +4,7 @@ import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.dto.MemberDTO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Mapper
@@ -17,5 +18,8 @@ public interface MemberDAO{
 	void insertMember(HelperDTO dto);
 	void insertHelper(HelperDTO dto);
 	void insertHelperImage(HelperDTO dto);
+	int updateMember(HelperDTO dto);
+	int updateHelper(HelperDTO dto);
+	int updateHelperImage(HelperDTO dto);
 
 }

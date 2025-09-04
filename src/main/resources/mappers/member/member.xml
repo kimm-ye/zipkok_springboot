@@ -92,7 +92,8 @@
 		     	MEMBER_AGE,
 		     	MEMBER_GENDER,
 		     	MEMBER_PHONE,
-		     	MEMBER_STATUS
+		     	MEMBER_STATUS,
+		     	CREATE_DT
 			)
 		VALUES
 		    (
@@ -103,7 +104,8 @@
 				#{memberAge},
 		    	#{memberGender},
 				#{memberPhone},
-				#{memberStatus}
+				#{memberStatus},
+		     	NOW()
 			)
 	</insert>
 
@@ -145,36 +147,47 @@
 				NOW()
 			)
 	</insert>
+
+	<!-- 사용자 수정-->
+	<update id="updateMember" parameterType="HelperDTO" useGeneratedKeys="true" keyProperty="memberSeq">
+		UPDATE MEMBER
+		SET
+			MEMBER_EMAIL = #{memberEmail},
+			MEMBER_PHONE = #{memberPhone},
+		<if test="memberPass != null and memberPass != ''">
+			MEMBER_PASS = #{memberPass},
+		</if>
+			CREATE_DT = NOW()
+		WHERE
+		    MEMBER_ID = #{memberId}
+	</update>
+
+	<!-- 헬퍼 수정-->
+	<update id="updateHelper" parameterType="HelperDTO">
+		UPDATE HELPER
+		SET
+			MEMBER_BANK = #{memberBank},
+			MEMBER_ACCOUNT = #{memberAccount},
+			MEMBER_VEHICLE = #{memberVehicle},
+			MEMBER_INTRODUCE = #{memberIntroduce}
+		WHERE
+			MEMBER_SEQ = #{memberSeq}
+	</update>
+
+	<update id="updateHelperImage" parameterType="HelperDTO">
+		UPDATE HELPER_IMAGE
+		SET
+			IMAGE_NAME = #{imageFileName},
+			IMAGE_ETX = #{imageFileEtx},
+			IMAGE_FILE = #{imageFile},
+			CREATE_DT = NOW()
+		WHERE
+			MEMBER_SEQ = #{memberSeq}
+	</update>
 	
 
-	<!-- 정보수정 조회 -->
-	<select id="getMemberInfo" resultType="com.kosmo.zipkok.dto.MemberDTO">
-		SELECT * FROM member WHERE member_id=#{0}
-	</select>
-	
-	<!-- 정보수정 (헬퍼) -->
-<!--	<update id="helperMyPage">
-		UPDATE member
-			SET member_email=#{member_email}, member_age=#{member_age}, member_pass=#{member_pass}, member_phone=#{member_phone},	
-				member_bank=#{member_bank}, member_account=#{member_account}, member_vehicle=#{member_vehicle}, 
-				member_introduce=#{member_introduce}
-				<if test="member_ofile != null and member_sfile !=null">
-					, member_ofile=#{member_ofile}, member_sfile=#{member_sfile}
-				</if>
-			
-				
-			WHERE member_id=#{member_id} AND member_status=#{member_status}
-	</update>
-	-->
-	<!-- 정보수정 (사용자) -->
-	<update id="userMyPage">
-		UPDATE member
-			SET member_email=#{member_email}, member_pass=#{member_pass}
-				, member_age=#{member_age}, member_phone=#{member_phone}
-			
-			WHERE member_id=#{member_id} AND member_status=#{member_status}
-	</update>
-	
+
+
 	<!-- 카카오로그인시 가입여부 -->
 	<select id="kakaoLogin" resultType="com.kosmo.zipkok.dto.MemberDTO">
 		SELECT * FROM member WHERE member_id=#{0}

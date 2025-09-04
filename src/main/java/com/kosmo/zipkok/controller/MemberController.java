@@ -82,14 +82,6 @@ public class MemberController {
 	}
 
 
-	//서버 업로드를 위한 메소드
-	public static String getUuid() {
-		String uuid = UUID.randomUUID().toString();
-		System.out.println("생성된UUID-1:"+uuid);
-
-		return uuid;
-	}
-
 	// 로그인
 	@PostMapping("/member/login/action")
 	public Map<String, Object> login (@RequestBody Map<String, String> param, HttpServletResponse res) throws IOException {
@@ -202,63 +194,27 @@ public class MemberController {
 	}
 
 
-	//회원정보수정 (헬퍼)
-	@RequestMapping("/myHelperPageAction.do")
-	public String myHelperPageAction(HttpSession session, MultipartHttpServletRequest req, MemberDTO memberDTO, Model model) {
+	//회원정보수정
+	@PatchMapping("/member/mypage/modify/action")
+	public Map<String, Object> modify(HelperDTO dto) throws Exception {
+		Map<String, Object> result = new HashMap<>();
 
-		String id = (String)session.getAttribute("Id");
-		int status = (Integer)session.getAttribute("UserStatus");
+		try{
+			// 정보 업데이트
+			memberService.updateMember(dto);
 
-		//물리적 경로 얻어오기
-		String path = req.getSession().getServletContext().getRealPath("/resources/upload");
-		MultipartFile mfile = null;
-		// 파일정보를 저장한 Map컬렉션을 2개이상 저장하기 위한 용도의 List컬렉션
-		List<Object> resultList = new ArrayList<Object>();
+			result.put("success", true);
+			result.put("message", "수정완료!");
+			result.put("redirectUrl", "./");
 
-		try {
-
-			//업로드폼의 file속성의 필드를 가져온다. (여기서는 2개임)
-			Iterator itr = req.getFileNames();
-
-			//갯수만큼 반복
-			while(itr.hasNext()) {
-				//전송된 파일명을 읽어온다.
-				mfile = req.getFile(itr.next().toString());
-
-				//한글깨짐방지 처리 후 전송된 파일명을 가져온다.
-				String originalName = new String(mfile.getOriginalFilename().getBytes(), "UTF-8");
-
-				//서버로 전송된 파일이 없다면 파일없이 서버에 저장
-				if("".equals(originalName)) continue;
-
-				String ext = originalName.substring(originalName.lastIndexOf('.'));
-				//UUID를 통해 생성된 문자열과 확장자를 결합해서 파일명을 완성한다.
-				String saveFileName = getUuid()	+ ext;
-
-				//물리적 경로에 새롭게 생성된 파일명으로 파일 저장
-				mfile.transferTo(new File(path + File.separator + saveFileName));
-
-//				memberDTO.setMember_ofile(originalName);
-//				memberDTO.setMember_sfile(saveFileName);
-//
-			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			result.put("success", false);
+			result.put("message", "정보수정 중 오류가 발생하였습니다.\n관리자에게 문의 바랍니다.");
 		}
-
-
-		memberDTO.setMemberId(id);
-		memberDTO.setMemberStatus(status);
-		memberDTO.setMemberEmail(req.getParameter("email_1") + "@" + req.getParameter("email_2"));
-
-//		sqlSession.getMapper(MemberImpl.class).helperMyPage(memberDTO);
-
-		model.addAttribute("msg", "회원정보 변경완료");
-
-		return "member/changeAlert";
-
+		return result;
 	}
+
 
 	@RequestMapping("/myUserPageAction.do")
 	public String myUserPageAction(HttpSession session, HttpServletRequest req, MemberDTO memberDTO, Model model) {
