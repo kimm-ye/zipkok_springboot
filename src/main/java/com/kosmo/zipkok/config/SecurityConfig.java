@@ -33,6 +33,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT 를 사용하기 위한 설정
             // exceptionHandling 설정 없음 → 자동으로 ErrorController로 이동!
+
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

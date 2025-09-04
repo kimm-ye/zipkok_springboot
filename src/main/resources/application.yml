@@ -6,6 +6,7 @@ server:
 
 # Spring 프레임워크 설정
 spring:
+<<<<<<< HEAD
   # .env 파일에서 환경 변수를 가져와 애플리케이션 설정에 적용
   config:
     import: optional:file:.env[.properties]
@@ -20,7 +21,7 @@ spring:
     username: ${DB_USERNAME:root}                 # 데이터베이스 사용자명
     password: ${DB_PASSWORD:}                     # 데이터베이스 비밀번호
   
-  # Thymeleaf 템플릿 엔진 설정
+
   thymeleaf:
     cache: false              # 개발 환경을 위한 캐시 비활성화
     prefix: classpath:/templates/    # 템플릿 파일 위치
@@ -54,6 +55,7 @@ jwt:
     expiration: 900000                            # Access Token 만료 시간: 15분 (밀리초)
   refresh:
     expiration: 604800000                         # Refresh Token 만료 시간: 7일 (밀리초)
+
 
 # Redis 설정
 redis:

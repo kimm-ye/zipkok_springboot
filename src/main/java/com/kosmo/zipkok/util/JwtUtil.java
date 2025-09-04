@@ -72,6 +72,7 @@ public class JwtUtil {
     
      // Refresh Token을 생성합니다.
     public String generateRefreshToken(String memberId) {
+
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshExpiration);
         
@@ -84,7 +85,7 @@ public class JwtUtil {
                 .compact();           // 최종 JWT 문자열 생성
     }
     
-     // JWT 토큰에서 사용자 ID를 추출합니다.
+
     public String getMemberIdFromToken(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())

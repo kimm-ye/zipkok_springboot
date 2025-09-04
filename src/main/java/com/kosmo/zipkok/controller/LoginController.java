@@ -1,14 +1,11 @@
 package com.kosmo.zipkok.controller;
 
-import com.kosmo.zipkok.dto.MemberDTO;
-import com.kosmo.zipkok.service.MemberService;
 import com.kosmo.zipkok.service.TokenService;
 import com.kosmo.zipkok.util.CookieUtil;
 import com.kosmo.zipkok.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -55,6 +52,7 @@ public class LoginController {
 
 		return "member/mypage";
 	}
+
 
 	//회원 탈퇴
     @RequestMapping("/mdelete.do")

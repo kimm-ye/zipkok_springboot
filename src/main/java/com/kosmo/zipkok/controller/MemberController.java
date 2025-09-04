@@ -10,6 +10,7 @@ import com.kosmo.zipkok.dto.TokenDTO;
 import com.kosmo.zipkok.service.RedisService;
 import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.service.MemberService;
+<<<<<<< HEAD
 import com.kosmo.zipkok.service.TokenService;
 import com.kosmo.zipkok.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,9 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.WebUtils;
 
 
 @Slf4j
@@ -180,7 +180,6 @@ public class MemberController {
 	@GetMapping("/member/mypage/modify")
 	public ModelAndView modify(HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
-
 		HelperDTO dto = tokenService.getMemberFromAccessToken(request);
 
 		if(dto != null) {
@@ -189,6 +188,7 @@ public class MemberController {
 			mv.setViewName("member/join");
 		} else {
 			mv.setViewName("member/login");
+
 		}
 		return mv;
 	}

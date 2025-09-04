@@ -50,7 +50,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Lazy //  @Lazy 어노테이션을 사용하여 순환 참조 임시 방지
     private CustomUserDetailsService userDetailsService;  
 
+<<<<<<< HEAD
     // 필터를 적용하지 않을 경로를 정의
+=======
+>>>>>>> 0e16dac48d3b3d09a660cd9e72ae64863573d24e
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
@@ -67,8 +70,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                path.endsWith(".jpg");
     }
 
+<<<<<<< HEAD
     /*
      * 모든 HTTP 요청에 대해 실행되는 핵심 인증 메서드
+=======
+    /**
+     * 모든 HTTP 요청에 대해 실행되는 메서드
+     *
+     * @param request HTTP 요청 객체
+     * @param response HTTP 응답 객체
+     * @param filterChain 다음 필터로 요청을 전달하는 체인
+>>>>>>> 0e16dac48d3b3d09a660cd9e72ae64863573d24e
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -86,16 +98,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 2단계: 토큰이 존재하고, 유효한 Access Token인 경우에만 인증 처리
         if (token != null && jwtUtil.validateToken(token) && jwtUtil.isAccessToken(token)) {
 
+<<<<<<< HEAD
             // 3단계: Redis 블랙리스트에서 토큰 확인 (로그아웃된 토큰인지)
             // Access Token은 JWT만으로 검증하지만, 로그아웃된 토큰은 무효화 => 이걸 블랙리스트라고 한다.
             if (!redisService.isAccessTokenBlacklisted(token)) {
+=======
+            // 3단계: JWT 토큰에서 사용자명 추출
+            String memberId = jwtUtil.getMemberIdFromToken(token);
+>>>>>>> 0e16dac48d3b3d09a660cd9e72ae64863573d24e
 
                 // 4단계: JWT Access Token에서 사용자명과 권한 추출
                 // JWT 자체에 포함된 정보를 사용하므로 Redis 조회 불필요
                 String memberId = jwtUtil.getMemberIdFromToken(token);
 
                 // 5단계: 사용자 상세 정보 로드 (권한 정보 포함)
+<<<<<<< HEAD
                 // 데이터베이스에서 최신 사용자 정보를 가져와 권한을 확인
+=======
+>>>>>>> 0e16dac48d3b3d09a660cd9e72ae64863573d24e
                 UserDetails userDetails = userDetailsService.loadUserByUsername(memberId);
 
                 // 6단계: Spring Security 인증 객체 생성
@@ -113,6 +133,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 이렇게 설정하면 @PreAuthorize, @Secured 등의 보안 어노테이션이 작동
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
+<<<<<<< HEAD
                 System.out.println("JWT Access Token 인증 성공: " + memberId);
             } else {
                 System.out.println("블랙리스트에 등록된 Access Token: " + token);
@@ -127,6 +148,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println("JWT Access Token이 유효하지 않음");
                 // JWT 서명이 잘못되었거나 만료된 경우
             }
+=======
+                System.out.println("JWT 인증 성공: " + memberId);
+            } else {
+                System.out.println("Redis에서 세션 정보를 찾을 수 없음: " + memberId);
+            }
+        } else if (token != null) {
+            System.out.println("JWT 토큰이 유효하지 않음");
+
+>>>>>>> 0e16dac48d3b3d09a660cd9e72ae64863573d24e
         }
 
         // 8단계: 다음 필터로 요청 전달 (인증 성공/실패와 관계없이)
@@ -142,10 +172,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
 
+<<<<<<< HEAD
         // 2순위: accessToken 쿠키 (로그아웃과 일치)
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("accessToken".equals(cookie.getName())) {
+=======
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("loginCookie".equals(cookie.getName())) {
+>>>>>>> 0e16dac48d3b3d09a660cd9e72ae64863573d24e
                     return cookie.getValue();
                 }
             }
