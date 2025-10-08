@@ -1,11 +1,11 @@
 package com.kosmo.zipkok.service;
 
+import com.kosmo.zipkok.dto.CustomUserDetail;
 import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.dto.MemberDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		HelperDTO member = memberService.selectMemberById(username);
+		HelperDTO member = memberService.selectMemberBySeq(username);
 		if (member == null) {
 			throw new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다.");
 		}
@@ -53,10 +53,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(role);
 
-		return new User(
-				member.getMemberId(),
-				member.getMemberPass(), // 패스워드가 들어가야 함
-				Collections.singleton(grantedAuthority)
+		return new CustomUserDetail(
+				member.getMemberId(), // 아이디
+				member.getMemberPass(), // 패스워드
+				Collections.singleton(grantedAuthority), // 역할,
+				member.getMemberSeq(), // seq
+				member.getMemberName(), // 이름
+				member.getMemberStatus() // 상태
 		);
 	}
 }

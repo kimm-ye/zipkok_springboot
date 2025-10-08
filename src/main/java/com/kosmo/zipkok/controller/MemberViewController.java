@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class LoginController {
+public class MemberViewController {
 
 	@Autowired
 	JwtUtil jwtUtil;
@@ -45,7 +45,6 @@ public class LoginController {
 	//마이페이지
 	@RequestMapping("/member/mypage")
 	public String mypage() {
-
 		return "member/mypage";
 	}
 
@@ -61,7 +60,6 @@ public class LoginController {
 			mv.setViewName("member/join");
 		} else {
 			mv.setViewName("member/login");
-
 		}
 		return mv;
 	}
@@ -72,12 +70,10 @@ public class LoginController {
 		return "member/logout/action";
 	}
 
-
 	//아이디/비밀번호 찾기
 	@RequestMapping("/member/find")
 	public String find() {
 		return "member/find";
 	}
-
 
 }

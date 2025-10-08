@@ -1,210 +1,326 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <!DOCTYPE mapper
   PUBLIC "-//com.kosmo.zipkok.mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.kosmo.zipkok.dao.MemberDAO">
+<mapper namespace="com.kosmo.zipkok.dao.MissionDAO">
+	<!-- 신청 가능한 수행 내역 조회 -->
+	<select id="getPerformanceHistory" parameterType="Map" resultType="MissionDTO">
+		SELECT
+			A.MISSION_SEQ as missionSeq,
+			A.MEMBER_SEQ as memberSeq,
+			B.MEMBER_NAME AS memberName,
+			A.MISSION_CATEGORY as missionCategory,
+			A.MISSION_TITLE as missionTitle,
+			A.MISSION_CONTENT as missionContent,
+			A.MISSION_GENDER as missionGender,
+			A.HELPER_SEQ as helperSeq,
+			A.MISSION_RESERVATION as missionReservation,
+			A.MISSION_RESERVATION_DT as missionReservationDt,
+			A.MISSION_TIME as missionTime,
+			A.MISSION_COST as missionCost,
+			A.MISSION_STATUS as missionStatus
+		FROM
+			MISSION A, MEMBER B
+		WHERE
+			A.member_seq = B.member_seq
+		AND mission_status = 0
+		ORDER BY MISSION_SEQ DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="getPerformanceHistoryCount" resultType="java.lang.Integer">
+		SELECT
+			COUNT(*)
+		FROM
+			MISSION
+		WHERE
+			mission_status = 0
+	</select>
+
+	<!-- 내가 응모한 심부름 내역 조회 -->
+	<select id="getMyPerformanceHistory" parameterType="Map" resultType="MissionDTO">
+		SELECT
+			A.MISSION_SEQ as missionSeq,
+			A.MEMBER_SEQ as memberSeq,
+			B.MEMBER_NAME AS memberName,
+			A.MISSION_CATEGORY as missionCategory,
+			A.MISSION_TITLE as missionTitle,
+			A.MISSION_CONTENT as missionContent,
+			A.MISSION_GENDER as missionGender,
+			A.HELPER_SEQ as helperSeq,
+			A.MISSION_RESERVATION as missionReservation,
+			A.MISSION_RESERVATION_DT as missionReservationDt,
+			A.MISSION_TIME as missionTime,
+			A.MISSION_COST as missionCost,
+			A.MISSION_STATUS as missionStatus
+		FROM
+			MISSION A, MEMBER B
+		WHERE
+			A.member_seq = B.member_seq
+		AND helper_seq = #{helperSeq}
+		ORDER BY MISSION_SEQ DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="getMyPerformanceHistoryCount" parameterType="String" resultType="java.lang.Integer">
+		SELECT
+			COUNT(*)
+		FROM
+			MISSION
+		WHERE
+			helper_seq = #{helperSeq}
+	</select>
+
+	<!-- 내가 요청한 내역 조회  -->
+	<select id="getRequestHistory" parameterType="Map" resultType="MissionDTO">
+		SELECT
+			A.MISSION_SEQ as missionSeq,
+			A.MEMBER_SEQ as memberSeq,
+			B.MEMBER_NAME AS memberName,
+			A.MISSION_CATEGORY as missionCategory,
+			A.MISSION_TITLE as missionTitle,
+			A.MISSION_CONTENT as missionContent,
+			A.MISSION_GENDER as missionGender,
+			A.HELPER_SEQ as helperSeq,
+			A.MISSION_RESERVATION as missionReservation,
+			A.MISSION_RESERVATION_DT as missionReservationDt,
+			A.MISSION_TIME as missionTime,
+			A.MISSION_COST as missionCost,
+			A.MISSION_STATUS as missionStatus
+		FROM
+			MISSION A, MEMBER B
+		WHERE
+			A.MEMBER_SEQ = B.MEMBER_SEQ
+		AND A.mission_status != 9
+		AND A.MEMBER_SEQ = #{memberSeq}
+		ORDER BY MISSION_SEQ DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="getRequestHistoryCount" parameterType="String" resultType="java.lang.Integer">
+		SELECT
+			COUNT(*)
+		FROM
+			MISSION
+		WHERE
+			mission_status != 9
+		AND MEMBER_SEQ = #{memberSeq}
+	</select>
+
+	<!-- 미션 상세 조회 -->
+	<select id="getMissionDetail" parameterType="String" resultType="MissionDTO">
+		SELECT
+			A.MISSION_SEQ        AS missionSeq,
+			A.MEMBER_SEQ         AS memberSeq,
+			B.MEMBER_NAME        AS memberName,
+			A.MISSION_CATEGORY   AS missionCategory,
+			A.MISSION_TITLE      AS missionTitle,
+			A.MISSION_CONTENT    AS missionContent,
+			A.MISSION_GENDER     AS missionGender,
+			A.HELPER_SEQ         AS helperSeq,
+			A.MISSION_RESERVATION    AS missionReservation,
+			A.MISSION_RESERVATION_DT AS missionReservationDt,
+			A.MISSION_TIME       AS missionTime,
+			A.MISSION_COST       AS missionCost,
+			A.MISSION_STATUS     AS missionStatus,
+			L.wayPostcode,
+			L.wayAddress1,
+			L.wayAddress2,
+			L.endPostcode,
+			L.endAddress1,
+			L.endAddress2,
+			IMG.image_name AS missionImageFileName,
+			IMG.image_etx AS missionImageFileEtx
+		FROM MISSION A
+		JOIN MEMBER B
+		ON A.MEMBER_SEQ = B.MEMBER_SEQ
+		JOIN (
+			SELECT
+				MISSION_SEQ,
+				MAX(CASE WHEN LOCATION_TYPE='WAY' THEN POSTCODE END)  AS wayPostcode,
+				MAX(CASE WHEN LOCATION_TYPE='WAY' THEN ADDRESS1 END)  AS wayAddress1,
+				MAX(CASE WHEN LOCATION_TYPE='WAY' THEN ADDRESS2 END)  AS wayAddress2,
+				MAX(CASE WHEN LOCATION_TYPE='END' THEN POSTCODE END)  AS endPostcode,
+				MAX(CASE WHEN LOCATION_TYPE='END' THEN ADDRESS1 END)  AS endAddress1,
+				MAX(CASE WHEN LOCATION_TYPE='END' THEN ADDRESS2 END)  AS endAddress2
+			FROM
+			    MISSION_LOCATION
+			GROUP BY MISSION_SEQ
+		) L
+		ON L.MISSION_SEQ = A.MISSION_SEQ
+		LEFT JOIN MISSION_IMAGE IMG
+		ON A.MISSION_SEQ = IMG.MISSION_SEQ
+		WHERE
+			A.MISSION_SEQ = #{missionSeq}
+	</select>
+
+	<select id="getMissionImage" parameterType="String" resultType="MissionFileDTO">
+		SELECT
+			MISSION_SEQ AS missionSeq,
+			IMAGE_FILE AS missionImageFile,
+			IMAGE_NAME AS missionImageFileName,
+			IMAGE_ETX AS missionImageFileEtx
+		FROM
+			MISSION_IMAGE
+		WHERE
+			MISSION_SEQ =  #{missionSeq}
+	</select>
 	
-	<select id="selectEmail" parameterType="java.lang.String" resultType="boolean">
+	<select id="selectMemberSeq" parameterType="String" resultType="String">
 		SELECT
-		    CASE
-				WHEN COUNT(MEMBER_SEQ) > 0 THEN 1
-			ELSE 0
-			END AS exists_flag
+		    member_seq AS memberSeq
 		FROM
-		    MEMBER
+		    mission
 		WHERE
-		    MEMBER_EMAIL = #{member_email}
+		    mission_seq = #{missionSeq}
 	</select>
 
-	<select id="selectMemberById" parameterType="java.lang.String" resultType="HelperDTO">
+	<select id="selectMissionStatus" parameterType="String" resultType="Integer">
 		SELECT
-			M.member_seq AS memberSeq,
-			M.member_id AS memberId,
-			M.member_pass AS memberPass,
-			M.member_name AS memberName,
-			M.member_email AS memberEmail,
-			M.member_age AS memberAge,
-			M.member_gender AS memberGender,
-			M.member_phone AS memberPhone,
-			NVL(M.member_missionN, 0) AS memberMissionN,
-			M.member_status AS memberStatus,
-			H.member_bank AS memberBank,
-			H.member_account AS memberAccount,
-			H.member_vehicle AS memberVehicle,
-			H.member_introduce AS memberIntroduce,
-			H.member_review AS memberReview,
-			NVL(H.member_missionC, 0) AS memberMissionC,
-			NVL(H.member_point, 0) AS memberPoint,
-			IMG.image_name AS imageFileName,
-			IMG.image_etx AS imageFileEtx,
-			IMG.image_file AS imageFile
+		    mission_status AS missionStatus
 		FROM
-			MEMBER M
-		LEFT JOIN HELPER H
-		ON M.member_seq = H.member_seq
-		LEFT JOIN HELPER_IMAGE IMG
-		ON H.member_seq = IMG.member_seq
+		    mission
 		WHERE
-		    member_useYn = 'Y'
-		AND MEMBER_ID =#{memberId}
+		    mission_seq = #{missionSeq}
 	</select>
 
-
-	<select id="idCheck" resultType="java.lang.String">
-		SELECT
-			member_id AS memberId
-		FROM
-			member
-		WHERE
-			member_id = #{memberId}
-	</select>
-
-	<select id="findId" parameterType="Map" resultType="java.lang.String">
-		SELECT
-			member_id AS memberId
-		FROM
-			member
-		WHERE
-			member_name = #{name}
-		AND member_email = #{email}
-	</select>
-
-	<select id="findPwd" parameterType="Map" resultType="java.lang.String">
-		SELECT
-			member_pass AS memberPass
-		FROM
-			member
-		WHERE
-			member_id = #{mid}
-		AND member_name = #{name}
-		AND member_email = #{email}
-	</select>
-
-	<!-- 사용자 등록 -->
-	<insert id="insertMember" parameterType="HelperDTO" useGeneratedKeys="true" keyProperty="memberSeq">
-		INSERT INTO MEMBER
-		    (
-		    	MEMBER_ID,
-		     	MEMBER_PASS,
-		     	MEMBER_NAME,
-		     	MEMBER_EMAIL,
-		     	MEMBER_AGE,
-		     	MEMBER_GENDER,
-		     	MEMBER_PHONE,
-		     	MEMBER_STATUS,
-		     	CREATE_DT
+	<insert id="insertMission" parameterType="MissionDTO" useGeneratedKeys="true" keyProperty="missionSeq">
+		INSERT INTO MISSION
+			(
+				member_seq,
+				mission_category,
+				mission_title,
+				mission_content,
+				mission_gender,
+				helper_seq,
+				mission_reservation,
+				mission_reservation_dt,
+				mission_time,
+				mission_cost,
+				mission_status
 			)
 		VALUES
 		    (
-				#{memberId},
-		    	#{memberPass},
-		    	#{memberName},
-		    	#{memberEmail},
-				#{memberAge},
-		    	#{memberGender},
-				#{memberPhone},
-				#{memberStatus},
+				#{memberSeq},
+				#{missionCategory},
+				#{missionTitle},
+				#{missionContent},
+				#{missionGender},
+				#{helperSeq},
+				#{missionReservation},
+				#{missionReservationDt},
+				#{missionTime},
+				#{missionCost},
+				0 /* 신청(대기)는 0 */
+			)
+
+	</insert>
+
+	<insert id="insertMissionLocation" parameterType="MissionDTO">
+		INSERT INTO mission_location
+		(mission_seq, location_type, postcode, address1, address2, latitude, longitude)
+		VALUES
+		<trim prefix="" suffixOverrides=",">
+			<if test="wayAddress1 != null and wayLatitude != null and wayLongitude != null">
+				(#{missionSeq}, 'WAY', #{wayPostcode}, #{wayAddress1}, #{wayAddress2}, #{wayLatitude}, #{wayLongitude}),
+			</if>
+			<if test="endAddress1 != null and endLatitude != null and endLongitude != null">
+				(#{missionSeq}, 'END', #{endPostcode}, #{endAddress1}, #{endAddress2}, #{endLatitude}, #{endLongitude}),
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="insertMissionImage" parameterType="MissionDTO">
+		INSERT INTO mission_image
+			(
+				mission_seq,
+				image_name,
+				image_etx,
+				image_file,
+				create_dt
+			)
+		VALUES
+		    (
+				#{missionSeq},
+				#{missionImageFileName},
+		     	#{missionImageFileEtx},
+		     	#{missionImageFile},
 		     	NOW()
 			)
 	</insert>
 
-	<!-- 헬퍼 등록-->
-	<insert id="insertHelper" parameterType="HelperDTO">
-		INSERT INTO HELPER
-			(
-			 	MEMBER_SEQ,
-				MEMBER_BANK,
-			 	MEMBER_ACCOUNT,
-			 	MEMBER_VEHICLE,
-				MEMBER_INTRODUCE
-			)
-		VALUES
-		    (
-		     	#{memberSeq},
-				#{memberBank},
-		    	#{memberAccount},
-		    	#{memberVehicle},
-				#{memberIntroduce}
-			)
-	</insert>
-
-	<insert id="insertHelperImage" parameterType="HelperDTO">
-		INSERT INTO HELPER_IMAGE
-			(
-				MEMBER_SEQ,
-				IMAGE_NAME,
-			 	IMAGE_ETX,
-				IMAGE_FILE,
-				CREATE_DT
-			)
-		VALUES
-			(
-				#{memberSeq},
-				#{imageFileName},
-				#{imageFileEtx},
-				#{imageFile},
-				NOW()
-			)
-	</insert>
-
-	<!-- 사용자 수정-->
-	<update id="updateMember" parameterType="HelperDTO" useGeneratedKeys="true" keyProperty="memberSeq">
-		UPDATE MEMBER
+	<update id="updateMission" parameterType="MissionDTO">
+		UPDATE MISSION
 		SET
-			MEMBER_EMAIL = #{memberEmail},
-			MEMBER_PHONE = #{memberPhone},
-		<if test="memberPass != null and memberPass != ''">
-			MEMBER_PASS = #{memberPass},
-		</if>
-			CREATE_DT = NOW()
+			member_seq = #{memberSeq},
+			mission_category = #{missionCategory},
+			mission_title = #{missionTitle},
+			mission_content = #{missionContent},
+			mission_gender = #{missionGender},
+			helper_seq = #{helperSeq},
+			mission_reservation = #{missionReservation},
+			mission_reservation_dt = #{missionReservationDt},
+			mission_time = #{missionTime},
+			mission_cost = #{missionCost},
+			mission_status =  #{missionStatus}
 		WHERE
-		    MEMBER_ID = #{memberId}
+		    mission_seq = #{missionSeq}
 	</update>
 
-	<!-- 헬퍼 수정-->
-	<update id="updateHelper" parameterType="HelperDTO">
-		UPDATE HELPER
+	<update id="updateMissionWayLocation" parameterType="MissionDTO">
+		UPDATE mission_location
 		SET
-			MEMBER_BANK = #{memberBank},
-			MEMBER_ACCOUNT = #{memberAccount},
-			MEMBER_VEHICLE = #{memberVehicle},
-			MEMBER_INTRODUCE = #{memberIntroduce}
+			postcode = #{wayPostcode},
+			address1 = #{wayAddress1},
+			address2 = #{wayAddress2},
+			latitude = #{wayLatitude},
+			longitude = #{wayLongitude}
 		WHERE
-			MEMBER_SEQ = #{memberSeq}
+			location_type = 'WAY'
+		AND mission_seq = #{missionSeq}
 	</update>
 
-	<update id="updateHelperImage" parameterType="HelperDTO">
-		UPDATE HELPER_IMAGE
+	<update id="updateMissionEndLocation" parameterType="MissionDTO">
+		UPDATE mission_location
 		SET
-			IMAGE_NAME = #{imageFileName},
-			IMAGE_ETX = #{imageFileEtx},
-			IMAGE_FILE = #{imageFile},
-			CREATE_DT = NOW()
+			postcode = #{endPostcode},
+			address1 = #{endAddress1},
+			address2 = #{endAddress2},
+			latitude = #{endLatitude},
+			longitude = #{endLongitude}
 		WHERE
-			MEMBER_SEQ = #{memberSeq}
+			location_type = 'END'
+		AND mission_seq = #{missionSeq}
+	</update>
+
+	<update id="updateMissionImage" parameterType="MissionDTO">
+		UPDATE mission_image
+		SET
+			image_name = #{missionImageFileName},
+			image_etx = #{missionImageFileEtx},
+			image_file = #{missionImageFile},
+			create_dt = NOW()
+		WHERE
+		    mission_seq = #{missionSeq}
 	</update>
 	
-
-	<update id="deleteMember" parameterType="String">
-		UPDATE MEMBER
+	<update id="updateMissionStatus" parameterType="Map">
+		UPDATE mission
 		SET
-		   MEMBER_USEYN = 'N'
+		    helper_seq = #{helperSeq},
+		    mission_status = #{missionStatus}
 		WHERE
-		    MEMBER_ID = #{memberId}
+		    mission_seq = #{missionSeq}
 	</update>
 
-	<!-- 카카오로그인시 가입여부 -->
-	<select id="kakaoLogin" resultType="com.kosmo.zipkok.dto.MemberDTO">
-		SELECT * FROM member WHERE member_id=#{0}
-	</select>
-	
-	<!-- 회원탈퇴 -->
-	<delete id="memberDelete" >
-		DELETE FROM member
-			WHERE member_id=#{param1} 
-	</delete>
-
+	<!-- 신청 상태인 심부름만 삭제 가능하도록 한다. -->
+	<update id="deleteMission" parameterType="String">
+		UPDATE mission
+		SET
+			mission_status = 9
+		WHERE
+		    mission_status = 0
+		AND mission_seq = #{missionSeq}
+	</update>
 </mapper>
 

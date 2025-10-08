@@ -1,28 +1,27 @@
 package com.kosmo.zipkok.service;
 
-import com.kosmo.zipkok.dto.HelperDTO;
-import com.kosmo.zipkok.dto.MemberDTO;
+import com.kosmo.zipkok.dto.*;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
-public interface MemberService {
+public interface MissionService {
 
-    // 이메일 체크 확인
-    boolean selectEmail(String email);
-    //비밀번호 검증
-    MemberDTO authenticate(String inputId, String inputPwd);
-    //아이디 중복체크
-    String idCheck(String id);
-    HelperDTO selectMemberById(String memberId);
-
-    //아이디찾기
-    String findId (Map<String, String> param);
-    String findPwd (Map<String, String> param);
-    // 회원가입
-    void insertMember(HelperDTO dto) throws IOException;
-    void updateMember(HelperDTO dto) throws IOException;
-
-    void deleteMember(String accessToken) throws Exception;
+    List<MissionDTO> getPerformanceHistory(PagingDTO paging);
+    int getPerformanceHistoryCount();
+    List<MissionDTO> getMyPerformanceHistory(String helperSeq, PagingDTO paging);
+    int getMyPerformanceHistoryCount(String helperSeq);
+    List<MissionDTO> getRequestHistory(String memberSeq, PagingDTO paging);
+    int getRequestHistoryCount(String memberSeq);
+    MissionDTO getMissionDetail(String missionSeq);
+    MissionFileDTO getMissionImage(String missionSeq);
+    String selectMemberSeq(String missionSeq);
+    int selectMissionStatus(String missionSeq);
+    void insertMission(MissionDTO missionDTO) throws IOException;
+    void updateMission(MissionDTO missionDTO) throws IOException;
+    void updateMissionStatus(Map<String, Object> param) throws Exception;
+    void deleteMission(String missionSeq) throws Exception;
 
 }

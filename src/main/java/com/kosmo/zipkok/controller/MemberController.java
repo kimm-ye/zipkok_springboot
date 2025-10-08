@@ -1,10 +1,10 @@
 package com.kosmo.zipkok.controller;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import com.kosmo.zipkok.dto.CustomUserDetail;
 import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.dto.TokenDTO;
 import com.kosmo.zipkok.service.RedisService;
@@ -14,10 +14,9 @@ import com.kosmo.zipkok.service.TokenService;
 import com.kosmo.zipkok.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -41,7 +40,6 @@ public class MemberController {
 		Map<String, Object> result = new HashMap<>();
 
 		try{
-			System.out.println("memberDTO : " + dto);
 
 			// 1. 해당하는 이메일이 존재하는지 체크
 			boolean hasEmail = memberService.selectEmail(dto.getMemberEmail());
@@ -174,24 +172,6 @@ public class MemberController {
 		return memberService.findPwd(info);
 	}
 
-	//회원정보 수정 페이지 이동
-	@GetMapping("/member/mypage/modify")
-	public ModelAndView modify(HttpServletRequest request) {
-		ModelAndView mv = new ModelAndView();
-		HelperDTO dto = tokenService.getMemberFromAccessToken(request);
-
-		if(dto != null) {
-			mv.addObject("info", dto);
-			mv.addObject("isModify", true);      // 수정 모드 플래그
-			mv.setViewName("member/join");
-		} else {
-			mv.setViewName("member/login");
-
-		}
-		return mv;
-	}
-
-
 	//회원정보수정
 	@PatchMapping("/member/mypage/modify/action")
 	public Map<String, Object> modify(HelperDTO dto) throws Exception {
@@ -202,7 +182,7 @@ public class MemberController {
 			memberService.updateMember(dto);
 
 			result.put("success", true);
-			result.put("message", "수정완료!");
+			result.put("message", "회원정보 변경 완료!");
 			result.put("redirectUrl", "./");
 
 		} catch (Exception e) {
@@ -214,38 +194,28 @@ public class MemberController {
 	}
 
 
-	@RequestMapping("/myUserPageAction.do")
-	public String myUserPageAction(HttpSession session, HttpServletRequest req, MemberDTO memberDTO, Model model) {
-
-		String id = (String)session.getAttribute("Id");
-		int status = (Integer)session.getAttribute("UserStatus");
-
-		memberDTO.setMemberId(id);
-		memberDTO.setMemberStatus(status);
-		memberDTO.setMemberEmail(req.getParameter("email_1") + "@" + req.getParameter("email_2"));
-
-
-//		sqlSession.getMapper(MemberImpl.class).userMyPage(memberDTO);
-
-		model.addAttribute("msg", "회원정보 변경완료");
-
-
-		return "member/changeAlert";
-	}
-
-
     //회원탈퇴
-    @RequestMapping("/memberDelete.do")
-    public String delete(HttpServletRequest req, HttpSession session) {
-        //로그인 확인
-        if(session.getAttribute("siteUserInfo")==null){
-            return "redirect:login.do";
-        }
+    @GetMapping("/member/unregister")
+    public Map<String, Object>  unregister(@AuthenticationPrincipal CustomUserDetail me, HttpServletResponse response) throws Exception {
 
-//        sqlSession.getMapper(MemberImpl.class).memberDelete(
-//            ((MemberDTO)session.getAttribute("siteUserInfo")).getMember_id()
-//        );
-        return "member/memberDelete";
+		Map<String, Object> result = new HashMap<>();
+
+		try{
+			// 정보 업데이트
+			memberService.deleteMember(me.getMemberSeq());
+
+			CookieUtil.deleteCookie("accessToken", "/", response);
+			CookieUtil.deleteCookie("refreshToken", "/", response);
+
+			result.put("success", true);
+			result.put("message", "회원탈퇴 완료");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.put("success", false);
+			result.put("message", "정보수정 중 오류가 발생하였습니다.\n관리자에게 문의 바랍니다.");
+		}
+		return result;
     }
 
 	// 로그아웃시 토큰 초기화

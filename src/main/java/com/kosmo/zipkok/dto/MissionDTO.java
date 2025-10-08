@@ -1,22 +1,46 @@
 package com.kosmo.zipkok.dto;
 
-public class BoardDTO {
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
-    private String mission_num;
-    private String mission_id;
-    private String mission_category;
-    private String mission_name;
-    private String mission_content;
-    private String mission_ofile;
-    private String mission_sfile;
-    private String mission_sex;
-    private String mission_Hid;
-    private String mission_start;
-    private String mission_waypoint;
-    private String mission_end;
-    private String mission_mission;
-    private String mission_reservation;
-    private String mission_time;
-    private String mission_cost;
-    private String mission_status;
+@Data
+public class MissionDTO extends MissionFileDTO {
+
+    private String memberSeq;
+    private String missionSeq;
+    private String missionCategory;
+    private String missionTitle;
+    private String missionContent;
+    private int missionGender;
+    private String helperSeq;
+    private String missionReservation; // 0=즉시신청, 1=예약신청
+    private String missionReservationDt; // 예약신청일자
+    private String missionTime; // 1= 10분이내, 2=10 ~ 20분, 3=20 ~ 40분, 4=40 ~ 60분, 5=60분 이상
+    private int missionCost;
+//    private MultipartFile missionAttachFile;
+//    private byte[] missionImageFile; // 실제 파일 내용을 바이트 배열로 읽어옴
+//    private String missionImageFileName;
+//    private String missionImageFileEtx;
+    private int missionStatus; // 0=신청(대기), 1=진행, 2=완료, 3=취소
+
+    private String memberName;
+
+    // -------------------------------
+    // 위치 관련 필드 추가
+    // -------------------------------
+
+    // 경유지 (1개만 받는다면)
+    private String wayAddress1;
+    private String wayAddress2;
+    private String wayPostcode;
+    private Double wayLatitude;
+    private Double wayLongitude;
+
+    // 도착지
+    private String endAddress1;
+    private String endAddress2;
+    private String endPostcode;
+    private Double endLatitude;
+    private Double endLongitude;
+
 }

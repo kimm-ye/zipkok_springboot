@@ -1,6 +1,6 @@
-package com.kosmo.zipkok.util;
+package com.kosmo.zipkok.dto;
 
-public class Paging {
+public class PagingDTO {
     private final int page;         // 1-based
     private final int size;         // page size
     private final int totalCount;   // 총 레코드 수
@@ -13,7 +13,7 @@ public class Paging {
     private final boolean hasPrev;  // 이전 블록 존재
     private final boolean hasNext;  // 다음 블록 존재
 
-    private Paging(int page, int size, int totalCount, int blockSize) {
+    private PagingDTO(int page, int size, int totalCount, int blockSize) {
         this.size = Math.max(1, Math.min(size, 100));
         this.totalCount = Math.max(0, totalCount);
         this.totalPages = Math.max(1, (int)Math.ceil((double)this.totalCount / this.size));
@@ -30,11 +30,11 @@ public class Paging {
         this.hasNext = this.endPage < this.totalPages;
     }
 
-    public static Paging of(int page, int size, int totalCount) {
-        return new Paging(page, size, totalCount, 10);
+    public static PagingDTO of(int page, int size, int totalCount) {
+        return new PagingDTO(page, size, totalCount, 10);
     }
-    public static Paging of(int page, int size, int totalCount, int blockSize) {
-        return new Paging(page, size, totalCount, blockSize);
+    public static PagingDTO of(int page, int size, int totalCount, int blockSize) {
+        return new PagingDTO(page, size, totalCount, blockSize);
     }
 
     // getters

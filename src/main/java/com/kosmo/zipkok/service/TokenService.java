@@ -24,8 +24,8 @@ public class TokenService {
         String token = CookieUtil.getCookieValue(request, "accessToken");
         HelperDTO dto = new HelperDTO();
         if (token != null && jwtUtil.validateToken(token) && jwtUtil.isAccessToken(token)) {
-            String memberId = jwtUtil.getMemberIdFromToken(token);
-            dto = memberService.selectMemberById(memberId);
+            String memberSeq = jwtUtil.getMemberSeqFromToken(token);
+            dto = memberService.selectMemberBySeq(memberSeq);
         }
         return dto;
     }

@@ -1,169 +1,179 @@
 package com.kosmo.zipkok.service.impl;
 
-import com.kosmo.zipkok.dao.MemberDAO;
-import com.kosmo.zipkok.dto.HelperDTO;
-import com.kosmo.zipkok.dto.MemberDTO;
-import com.kosmo.zipkok.service.MemberService;
-import com.kosmo.zipkok.util.JwtUtil;
-import lombok.RequiredArgsConstructor;
+import com.kosmo.zipkok.dao.MissionDAO;
+import com.kosmo.zipkok.dto.*;
+import com.kosmo.zipkok.service.MissionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @Transactional
-public class MemberServiceImpl implements MemberService {
+public class MissionServiceImpl implements MissionService {
 
-	@Autowired
-	private MemberDAO memberDao;  // final 필드
+    @Autowired
+    MissionDAO missionDao;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+    //수행내역 조회
+    @Override
+    public List<MissionDTO> getPerformanceHistory(PagingDTO paging) {
 
-	@Autowired
-	private JwtUtil jwtUtil;
+        Map<String, Object> params = new HashMap<>();
+        params.put("offset", paging.getOffset());
+        params.put("limit", paging.getLimit());
 
-	@Override
-	public boolean selectEmail(String email) {
-		return memberDao.selectEmail(email);
-	}
+        return missionDao.getPerformanceHistory(params);
+    }
 
+    @Override
+    public int getPerformanceHistoryCount() {
+        return missionDao.getPerformanceHistoryCount();
+    }
 
-	@Override
-	public MemberDTO authenticate(String inputId, String inputPwd) {
-	    try {
+    @Override
+    public List<MissionDTO> getMyPerformanceHistory(String helperSeq, PagingDTO paging) {
 
-	        MemberDTO member = memberDao.selectMemberById(inputId);
+        Map<String, Object> params = new HashMap<>();
+        params.put("offset", paging.getOffset());
+        params.put("limit", paging.getLimit());
+        params.put("helperSeq", helperSeq);
 
-			System.out.println("member : " + member);
+        return missionDao.getMyPerformanceHistory(params);
+    }
 
-	        if (member != null) {
+    @Override
+    public int getMyPerformanceHistoryCount(String helperSeq) {
+        return missionDao.getMyPerformanceHistoryCount(helperSeq);
+    }
 
-	            // 비밀번호 비교: 원본 vs 암호화된 비밀번호
-	            boolean isMatch = passwordEncoder.matches(inputPwd, member.getMemberPass());
+    // 요청내역 조회
+    @Override
+    public List<MissionDTO> getRequestHistory(String memberSeq, PagingDTO paging) {
 
-	            if (isMatch) {
-	                System.out.println("로그인 성공: " + inputId);
-	                return member;
-	            } else {
-	                System.out.println("비밀번호 불일치: " + inputId);
-	            }
-	        } else {
-	            System.out.println("사용자 없음: " + inputId);
-	        }
+        Map<String, Object> params = new HashMap<>();
+        params.put("offset", paging.getOffset());
+        params.put("limit", paging.getLimit());
+        params.put("memberSeq", memberSeq);
 
-	        return null;
+        return missionDao.getRequestHistory(params);
+    }
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw e;
-	    }
-	}
+    @Override
+    public int getRequestHistoryCount(String memberSeq) {
+        return missionDao.getRequestHistoryCount(memberSeq);
+    }
 
+    // 미션 상세페이지
+    @Override
+    public MissionDTO getMissionDetail(String missionSeq) {
+        return missionDao.getMissionDetail(missionSeq);
+    }
 
-	@Override
-	public String idCheck(String id) {
-		return memberDao.idCheck(id);
-	}
+    @Override
+    public MissionFileDTO getMissionImage(String missionSeq) {
+        return missionDao.getMissionImage(missionSeq);
+    }
 
-	@Override
-	public String findId(Map<String, String> param) {
-		return memberDao.findId(param);
-	}
+    @Override
+    public String selectMemberSeq(String missionSeq) {
+        return missionDao.selectMemberSeq(missionSeq);
+    }
 
-	@Override
-	public String findPwd(Map<String, String> param) {
-		return memberDao.findPwd(param);
-	}
+    @Override
+    public int selectMissionStatus(String missionSeq) {
+        return missionDao.selectMissionStatus(missionSeq);
+    }
 
-	@Override
-	public HelperDTO selectMemberById(String memberId) {
-		return  memberDao.selectMemberById(memberId);
-	}
+    @Override
+    public void insertMission(MissionDTO missionDTO) throws IOException {
+        try{
+            //mission 테이블에 데이터 insert
+            missionDao.insertMission(missionDTO);
 
-	@Override
-	public void insertMember(HelperDTO dto) throws IOException {
+            // mission_location에 insert
+            missionDao.insertMissionLocation(missionDTO);
 
-		try {
-			// 패스워드 security 사용해서 BCrypt 암호화 (고정 60자)
-			String encryptPwd = passwordEncoder.encode(dto.getMemberPass());
-			dto.setMemberPass(encryptPwd);
+            // mission_file에 insert
+            if(missionDTO.getMissionAttachFile().getSize() > 0) {
+                String fileName = missionDTO.getMissionAttachFile().getOriginalFilename();
+                String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
+                String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
 
-			memberDao.insertMember(dto);
+                missionDTO.setMissionImageFile(missionDTO.getMissionAttachFile().getBytes());
+                missionDTO.setMissionImageFileName(originalName);
+                missionDTO.setMissionImageFileEtx(fileEtx);
 
-			// 헬퍼인 경우 helper 테이블 저장
-			if(dto.getMemberStatus() == 2) {
-				memberDao.insertHelper(dto);
+                missionDao.insertMissionImage(missionDTO);
+            }
 
-				if(dto.getAttachFile().getSize() > 0) {
-					String fileName = dto.getAttachFile().getOriginalFilename();
-					String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
-					String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 
-					dto.setImageFile(dto.getAttachFile().getBytes());
-					dto.setImageFileName(originalName);
-					dto.setImageFileEtx(fileEtx);
+    @Override
+    public void updateMission(MissionDTO missionDTO) throws IOException {
+        try {
+            //mission 테이블에 데이터 update
+            missionDao.updateMission(missionDTO);
 
-					memberDao.insertHelperImage(dto);
-				}
-			}
-		} catch (Exception e){
-			e.printStackTrace();
-			throw e; // 컨트롤러에서 예외처리 하기 위함
-		}
-	}
+            // mission_location에 update/insert (merge문이 없어서)
+            if(missionDTO.getWayLatitude() != null && missionDTO.getWayLongitude() != null) {
+                int wayUpdated = missionDao.updateMissionWayLocation(missionDTO);
+                if(wayUpdated == 0) {
+                    missionDao.insertMissionLocation(missionDTO);
+                }
+            }
 
-	@Override
-	public void updateMember(HelperDTO dto) throws IOException {
-		try{
-			System.out.println("memberDTO : " + dto);
+            if(missionDTO.getEndLatitude() != null && missionDTO.getEndLongitude() != null) {
+                int endUpdated = missionDao.updateMissionEndLocation(missionDTO);
+                if(endUpdated == 0) {
+                    missionDao.insertMissionLocation(missionDTO);
+                }
+            }
 
-			if(!"".equals(dto.getMemberPass()) && dto.getMemberPass() != null) {
-				// 패스워드 security 사용해서 BCrypt 암호화 (고정 60자)
-				String encryptPwd = passwordEncoder.encode(dto.getMemberPass());
-				dto.setMemberPass(encryptPwd);
-			}
-			memberDao.updateMember(dto);
+            // mission_file에 insert
+            if(missionDTO.getMissionAttachFile().getSize() > 0) {
+                String fileName = missionDTO.getMissionAttachFile().getOriginalFilename();
+                String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
+                String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
 
-			// 헬퍼인 경우 helper 테이블 수정
-			if(dto.getMemberStatus() == 2) {
-				memberDao.updateHelper(dto);
+                missionDTO.setMissionImageFile(missionDTO.getMissionAttachFile().getBytes());
+                missionDTO.setMissionImageFileName(originalName);
+                missionDTO.setMissionImageFileEtx(fileEtx);
 
-				if(dto.getAttachFile().getSize() > 0) {
-					String fileName = dto.getAttachFile().getOriginalFilename();
-					String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
-					String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
+                missionDao.updateMissionImage(missionDTO);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 
-					dto.setImageFile(dto.getAttachFile().getBytes());
-					dto.setImageFileName(originalName);
-					dto.setImageFileEtx(fileEtx);
+    @Override
+    public void updateMissionStatus(Map<String, Object> param) throws Exception {
+        try {
+            missionDao.updateMissionStatus(param);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 
-					int updateCnt = memberDao.updateHelperImage(dto);
-					if (updateCnt < 1) {
-						memberDao.insertHelperImage(dto);
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e; // 컨트롤러에서 예외처리 하기 위함
-		}
-	}
-
-	@Override
-	public void deleteMember(String accessToken) throws Exception {
-		String memberId = jwtUtil.getMemberIdFromToken(accessToken);
-
-		memberDao.deleteMember(memberId);
-
-	}
-
+    @Override
+    public void deleteMission(String missionSeq) throws Exception {
+        try {
+            missionDao.deleteMission(missionSeq);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 }

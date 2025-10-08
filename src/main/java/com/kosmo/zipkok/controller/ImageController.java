@@ -1,6 +1,7 @@
 package com.kosmo.zipkok.controller;
 
 import com.kosmo.zipkok.dto.MissionDTO;
+import com.kosmo.zipkok.dto.MissionFileDTO;
 import com.kosmo.zipkok.dto.PagingDTO;
 import com.kosmo.zipkok.service.MissionService;
 import com.kosmo.zipkok.util.CookieUtil;
@@ -8,107 +9,65 @@ import com.kosmo.zipkok.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @RestController
-public class MissionController {
-
+public class ImageController {
 	@Autowired
 	MissionService missionService;
 
-	@Autowired
-	JwtUtil jwtUtil;
-
-	// 사용자 심부름 등록
-	@PostMapping("/mission/request/register")
-	public Map<String, Object> register(HttpServletRequest request, MissionDTO missionDTO) throws IOException {
-		Map<String, Object> result = new HashMap<>();
-
+	@GetMapping("/mission/image/{missionSeq}")
+	public ResponseEntity<byte[]> downloadMissionImage(@PathVariable("missionSeq") String missionSeq) {
 		try {
-			String accessToken = CookieUtil.getCookieValue(request, "accessToken");
-			String memberSeq = jwtUtil.getMemberSeqFromToken(accessToken);
+			// 해당하는 이미지 파일만 조회
+			MissionFileDTO mission = missionService.getMissionImage(missionSeq);
 
-			missionDTO.setMemberSeq(memberSeq);
-			missionDTO.setMissionStatus(0); // 신청(대기)는 0
+			if (mission == null || mission.getMissionImageFile() == null) {
+				return ResponseEntity.notFound().build();
+			}
 
-			missionService.insertMission(missionDTO);
+			HttpHeaders headers = new HttpHeaders();
 
-			result.put("success", true);
-			result.put("message", "심부름 등록 완료!");
-			result.put("redirectUrl", "/zipkok/member/mypage");
+			// Content-Type 설정
+			String ext = mission.getMissionImageFileEtx();
+			if (ext != null) {
+				switch (ext.toLowerCase()) {
+					case "jpg":
+					case "jpeg":
+						headers.setContentType(MediaType.IMAGE_JPEG);
+						break;
+					case "png":
+						headers.setContentType(MediaType.IMAGE_PNG);
+						break;
+					case "gif":
+						headers.setContentType(MediaType.IMAGE_GIF);
+						break;
+					default:
+						headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+				}
+			}
 
-		}catch (Exception e) {
+			// 파일명 설정 (다운로드용)
+			String fileName = mission.getFullMissionImageName();
+			headers.setContentDispositionFormData("inline", fileName);
+			headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+			return new ResponseEntity<>(mission.getMissionImageFile(), headers, HttpStatus.OK);
+
+		} catch (Exception e) {
 			e.printStackTrace();
-			result.put("success", false);
-			result.put("message", "정보수정 중 오류가 발생하였습니다.\n관리자에게 문의 바랍니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-		return result;
 	}
-
-	// 수행내역 리스트 조회
-	@GetMapping("/mission/performance/history")
-	public ModelAndView performance(HttpServletRequest request,
-									@RequestParam(value = "page", defaultValue = "1") int page,
-									@RequestParam(value = "size", defaultValue = "10") int size) {
-
-		ModelAndView mv = new ModelAndView("mission/performance");
-		String accessToken = CookieUtil.getCookieValue(request, "accessToken");
-
-		int totalCount = missionService.getPerformanceHistoryCount(accessToken);
-		PagingDTO paging = PagingDTO.of(page, size, totalCount);
-		List<MissionDTO> missionHistory = missionService.getPerformanceHistory(accessToken, paging);
-
-		mv.addObject("lists", missionHistory);
-		mv.addObject("paging", paging);
-
-		return mv;
-	}
-
-
-	// 요청내역 리스트 조회
-	@GetMapping("/mission/request/history")
-	public ModelAndView request(HttpServletRequest request,
-									@RequestParam(value = "page", defaultValue = "1") int page,
-									@RequestParam(value = "size", defaultValue = "10") int size) {
-
-		ModelAndView mv = new ModelAndView("mission/performance");
-		String accessToken = CookieUtil.getCookieValue(request, "accessToken");
-
-		int totalCount = missionService.getRequestHistoryCount(accessToken);
-		PagingDTO paging = PagingDTO.of(page, size, totalCount);
-		List<MissionDTO> missionHistory = missionService.getRequestHistory(accessToken, paging);
-
-		mv.addObject("lists", missionHistory);
-		mv.addObject("paging", paging);
-
-		return mv;
-	}
-
-	@GetMapping("/mission/request/detail")
-	public ModelAndView detail(HttpServletRequest request,
-							   @RequestParam("missionSeq") String missionSeq) {
-
-		ModelAndView mv = new ModelAndView("mission/register");
-		MissionDTO detail = missionService.getMissionDetail(missionSeq);
-
-		mv.addObject("mode", "edit");   // 수정 모드
-		mv.addObject("mission", detail);
-
-		return mv;
-	}
-
-	@PostMapping("/mission/request/update")
-	public void update(){
-
-	}
-
 }

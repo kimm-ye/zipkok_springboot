@@ -12,9 +12,4 @@ public class MainController {
         return "index";
     }
 
-    // 심부름 요청 페이지
-    @GetMapping("/mission")
-    public String missionSelect() {
-        return "mission/registration";
-    }
 }

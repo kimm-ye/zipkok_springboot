@@ -4,6 +4,7 @@ import com.kosmo.zipkok.dao.MemberDAO;
 import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.service.MemberService;
+import com.kosmo.zipkok.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,9 @@ public class MemberServiceImpl implements MemberService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
+	@Autowired
+	private JwtUtil jwtUtil;
+
 	@Override
 	public boolean selectEmail(String email) {
 		return memberDao.selectEmail(email);
@@ -37,16 +41,12 @@ public class MemberServiceImpl implements MemberService {
 	    try {
 
 	        MemberDTO member = memberDao.selectMemberById(inputId);
-
-			System.out.println("member : " + member);
-
 	        if (member != null) {
 
 	            // 비밀번호 비교: 원본 vs 암호화된 비밀번호
 	            boolean isMatch = passwordEncoder.matches(inputPwd, member.getMemberPass());
 
 	            if (isMatch) {
-	                System.out.println("로그인 성공: " + inputId);
 	                return member;
 	            } else {
 	                System.out.println("비밀번호 불일치: " + inputId);
@@ -80,8 +80,8 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public HelperDTO selectMemberById(String memberId) {
-		return  memberDao.selectMemberById(memberId);
+	public HelperDTO selectMemberBySeq(String memberSeq) {
+		return  memberDao.selectMemberBySeq(memberSeq);
 	}
 
 	@Override
@@ -119,8 +119,6 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void updateMember(HelperDTO dto) throws IOException {
 		try{
-			System.out.println("memberDTO : " + dto);
-
 			if(!"".equals(dto.getMemberPass()) && dto.getMemberPass() != null) {
 				// 패스워드 security 사용해서 BCrypt 암호화 (고정 60자)
 				String encryptPwd = passwordEncoder.encode(dto.getMemberPass());
@@ -154,4 +152,14 @@ public class MemberServiceImpl implements MemberService {
 		}
 	}
 
+	@Override
+	public void deleteMember(String memberSeq) throws Exception {
+
+		try {
+			memberDao.deleteMember(memberSeq);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
 }

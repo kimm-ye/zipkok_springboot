@@ -1,10 +1,247 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:with="mode=${mode} ?: 'create'">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${mode == 'edit' ? '심부름 수정하기' : (mode == 'view' ? '심부름 상세보기' : '심부름 요청하기')}">심부름 요청하기</title>
+
+    <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/mission.css}">
+    <script type="text/javascript" th:src="@{/js/mission/mission.js}"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
+
 <body>
-$END$
+<div class="container">
+    <div class="header">
+        <h1>
+            <i class="fas fa-hand-holding-heart"></i>
+            <span th:text="${mode == 'edit' ? '심부름 수정' : (mode == 'view' ? '심부름 상세' : '심부름 요청')}">심부름 요청</span>
+        </h1>
+        <p th:text="${mode == 'view' ? '이 심부름을 수행하시겠습니까?' : '믿을 수 있는 셔틀콕에게 심부름을 맡겨보세요'}">믿을 수 있는 셔틀콕에게 심부름을 맡겨보세요</p>
+    </div>
+
+    <div class="form-container">
+        <form id="missionForm" enctype="multipart/form-data"
+              th:action="@{${mode == 'edit'} ? '/mission/request/update' : '/mission/request/register'}"
+              th:attr="onsubmit=|return ${mode == 'edit' ? 'missionUpdate(this)' : 'missionRegister(this)'}|">
+
+            <!-- 수정/보기 모드에서만 PK 포함 -->
+            <input type="hidden" name="missionSeq" th:if="${mode == 'edit' || mode == 'view'}" th:value="${mission?.missionSeq}"/>
+            <input type="hidden" name="memberSeq" th:if="${mode == 'edit' || mode == 'view'}" th:value="${mission?.memberSeq}"/>
+
+            <!-- 심부름 항목 -->
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-list"></i> 심부름 항목 <span class="required" th:if="${mode != 'view'}">*</span></label>
+                <select id="missionCategory" name="missionCategory" class="form-control"
+                        th:required="${mode != 'view'}"
+                        th:disabled="${mode == 'view'}">
+                    <option value="">-- 심부름 종류를 선택해주세요 --</option>
+                    <option value="delivery"
+                            th:selected="${mode == 'edit' || mode == 'view' ? (mission?.missionCategory == 'delivery') : (flag == 'delivery')}">🚚 배달/장보기</option>
+                    <option value="clean"
+                            th:selected="${mode == 'edit' || mode == 'view' ? (mission?.missionCategory == 'clean') : (flag == 'clean')}">🧹 청소/집안일</option>
+                    <option value="installation"
+                            th:selected="${mode == 'edit' || mode == 'view' ? (mission?.missionCategory == 'installation') : (flag == 'installation')}">📦 설치/조립/운반</option>
+                    <option value="together"
+                            th:selected="${mode == 'edit' || mode == 'view' ? (mission?.missionCategory == 'together') : (flag == 'together')}">🤝 돌봄/동행</option>
+                    <option value="bug"
+                            th:selected="${mode == 'edit' || mode == 'view' ? (mission?.missionCategory == 'bug') : (flag == 'bug')}">🐛 벌레/쥐잡기</option>
+                    <option value="role"
+                            th:selected="${mode == 'edit' || mode == 'view' ? (mission?.missionCategory == 'role') : (flag == 'role')}">🎭 역할대행</option>
+                    <option value="lesson"
+                            th:selected="${mode == 'edit' || mode == 'view' ? (mission?.missionCategory == 'lesson') : (flag == 'lesson')}">📚 과외/공부</option>
+                    <option value="etc"
+                            th:selected="${mode == 'edit' || mode == 'view' ? (mission?.missionCategory == 'etc') : (flag == 'etc')}">⚡ 기타</option>
+                </select>
+            </div>
+
+            <!-- 심부름 제목 -->
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-heading"></i> 심부름 제목 <span class="required" th:if="${mode != 'view'}">*</span></label>
+                <input type="text" id="missionTitle" name="missionTitle" class="form-control" maxlength="50"
+                       th:required="${mode != 'view'}"
+                       th:readonly="${mode == 'view'}"
+                       placeholder="예: 마트에서 생필품 구매해주세요"
+                       th:value="${mission?.missionTitle}">
+                <div class="helper-text" th:if="${mode != 'view'}">최대 50자까지 입력 가능합니다</div>
+            </div>
+
+            <!-- 셔틀콕 선호 성별 -->
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-user-friends"></i> 셔틀콕 선호 성별</label>
+                <select id="missionGender" name="missionGender" class="form-control"
+                        th:disabled="${mode == 'view'}">
+                    <option value="0" th:selected="${(mode == 'edit' || mode == 'view') ? (mission?.missionGender == 0) : true}">👥 성별 무관</option>
+                    <option value="1" th:selected="${mission?.missionGender == 1}">👨 남성</option>
+                    <option value="2" th:selected="${mission?.missionGender == 2}">👩 여성</option>
+                </select>
+            </div>
+
+            <!-- 경유지 -->
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-route"></i> 경유지 주소 (선택사항)</label>
+                <div class="address-group">
+                    <input type="text" id="wayPostcode" name="wayPostcode" class="form-control"
+                           placeholder="우편번호"
+                           th:readonly="${mode == 'view'}"
+                           th:value="${mission?.wayPostcode}">
+                    <input type="text" id="wayAddress1" name="wayAddress1" class="form-control"
+                           placeholder="우편번호 검색 후 주소가 입력됩니다" readonly
+                           th:value="${mission?.wayAddress1}">
+                    <button type="button" class="search-btn"
+                            th:if="${mode != 'view'}"
+                            onclick="wayPostCode()">
+                        <i class="fas fa-search"></i> 주소 검색
+                    </button>
+                </div>
+                <input type="text" id="wayAddress2" name="wayAddress2" class="form-control"
+                       placeholder="상세주소를 입력해주세요"
+                       style="margin-top:10px;"
+                       th:readonly="${mode == 'view'}"
+                       th:value="${mission?.wayAddress2}">
+                <input type="hidden" id="wayLatitude"  name="wayLatitude"  th:value="${mission?.wayLatitude}">
+                <input type="hidden" id="wayLongitude" name="wayLongitude" th:value="${mission?.wayLongitude}">
+            </div>
+
+            <!-- 도착지 -->
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-map-marker-alt"></i> 도착지 주소 <span class="required" th:if="${mode != 'view'}">*</span></label>
+                <div class="address-group">
+                    <input type="text" id="endPostcode" name="endPostcode" class="form-control"
+                           placeholder="우편번호"
+                           th:readonly="${mode == 'view'}"
+                           th:value="${mission?.endPostcode}">
+                    <input type="text" id="endAddress1" name="endAddress1" class="form-control"
+                           th:required="${mode != 'view'}"
+                           placeholder="우편번호 검색 후 주소가 입력됩니다" readonly
+                           th:value="${mission?.endAddress1}">
+                    <button type="button" class="search-btn"
+                            th:if="${mode != 'view'}"
+                            onclick="endPostCode()">
+                        <i class="fas fa-search"></i> 주소 검색
+                    </button>
+                </div>
+                <input type="text" id="endAddress2" name="endAddress2" class="form-control"
+                       th:required="${mode != 'view'}"
+                       placeholder="상세주소를 입력해주세요"
+                       style="margin-top:10px;"
+                       th:readonly="${mode == 'view'}"
+                       th:value="${mission?.endAddress2}">
+                <input type="hidden" id="endLatitude"  name="endLatitude"  th:value="${mission?.endLatitude}">
+                <input type="hidden" id="endLongitude" name="endLongitude" th:value="${mission?.endLongitude}">
+            </div>
+
+            <!-- 요청일시 -->
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-clock"></i> 요청일시</label>
+                <div class="radio-group">
+                    <label class="radio-item" th:classappend="${mission == null or mission?.missionReservation == 1} ? ' active'">
+                        <input type="radio" name="missionReservation" value="1"
+                               th:checked="${mission == null or mission?.missionReservation == '1'}"
+                               th:disabled="${mode == 'view'}"
+                               onchange="toggleDateInput()"> ⚡ 즉시 요청
+                    </label>
+                    <label class="radio-item" th:classappend="${mission?.missionReservation == '2'} ? ' active'">
+                        <input type="radio" name="missionReservation" value="2"
+                               th:checked="${mission?.missionReservation == '2'}"
+                               th:disabled="${mode == 'view'}"
+                               onchange="toggleDateInput()"> 📅 예약 요청
+                    </label>
+                </div>
+                <div class="date-input" id="dateInput"
+                     th:style="${mission?.missionReservation == '2'} ? 'display:block' : 'display:none'">
+                    <input type="date" name="missionReservationDt" class="form-control"
+                           th:readonly="${mode == 'view'}"
+                           th:value="${mission?.missionReservationDt}">
+                </div>
+            </div>
+
+            <!-- 심부름 내용 -->
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-file-alt"></i> 심부름 내용 <span class="required" th:if="${mode != 'view'}">*</span></label>
+                <textarea id="missionContent" name="missionContent" class="form-control" maxlength="200"
+                          th:required="${mode != 'view'}"
+                          th:readonly="${mode == 'view'}"
+                          placeholder="구체적인 심부름 내용을 작성해주세요. 예: 이마트에서 우유 2개, 빵 1봉지 구매"
+                          th:text="${mission?.missionContent}"></textarea>
+                <div class="helper-text" th:if="${mode != 'view'}">최대 200자까지 입력 가능합니다</div>
+            </div>
+
+            <!-- 첨부파일 -->
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-paperclip"></i> 첨부파일 <span th:if="${mode != 'view'}">(선택사항)</span></label>
+
+                <!-- 수정/보기 모드에서 기존 첨부 노출 -->
+                <div th:if="${(mode == 'edit' || mode == 'view') && mission.missionImageFileName != null}" style="margin-bottom:10px;">
+                    <div class="current-file">
+                        <i class="fas fa-image"></i>
+                        <a th:href="@{/mission/image/{seq}(seq=${mission.missionSeq})}"
+                           target="_blank"
+                           th:text="'현재 첨부: ' + ${mission.missionImageFileName + '.' + mission.missionImageFileEtx}">
+                            현재 첨부 보기
+                        </a>
+                    </div>
+                </div>
+
+                <div class="file-upload" th:if="${mode != 'view'}">
+                    <input type="file" name="missionAttachFile" accept="image/*" id="fileInput">
+                    <div class="file-upload-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span th:text="${mode == 'edit' ? '클릭하여 파일을 교체하세요 (선택)' : '클릭하여 파일을 업로드하세요'}">클릭하여 파일을 업로드하세요</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 심부름 가격 -->
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-won-sign"></i> 심부름 가격 <span class="required" th:if="${mode != 'view'}">*</span></label>
+                <div class="price-input">
+                    <input type="number" id="missionCost" name="missionCost" class="form-control" min="3000"
+                           th:required="${mode != 'view'}"
+                           th:readonly="${mode == 'view'}"
+                           placeholder="3000" style="padding-right:50px;"
+                           th:value="${mission?.missionCost}">
+                </div>
+                <div class="helper-text" th:if="${mode != 'view'}">최소 금액은 3,000원입니다</div>
+            </div>
+
+            <!-- 등록/수정/수행 버튼 -->
+            <!-- 내가 작성한 글이 아니고 (mode = view), 심부름 상태가 신청(0)인 상태 -->
+            <div th:if="${mode == 'view' && mission?.missionStatus == 0}">
+                <!-- 보기 모드: 수행하기 버튼 -->
+                <button type="button" class="submit-btn" onclick="performMission()">
+                    <i class="fas fa-check-circle"></i>
+                    이 심부름 수행하기
+                </button>
+            </div>
+
+            <!-- 수정 모드인 경우 수정하기 버튼 /  -->
+            <div th:if="${mode != 'view'}">
+                <!-- 등록/수정 모드: 기존 버튼 -->
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    <span th:text="${mode == 'edit' ? '심부름 수정하기' : '심부름 등록하기'}">심부름 등록하기</span>
+                </button>
+                <button type="button" th:if="${mode == 'edit'}"
+                        class="submit-btn delete-btn"
+                        onclick="deleteMission()">
+                    <i class="fas fa-trash-alt"></i>
+                    <span >심부름 삭제하기</span>
+                </button>
+            </div>
+
+            <button type="button" class="submit-btn back-btn" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+                이전으로
+            </button>
+        </form>
+    </div>
+</div>
+
 </body>
 </html>
