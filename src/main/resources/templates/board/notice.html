@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 - 셔틀콕</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/board/notice.css}">
+    <script type="text/javascript" th:src="@{/js/board/notice.js}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <i class="fas fa-bullhorn"></i>
+            <span>공지사항</span>
+        </h1>
+        <p>셔틀콕의 새로운 소식을 확인하세요</p>
+    </div>
+
+    <div class="search-bar">
+        <div class="search-group">
+            <input type="text" class="search-input" placeholder="공지사항 검색..." id="searchInput">
+            <button class="search-btn" onclick="searchNotice()">
+                <i class="fas fa-search"></i>
+                검색
+            </button>
+        </div>
+    </div>
+
+    <div class="notice-list" id="noticeList">
+        <div class="notice-item" onclick="viewNotice(1)">
+            <i class="fas fa-star notice-icon"></i>
+            <div class="notice-content">
+                <div class="notice-title">
+                    <span class="notice-badge badge-important">중요</span>
+                    <span>서비스 이용약관 개정 안내</span>
+                </div>
+                <div class="notice-meta">
+                    <span><i class="fas fa-calendar"></i> 2025.10.10</span>
+                    <span><i class="fas fa-eye"></i> 1,234</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice-item" onclick="viewNotice(2)">
+            <i class="fas fa-gift notice-icon"></i>
+            <div class="notice-content">
+                <div class="notice-title">
+                    <span class="notice-badge badge-event">이벤트</span>
+                    <span>가을맞이 심부름 수수료 할인 이벤트!</span>
+                </div>
+                <div class="notice-meta">
+                    <span><i class="fas fa-calendar"></i> 2025.10.08</span>
+                    <span><i class="fas fa-eye"></i> 987</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice-item" onclick="viewNotice(3)">
+            <i class="fas fa-bell notice-icon"></i>
+            <div class="notice-content">
+                <div class="notice-title">
+                    <span class="notice-badge badge-new">NEW</span>
+                    <span>신규 카테고리 '과외/공부' 오픈!</span>
+                </div>
+                <div class="notice-meta">
+                    <span><i class="fas fa-calendar"></i> 2025.10.05</span>
+                    <span><i class="fas fa-eye"></i> 756</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice-item" onclick="viewNotice(4)">
+            <i class="fas fa-wrench notice-icon"></i>
+            <div class="notice-content">
+                <div class="notice-title">
+                    <span>시스템 점검 안내 (2025.10.12)</span>
+                </div>
+                <div class="notice-meta">
+                    <span><i class="fas fa-calendar"></i> 2025.10.03</span>
+                    <span><i class="fas fa-eye"></i> 543</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice-item" onclick="viewNotice(5)">
+            <i class="fas fa-shield-alt notice-icon"></i>
+            <div class="notice-content">
+                <div class="notice-title">
+                    <span>개인정보 보호정책 업데이트</span>
+                </div>
+                <div class="notice-meta">
+                    <span><i class="fas fa-calendar"></i> 2025.09.28</span>
+                    <span><i class="fas fa-eye"></i> 432</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice-item" onclick="viewNotice(6)">
+            <i class="fas fa-mobile-alt notice-icon"></i>
+            <div class="notice-content">
+                <div class="notice-title">
+                    <span>모바일 앱 출시 예정 안내</span>
+                </div>
+                <div class="notice-meta">
+                    <span><i class="fas fa-calendar"></i> 2025.09.25</span>
+                    <span><i class="fas fa-eye"></i> 1,567</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice-item" onclick="viewNotice(7)">
+            <i class="fas fa-users notice-icon"></i>
+            <div class="notice-content">
+                <div class="notice-title">
+                    <span>회원 등급제 도입 안내</span>
+                </div>
+                <div class="notice-meta">
+                    <span><i class="fas fa-calendar"></i> 2025.09.20</span>
+                    <span><i class="fas fa-eye"></i> 890</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice-item" onclick="viewNotice(8)">
+            <i class="fas fa-question-circle notice-icon"></i>
+            <div class="notice-content">
+                <div class="notice-title">
+                    <span>자주 묻는 질문(FAQ) 업데이트</span>
+                </div>
+                <div class="notice-meta">
+                    <span><i class="fas fa-calendar"></i> 2025.09.15</span>
+                    <span><i class="fas fa-eye"></i> 678</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination">
+        <button class="page-btn" onclick="changePage('prev')">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="page-btn active" onclick="changePage(1)">1</button>
+        <button class="page-btn" onclick="changePage(2)">2</button>
+        <button class="page-btn" onclick="changePage(3)">3</button>
+        <button class="page-btn" onclick="changePage(4)">4</button>
+        <button class="page-btn" onclick="changePage(5)">5</button>
+        <button class="page-btn" onclick="changePage('next')">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <a class="home-btn" th:href="@{/}">
+            <i class="fas fa-home"></i>
+            홈으로 가기
+        </a>
+    </div>
+
+    <a th:if="${role == 'ROLE_ADMIN'}"
+       class="write-btn"
+       th:href="@{/notice/write}"
+       title="공지사항 작성">
+        <i class="fas fa-pen"></i>
+    </a>
+
+</div>
+
+</body>
+</html>

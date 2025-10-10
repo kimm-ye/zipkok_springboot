@@ -15,20 +15,6 @@ public class MissionViewController {
 
 	@Autowired
 	MissionService missionService;
-/*
-
-	// 우저 - 요청내역 조회 페이지로 이동
-	@RequestMapping("/mission/request")
-	public String request() {
-		return "request.html_사용안함";
-	}
-
-	// 헬퍼 - 수헹내역 조회 페이지로 이동
-	@RequestMapping("/mission/performance")
-	public String performance() {
-		return "mission/performance";
-	}
-*/
 
     // 유저 - 심부름 신청
     @GetMapping("/mission/select")

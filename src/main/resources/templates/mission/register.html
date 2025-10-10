@@ -10,7 +10,7 @@
 
     <th:block th:replace="~{fragments/header :: header}"></th:block>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/mission.css}">
+    <link rel="stylesheet" th:href="@{/css/mission/mission.css}">
     <script type="text/javascript" th:src="@{/js/mission/mission.js}"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
@@ -188,8 +188,16 @@
                     </div>
                 </div>
 
+                <!-- 새로 선택한 파일명 표시 영역 -->
+                <div id="selectedFileName" style="margin-bottom:10px; display:none;">
+                    <div class="current-file">
+                        <i class="fas fa-file"></i>
+                        <span id="fileNameText"></span>
+                    </div>
+                </div>
+
                 <div class="file-upload" th:if="${mode != 'view'}">
-                    <input type="file" name="missionAttachFile" accept="image/*" id="fileInput">
+                    <input type="file" name="missionAttachFile" accept="image/*" id="missionAttachFile">
                     <div class="file-upload-label">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <span th:text="${mode == 'edit' ? '클릭하여 파일을 교체하세요 (선택)' : '클릭하여 파일을 업로드하세요'}">클릭하여 파일을 업로드하세요</span>
@@ -223,7 +231,7 @@
             <!-- 수정 모드인 경우 수정하기 버튼 /  -->
             <div th:if="${mode != 'view'}">
                 <!-- 등록/수정 모드: 기존 버튼 -->
-                <button type="submit" class="submit-btn">
+                <button type="submit" class="submit-btn" id="submitBtn">
                     <i class="fas fa-paper-plane"></i>
                     <span th:text="${mode == 'edit' ? '심부름 수정하기' : '심부름 등록하기'}">심부름 등록하기</span>
                 </button>

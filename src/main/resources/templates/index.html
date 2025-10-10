@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>집에서 심부름을 콕! 집콕!</title>
     <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <script type="text/javascript" th:src="@{/js/board/notice.js}"></script>
 </head>
 
 <body>
@@ -186,7 +187,7 @@
 	      <table class="table table-bordered" id="dataTable" width="90%" cellspacing="0" >
 	         <tr style="background-color: #ffc654">
 	            <th width="10%" style="text-align: center">번호</th>
-	            <th width="*" >제목</th>
+	            <th width="*" >내용</th>
 	            <th width="15%" style="text-align: center">작성자</th>
 	            <th width="10%" style="text-align: center">작성일</th>
 	            <th width="15%" style="text-align: center">조회수</th>
@@ -201,7 +202,7 @@
 	         <tr th:each="row, iterStat : ${listRows}">
 	            <td class="text-center" th:text="${row.virtualNum}"></td>
 	            <td class="text-left">
-	               <a th:href="@{/notice/view(num=${row.mboardNum}, nowPage=${nowPage})}" th:text="${row.mboardTitle}"></a>
+	               <a th:href="@{/templates/board/view(num=${row.mboardNum}, nowPage=${nowPage})}" th:text="${row.mboardTitle}"></a>
 	            </td>
 	            <td class="text-center" th:text="${row.mboardId}"></td>
 	            <td class="text-center" th:text="${row.mboardDate}"></td>
@@ -215,12 +216,13 @@
 	               </td>
 	            </tr>
 	         </table>
-	      <!-- 페이지 번호 -->
+
+            <!-- 페이지 번호 -->
 	         <table border="0" width="100%">
 	            <tr>
 	               <td align="center">
 	               <button type="button" style="background-color: #ffc654; font-weight: bold"
-	                  onclick="location.href='/notice'">더 보기</button>
+	                  onclick="location.href='./notice'">더보기</button>
 	               </td>
 	            </tr>
 	            <br />

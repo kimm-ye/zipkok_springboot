@@ -133,29 +133,29 @@ CREATE INDEX idx_mission_member_seq ON mission(member_seq);
 CREATE INDEX idx_mission_helper_seq ON mission(helper_seq);
 ----------------------------------------------------------------------------------------------
 
-CREATE TABLE mboard (
-    mboard_num INT AUTO_INCREMENT PRIMARY KEY,
-    mboard_id VARCHAR(20) NOT NULL,
-    mboard_title VARCHAR(30) NOT NULL,
-    mboard_content VARCHAR(200) NOT NULL,
-    mboard_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    mboard_count INT DEFAULT 0 NOT NULL
+CREATE TABLE board_notice (
+    notice_seq INT AUTO_INCREMENT PRIMARY KEY,
+    notice_title VARCHAR(100) NOT NULL,
+    notice_content VARCHAR(2000) NOT NULL,
+    member_seq INT NOT NULL,
+    notice_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    notice_view INT DEFAULT 0 NOT NULL
 ); 
 
-INSERT INTO mboard (mboard_id, mboard_title, mboard_content, mboard_date, mboard_count)
-VALUES ('게시자', '이것 뭐에요?', '이것좀알려주세요너무궁금해요', NOW(), 0);
+INSERT INTO board_notice (notice_title, notice_content, member_seq, notice_date, notice_view)
+VALUES ('이것 뭐에요?', '이것좀알려주세요너무궁금해요', 1, NOW(), 0);
 
-INSERT INTO mboard (mboard_id, mboard_title, mboard_content, mboard_date, mboard_count)
-VALUES ('게시자1', '이것 뭐에요?1', '이것좀알려주세요너무궁금해요1', NOW(), 0);
+INSERT INTO board_notice (notice_title, notice_content, member_seq, notice_date, notice_view)
+VALUES ('이것 뭐에요?1', '이것좀알려주세요너무궁금해요1', 1, NOW(), 0);
 
-INSERT INTO mboard (mboard_id, mboard_title, mboard_content, mboard_date, mboard_count)
-VALUES ('게시자2', '이것 뭐에요?2', '이것좀알려주세요너무궁금해요2', NOW(), 0);
+INSERT INTO board_notice (notice_title, notice_content, member_seq, notice_date, notice_view)
+VALUES ('이것 뭐에요?2', '이것좀알려주세요너무궁금해요2',1, NOW(), 0);
 
-INSERT INTO mboard (mboard_id, mboard_title, mboard_content, mboard_date, mboard_count)
-VALUES ('게시자3', '이것 뭐에요?3', '이것좀알려주세요너무궁금해요3', NOW(), 0);
+INSERT INTO board_notice (notice_title, notice_content, member_seq, notice_date, notice_view)
+VALUES ('이것 뭐에요?3', '이것좀알려주세요너무궁금해요3',1, NOW(), 0);
 
-INSERT INTO mboard (mboard_id, mboard_title, mboard_content, mboard_date, mboard_count)
-VALUES ('게시자4', '이것 뭐에요?4', '이것좀알려주세요너무궁금해요4', NOW(), 0);
+INSERT INTO board_notice (notice_title, notice_content, member_seq, notice_date, notice_view)
+VALUES ('이것 뭐에요?4', '이것좀알려주세요너무궁금해요4',1, NOW(), 0);
 
 ----------------------------------------------------------------------------------------------
 
@@ -361,4 +361,14 @@ create table mission_image
     constraint mission_image_ibfk_1
         foreign key (mission_seq) references zipkok.mission (mission_seq)
             on delete cascade
+);
+
+CREATE TABLE board_file (
+    file_id INT AUTO_INCREMENT PRIMARY KEY,
+    board_type VARCHAR(20) NOT NULL,  -- NOTICE, QNA 등
+    board_seq INT NOT NULL,
+    file_name VARCHAR(255),
+    file_etx VARCHAR(20),
+    board_file LONGBLOB,
+    create_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

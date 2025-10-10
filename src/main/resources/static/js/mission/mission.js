@@ -40,25 +40,41 @@ function toggleDateInput() {
 }
 
 // 파일 업로드 피드백
-document.getElementById('fileInput').addEventListener('change', function(e) {
-    const label = this.nextElementSibling;
-    if (this.files.length > 0) {
-        label.innerHTML = `<i class="fas fa-check-circle" style="color: #10b981;"></i> ${this.files[0].name}`;
-    } else {
-        label.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> 클릭하여 파일을 업로드하세요`;
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('missionAttachFile');
+    const selectedFileNameDiv = document.getElementById('selectedFileName');
+    const fileNameText = document.getElementById('fileNameText');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+
+            if (file) {
+                // 파일이 선택되면 파일명 표시
+                fileNameText.textContent = '선택된 파일: ' + file.name;
+                selectedFileNameDiv.style.display = 'block';
+            } else {
+                // 파일 선택 취소 시 숨김
+                selectedFileNameDiv.style.display = 'none';
+            }
+        });
     }
 });
 
 
 // 폼 유효성 검사
-document.getElementById('missionForm').addEventListener('submit', function(e) {
-    const price = parseInt(document.querySelector('input[name="mission_cost"]').value);
-    if (price < 3000) {
-        e.preventDefault();
-        alert('최소 금액은 3,000원입니다.');
-        return false;
-    }
-});
+const submitBtn = document.getElementById('submitBtn');
+if(submitBtn) {
+    submitBtn.addEventListener('submit', function(e) {
+        const price = parseInt(document.querySelector('input[name="mission_cost"]').value);
+        if (price < 3000) {
+            e.preventDefault();
+            alert('최소 금액은 3,000원입니다.');
+            return false;
+        }
+    });
+}
+
 
 // 카카오 우편번호 API
 async function loadKakaoMapScript() {
@@ -178,7 +194,6 @@ async function missionRegister(form){
 
     try {
         const formData = new FormData(form);
-        console.log(formData)
 
         const response = await fetch('./request/register', {
             method: 'POST',
@@ -266,7 +281,6 @@ async function performMission() {
 // 심부름 삭제하기 버튼 클릭
 async function deleteMission() {
     const missionSeq = document.querySelector('input[name="missionSeq"]').value;
-    alert(missionSeq);
 
     if (!confirm('이 심부름을 삭제하시겠습니까?')) {
         return;

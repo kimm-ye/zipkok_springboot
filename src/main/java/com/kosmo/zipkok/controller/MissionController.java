@@ -44,7 +44,6 @@ public class MissionController {
 		return result;
 	}
 
-
 	// 내가 요청한 내역 조회
 	@GetMapping("/mission/request/history")
 	public ModelAndView request(@AuthenticationPrincipal CustomUserDetail me,

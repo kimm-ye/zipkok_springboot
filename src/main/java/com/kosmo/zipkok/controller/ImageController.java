@@ -15,8 +15,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,10 +62,14 @@ public class ImageController {
 
 			// 파일명 설정 (다운로드용)
 			String fileName = mission.getFullMissionImageName();
-			headers.setContentDispositionFormData("inline", fileName);
+			String encodedFileName = UriUtils.encode(fileName, StandardCharsets.UTF_8);
+
+			// Content-Disposition 헤더를 직접 설정
+			headers.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + encodedFileName);
 			headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
 			return new ResponseEntity<>(mission.getMissionImageFile(), headers, HttpStatus.OK);
+
 
 		} catch (Exception e) {
 			e.printStackTrace();

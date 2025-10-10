@@ -1,0 +1,563 @@
+/* reset & base (unchanged) */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+    font-size: 2.5em;
+    color: #2d3748;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.header h1 i {
+    color: #FFC100;
+}
+
+.header p {
+    color: #718096;
+    font-size: 1.1em;
+}
+
+/* ===== 검색 바 (목록 페이지) ===== */
+.search-bar {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.search-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+    padding: 15px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1em;
+    transition: all 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #FFC100;
+    box-shadow: 0 0 0 3px rgba(255, 193, 0, 0.08);
+}
+
+.search-btn {
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #FFC100 0%, #FF4C00 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-btn:hover,
+.search-btn:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(255, 193, 0, 0.25);
+}
+
+/* ===== 공지사항 목록 (목록 페이지) ===== */
+.notice-list {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.notice-item {
+    padding: 22px 26px;
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    text-decoration: none; /* if it's an anchor */
+    color: inherit;
+    outline: none;
+    /* make it keyboard focusable if using <a> or role=button */
+}
+
+.notice-item:hover {
+    background: #f7fafc;
+    transform: translateX(4px);
+}
+
+.notice-item:focus-visible {
+    box-shadow: 0 0 0 4px rgba(255, 193, 0, 0.12);
+    border-radius: 8px;
+}
+
+.notice-item:last-child {
+    border-bottom: none;
+}
+
+.notice-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-important {
+    background: linear-gradient(135deg, #f56565 0%, #ed8936 100%);
+    color: white;
+}
+
+.badge-new {
+    background: linear-gradient(135deg, #FFC100 0%, #FF4C00 100%);
+    color: white;
+}
+
+.badge-event {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+}
+
+.badge-normal {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.notice-content {
+    flex: 1;
+}
+
+.notice-title {
+    font-size: 1.1em;
+    color: #2d3748;
+    margin-bottom: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notice-meta {
+    color: #a0aec0;
+    font-size: 0.9em;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.notice-meta i {
+    color: #cbd5e0;
+}
+
+.notice-icon {
+    font-size: 1.5em;
+    color: #FFC100;
+    width: 40px;
+    text-align: center;
+}
+
+/* ===== 페이지네이션 ===== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.page-btn {
+    padding: 10px 16px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.page-btn:hover,
+.page-btn:focus {
+    border-color: #FFC100;
+    color: #FFC100;
+}
+
+.page-btn.active {
+    background: linear-gradient(135deg, #FFC100 0%, #FF4C00 100%);
+    color: white;
+    border-color: transparent;
+}
+
+/* ===== 작성 버튼 (플로팅) =====
+   NOTE: make it anchor-friendly: if you use <a class="write-btn" href="..."> it'll look & behave the same.
+*/
+.write-btn {
+    position: fixed;
+    bottom: 32px; /* 조금 위로 올림 */
+    right: 32px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #FFC100 0%, #FF4C00 100%);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5em;
+    cursor: pointer;
+    box-shadow: 0 8px 28px rgba(255, 193, 0, 0.32);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none; /* for anchors */
+    z-index: 1200;
+}
+
+.write-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 12px 36px rgba(255, 193, 0, 0.36);
+}
+
+.write-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 6px rgba(255, 193, 0, 0.16);
+}
+
+/* small screens: reduce size & shift inwards so it's not off-screen */
+@media (max-width: 480px) {
+    .write-btn {
+        width: 54px;
+        height: 54px;
+        bottom: 20px;
+        right: 16px;
+        font-size: 1.2em;
+    }
+}
+
+/* ===== 홈 버튼 =====
+   NOTE: allow both <button> and <a> to reuse same class.
+*/
+.home-btn {
+    padding: 12px 30px;
+    background: white;
+    color: #2d3748;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none; /* anchors */
+}
+
+.home-btn:hover,
+.home-btn:focus {
+    border-color: #FFC100;
+    color: #FFC100;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(255, 193, 0, 0.22);
+}
+
+.home-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 6px rgba(255, 193, 0, 0.10);
+}
+
+/* ===== 빈 상태 ===== */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #a0aec0;
+}
+
+.empty-state i {
+    font-size: 4em;
+    margin-bottom: 20px;
+    color: #cbd5e0;
+}
+
+.empty-state p {
+    font-size: 1.2em;
+}
+
+/* ========================================= */
+/* ===== 작성 페이지 전용 스타일 ===== */
+/* ========================================= */
+
+.form-container {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 10px;
+}
+
+.form-label i {
+    color: #FFC100;
+}
+
+.required {
+    color: #f56565;
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1em;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #FFC100;
+    box-shadow: 0 0 0 3px rgba(255, 193, 0, 0.08);
+}
+
+.form-select {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1em;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #FFC100;
+    box-shadow: 0 0 0 3px rgba(255, 193, 0, 0.08);
+}
+
+textarea.form-control {
+    min-height: 300px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.helper-text {
+    font-size: 0.9em;
+    color: #a0aec0;
+    margin-top: 8px;
+}
+
+/* ===== 파일 업로드 ===== */
+.file-upload {
+    border: 2px dashed #e2e8f0;
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+}
+
+.file-upload:hover {
+    border-color: #FFC100;
+    background: #fffbf5;
+}
+
+.file-upload input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: #718096;
+}
+
+.file-upload-label i {
+    font-size: 3em;
+    color: #FFC100;
+}
+
+.selected-file {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f7fafc;
+    border-radius: 10px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+
+.selected-file i {
+    color: #FFC100;
+    font-size: 1.5em;
+}
+
+.selected-file.show {
+    display: flex;
+}
+
+/* ===== 배지 미리보기 ===== */
+.badge-preview {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.badge-preview-item {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+/* ===== 버튼 그룹 ===== */
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.submit-btn {
+    flex: 1;
+    padding: 18px;
+    background: linear-gradient(135deg, #FFC100 0%, #FF4C00 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 193, 0, 0.4);
+}
+
+.cancel-btn {
+    flex: 1;
+    padding: 18px;
+    background: white;
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.cancel-btn:hover {
+    border-color: #cbd5e0;
+    background: #f7fafc;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 1.8em;
+    }
+
+    .notice-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .notice-icon {
+        display: none;
+    }
+
+    .search-group {
+        flex-direction: column;
+    }
+
+    .search-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .home-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-container {
+        padding: 25px;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    textarea.form-control {
+        min-height: 200px;
+    }
+}

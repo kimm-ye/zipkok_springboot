@@ -17,10 +17,6 @@ public class MissionDTO extends MissionFileDTO {
     private String missionReservationDt; // 예약신청일자
     private String missionTime; // 1= 10분이내, 2=10 ~ 20분, 3=20 ~ 40분, 4=40 ~ 60분, 5=60분 이상
     private int missionCost;
-//    private MultipartFile missionAttachFile;
-//    private byte[] missionImageFile; // 실제 파일 내용을 바이트 배열로 읽어옴
-//    private String missionImageFileName;
-//    private String missionImageFileEtx;
     private int missionStatus; // 0=신청(대기), 1=진행, 2=완료, 3=취소
 
     private String memberName;
