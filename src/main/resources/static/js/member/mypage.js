@@ -1,0 +1,39 @@
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById("memberUnregister").addEventListener("click", async function (e) {
+        e.preventDefault();
+        await handleMemberUnregister();
+    });
+});
+
+
+// 회원 탈퇴
+async function handleMemberUnregister(){
+    // 확인 절차 추가
+    if (!confirm('정말로 회원탈퇴를 하시겠습니까?\n탈퇴 후에는 복구가 불가능합니다.')) {
+        return;
+    }
+
+    try{
+        const response = await fetch('./unregister', {
+            method : 'GET'
+        });
+
+        if(!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert(result.message);
+            // 로그인 성공 후 메인 페이지로 이동
+            window.location.href = '/zipkok';
+        } else {
+            alert(result.message);
+        }
+
+    } catch (error) {
+        console.error('아이디 찾기 오류:', error);
+        alert("오류가 발생하였습니다. \n동일한 증상 발생시 관리자에게 문의바랍니다.");
+    }
+}

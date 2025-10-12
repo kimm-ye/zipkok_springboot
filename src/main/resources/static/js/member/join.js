@@ -155,7 +155,7 @@ function joinValidate(form) {
 function input_bank(frm) {
     var bank = frm.memberBank.value;
 
-    if (bank == "") {
+    if (bank === "") {
         frm.memberAccount.readOnly = true;
         frm.memberAccount.value = '';
     }
@@ -198,7 +198,6 @@ async function submitFormWithFetch(form) {
         });
 
         const result = await response.json();
-        console.log(result)
 
         if (result.success) {
             alert(result.message);

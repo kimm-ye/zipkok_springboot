@@ -64,6 +64,7 @@ public class WebConfig implements WebMvcConfigurer {
                     "/member/logout/**",       // 로그아웃 관련 페이지
                     "/member/join/**",         // 회원가입 관련 페이지
                     "/member/find/**",         // 아이디/비밀번호 찾기 페이지
+                    "/notice",                  // 공지사항
                     "/error",
                     "/403",
                     "/404",

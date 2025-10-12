@@ -16,9 +16,9 @@ function setDisplay() {
     }
 }
 
+// 체크여부에 따라 아이디 혹은 비밀번호 찾기 이동
 function handleSubmit() {
     const mode = $('input[name="idpw"]:checked').val();
-    console.log('mode : ' + mode);
     if (mode === 'id') {
         findIdRequest(); // 아이디 찾기
     } else {
@@ -61,7 +61,6 @@ async function findIdRequest() {
 
 // 비밀번호 찾기
 async function findPwd() {
-    console.log("비번 찾기 실행");
 
     const form = document.querySelector("form[name='findForm']");
 
@@ -93,7 +92,6 @@ async function findPwd() {
             alert("패스워드는 '" + result + "'입니다.");
         }
     } catch (error) {
-        console.error('비밀번호 찾기 오류:', error);
         alert("오류가 발생하였습니다. \n 동일한 증상 발생시 관리자에게 문의바랍니다.");
     }
 }
@@ -118,9 +116,7 @@ async function validateLoginForm(form) {
 
     const data = {
         memberId: id,
-        memberPass: pass,
-        kakaoemail: form.kakaoemail.value,
-        kakaoname: form.kakaoname.value
+        memberPass: pass
     };
 
     try {
@@ -140,8 +136,8 @@ async function validateLoginForm(form) {
 
         if (result.success) {
 
-            localStorage.setItem('memberId', result.memberId || id);
-            localStorage.setItem('memberName', result.memberName || '');
+           /* localStorage.setItem('memberId', result.memberId || id);
+            localStorage.setItem('memberName', result.memberName || '');*/
             
             alert(result.message);
             // 로그인 성공 후 메인 페이지로 이동
@@ -165,3 +161,43 @@ async function validateLoginForm(form) {
     }
 }
 
+
+
+
+
+// ==================== 카카오 로그인 버튼 클릭 ====================
+
+
+//카카오 로그인 후 토근 값 저장.
+function loginWithKakao() {
+
+    Kakao.Auth.login({
+        success: function (authObj) {
+            console.log(authObj); // access토큰 값
+            Kakao.Auth.setAccessToken(authObj.access_token); // access토큰값 저장
+
+            getInfo();
+        },
+        fail: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+// 엑세스 토큰을 발급받고, 아래 함수를 호출시켜서 사용자 정보를 받아옴.
+function getInfo() {
+    Kakao.API.request({
+        url: '/v2/user/me',
+        success: function (res) {
+            var account = res.kakao_account;
+
+            document.getElementById('kakaoemail').val(account.email);
+            document.getElementById('kakaoname').val(account.profile.nickname);
+            // 사용자 정보가 포함된 폼을 서버로 제출한다.
+            document.querySelector('#form-kakao-login').submit();
+        },
+        fail: function (error) {
+            alert('카카오 로그인에 실패했습니다. 관리자에게 문의하세요.' + JSON.stringify(error));
+        }
+    });
+}

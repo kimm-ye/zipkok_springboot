@@ -8,9 +8,10 @@
     <title>마이페이지</title>
     <th:block th:replace="~{fragments/header :: header}"></th:block>
     <script type="text/javascript" th:src="@{/js/member/mypage.js}"></script>
+    <script type="text/javascript" th:src="@{/js/mission/mission.js}"></script>
 </head>
 <body>
-    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+    <link rel="stylesheet" th:href="@{/css/member/mypage.css}">
     <!-- Header Include (Thymeleaf fragment로 대체 필요) -->
     <div th:replace="~{fragments/nav :: nav}"></div>
 
@@ -30,7 +31,7 @@
             <th:block sec:authorize="hasAnyRole('USER')">
                 <div class="item" >
                     <div class="number">
-                        <a href="CInfoAll.do">요청내용보기</a>
+                        <a href="/zipkok/mission/request/history">요청내역 보기</a>
                     </div>
                 </div>
             </th:block>
@@ -39,7 +40,17 @@
             <th:block sec:authorize="hasAnyRole('HELPER')">
                 <div class="item" >
                     <div class="number">
-                        <a href="HInfoAll.do">수행내용보기</a>
+                        <a href="/zipkok/mission/request/history">요청내역 보기</a>
+                    </div>
+                </div>
+                <div class="item" >
+                    <div class="number">
+                        <a href="/zipkok/mission/performance/history">수행내역 보기</a>
+                    </div>
+                </div>
+                <div class="item" >
+                    <div class="number">
+                        <a href="/zipkok/mission/performance/history/my">나의 수행내역</a>
                     </div>
                 </div>
                 <!-- 헬퍼인 경우 포인트 표시 -->
@@ -57,7 +68,7 @@
                 <div class="right"> > </div>
             </a>
 
-            <a href="memberDelete.do" class="item">
+            <a href="#" class="item" id="memberUnregister">
                 <div class="icon">Ⅱ</div>
                 <div class="text">회원탈퇴<span class="circle"></span></div>
                 <div class="right"> > </div>

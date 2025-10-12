@@ -15,7 +15,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#"><img th:src="@{/img/logo.png}" alt="Logo"></a>
+                <a class="navbar-brand" href="/zipkok"><img th:src="@{/img/logo.png}" alt="Logo"></a>
             </div>
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -23,7 +23,7 @@
                     <li><a class="page-scroll" href="#about">About</a></li>
                     <li><a class="page-scroll" href="#Notice">Notice</a></li>
                     <li><a class="page-scroll" href="#Screenshots">Screenshots</a></li>
-                    <li><a class="page-scroll" th:href="@{/HList}">Cock</a></li>
+                    <li><a class="page-scroll" th:href="@{/mission/request/history}">Kok</a></li>
                     <li><a class="page-scroll" th:href="@{/build/index.html}">Q&A</a></li>
 
                     <!-- 로그인 유무에 따른 join/logout -->
@@ -46,6 +46,13 @@
 
                     <!-- 관리자 권한 -->
                     <th:block sec:authorize="hasRole('ADMIN')">
+                        <li>
+                            <form th:action="@{/member/logout/action}" method="post" style="display:inline;">
+                                <button type="submit" class="page-scroll btn-link" style="background:none; border:none; padding:0; cursor:pointer;">
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
                         <li><a class="page-scroll" th:href="@{/admin}" target="_blank">Admin</a></li>
                     </th:block>
                 </ul>

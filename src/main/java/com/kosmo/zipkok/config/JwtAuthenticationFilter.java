@@ -69,6 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /*
      * 모든 HTTP 요청에 대해 실행되는 핵심 인증 메서드
+
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -90,13 +91,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Access Token은 JWT만으로 검증하지만, 로그아웃된 토큰은 무효화 => 이걸 블랙리스트라고 한다.
             if (!redisService.isAccessTokenBlacklisted(token)) {
 
+
                 // 4단계: JWT Access Token에서 사용자명과 권한 추출
                 // JWT 자체에 포함된 정보를 사용하므로 Redis 조회 불필요
-                String memberId = jwtUtil.getMemberIdFromToken(token);
+                String memberSeq = jwtUtil.getMemberSeqFromToken(token);
 
                 // 5단계: 사용자 상세 정보 로드 (권한 정보 포함)
                 // 데이터베이스에서 최신 사용자 정보를 가져와 권한을 확인
-                UserDetails userDetails = userDetailsService.loadUserByUsername(memberId);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(memberSeq);
 
                 // 6단계: Spring Security 인증 객체 생성
                 // UsernamePasswordAuthenticationToken은 Spring Security가 인증된 사용자로 인식하는 객체
@@ -107,13 +109,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         userDetails.getAuthorities()  // 사용자 권한 목록 (ROLE_ADMIN, ROLE_USER 등)
                     );
 
-                System.out.println("authentication : " + authentication);
+                //System.out.println("authentication : " + authentication);
 
                 // 7단계: Spring Security 컨텍스트에 인증 정보 설정
                 // 이렇게 설정하면 @PreAuthorize, @Secured 등의 보안 어노테이션이 작동
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                System.out.println("JWT Access Token 인증 성공: " + memberId);
+                //System.out.println("JWT Access Token 인증 성공: " + memberSeq);
             } else {
                 System.out.println("블랙리스트에 등록된 Access Token: " + token);
                 // 블랙리스트에 등록된 토큰은 인증 실패로 처리
@@ -127,6 +129,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println("JWT Access Token이 유효하지 않음");
                 // JWT 서명이 잘못되었거나 만료된 경우
             }
+
         }
 
         // 8단계: 다음 필터로 요청 전달 (인증 성공/실패와 관계없이)
@@ -146,6 +149,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("accessToken".equals(cookie.getName())) {
+
                     return cookie.getValue();
                 }
             }

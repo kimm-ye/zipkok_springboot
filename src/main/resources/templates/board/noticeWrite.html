@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 작성 - 셔틀콕</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/board/notice.css}">
+    <script type="text/javascript" th:src="@{/js/board/notice.js}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <i class="fas fa-pen-to-square"></i>
+            <span>공지사항 작성</span>
+        </h1>
+        <p>중요한 소식을 회원들에게 전달하세요</p>
+    </div>
+
+    <div class="form-container">
+        <form id="noticeForm" enctype="multipart/form-data" onsubmit="submitNotice(this)">
+            <input type="hidden" id="boardType" name="boardType" value="N">
+            <!-- 공지 유형 -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-tag"></i>
+                    공지 유형
+                    <span class="required">*</span>
+                </label>
+                <select id="noticeType" class="form-select" required onchange="updateBadgePreview()">
+                    <option value="">-- 공지 유형을 선택해주세요 --</option>
+                    <option value="important">🔴 중요 공지</option>
+                    <option value="normal">📢 일반 공지</option>
+                </select>
+                <div class="badge-preview" id="badgePreview"></div>
+            </div>
+
+            <!-- 제목 -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-heading"></i>
+                    제목
+                    <span class="required">*</span>
+                </label>
+                <input
+                        type="text"
+                        id="noticeTitle"
+                        name="noticeTitle"
+                        class="form-control"
+                        maxlength="100"
+                        placeholder="공지사항 제목을 입력해주세요"
+                        required
+                >
+                <div class="helper-text">최대 100자까지 입력 가능합니다</div>
+            </div>
+
+            <!-- 내용 -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-file-lines"></i>
+                    내용
+                    <span class="required">*</span>
+                </label>
+                <textarea
+                        id="noticeContent"
+                        name="noticeContent"
+                        class="form-control"
+                        placeholder="공지사항 내용을 상세히 작성해주세요"
+                        required
+                ></textarea>
+                <div class="helper-text">상세한 내용을 작성해주세요</div>
+            </div>
+
+            <!-- 첨부파일 -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-paperclip"></i>
+                    첨부파일
+                    <span style="color: #a0aec0; font-weight: normal;">(선택사항)</span>
+                </label>
+                <div class="file-upload" onclick="document.getElementById('boardAttachFile').click()">
+                    <input type="file" id="boardAttachFile" name="boardAttachFile" onchange="handleFileSelect(event)">
+                    <div class="file-upload-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>클릭하여 파일을 업로드하세요</span>
+                    </div>
+                </div>
+                <div class="selected-file" id="selectedFile">
+                    <i class="fas fa-file-image"></i>
+                    <span id="fileName"></span>
+                    <button type="button" onclick="removeFile()" style="margin-left: auto; background: none; border: none; color: #f56565; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="button-group">
+                <button type="button" class="cancel-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i>
+                    취소
+                </button>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-check"></i>
+                    공지사항 등록
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

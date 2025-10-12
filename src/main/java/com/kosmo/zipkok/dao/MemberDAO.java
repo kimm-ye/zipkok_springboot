@@ -11,6 +11,7 @@ import java.util.Map;
 public interface MemberDAO{
 
 	boolean selectEmail(String email);
+	HelperDTO selectMemberBySeq(String memberSeq);
 	HelperDTO selectMemberById(String memberId);
 	String findId (Map<String, String> param);
 	String findPwd (Map<String, String> param);
@@ -18,8 +19,8 @@ public interface MemberDAO{
 	void insertMember(HelperDTO dto);
 	void insertHelper(HelperDTO dto);
 	void insertHelperImage(HelperDTO dto);
-	int updateMember(HelperDTO dto);
-	int updateHelper(HelperDTO dto);
+	void updateMember(HelperDTO dto);
+	void updateHelper(HelperDTO dto);
 	int updateHelperImage(HelperDTO dto);
-
+	void deleteMember(String memberSeq);
 }

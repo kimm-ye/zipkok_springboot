@@ -1,19 +1,18 @@
 package com.kosmo.zipkok.controller;
 
-import com.kosmo.zipkok.dto.MemberDTO;
-import com.kosmo.zipkok.service.MemberService;
+import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.service.TokenService;
 import com.kosmo.zipkok.util.CookieUtil;
 import com.kosmo.zipkok.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class LoginController {
+public class MemberViewController {
 
 	@Autowired
 	JwtUtil jwtUtil;
@@ -43,28 +42,38 @@ public class LoginController {
 		}
 	}
 
+	//마이페이지
+	@RequestMapping("/member/mypage")
+	public String mypage() {
+		return "member/mypage";
+	}
+
+	//회원정보 수정 페이지 이동
+	@GetMapping("/member/mypage/modify")
+	public ModelAndView modify(HttpServletRequest request) {
+		ModelAndView mv = new ModelAndView();
+		HelperDTO dto = tokenService.getMemberFromAccessToken(request);
+
+		if(dto != null) {
+			mv.addObject("info", dto);
+			mv.addObject("isModify", true);      // 수정 모드 플래그
+			mv.setViewName("member/join");
+		} else {
+			mv.setViewName("member/login");
+		}
+		return mv;
+	}
+
 	//로그아웃
 	@RequestMapping("/member/logout")
 	public String memberLogout() {
 		return "member/logout/action";
 	}
 
-	//마이페이지
-	@RequestMapping("/member/mypage")
-	public String mypage() {
-
-		return "member/mypage";
-	}
-
-	//회원 탈퇴
-    @RequestMapping("/mdelete.do")
-    public String memberdelete() {
-        return "member/mdelete";
-    }
-	
 	//아이디/비밀번호 찾기
 	@RequestMapping("/member/find")
 	public String find() {
 		return "member/find";
 	}
+
 }

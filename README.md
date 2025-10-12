@@ -98,7 +98,7 @@
 │                 │    │                 │    │                 │
 │   • Bootstrap   │    │   • Security    │    │   • User Data   │
 │   • jQuery      │    │   • JWT         │    │   • Mission     │
-│   • WOW.js      │    │   • MyBatis     │    │   • Board       │
+│                 │    │   • MyBatis     │    │   • Board       │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                                 │
                                 ▼
@@ -106,7 +106,7 @@
                        │     Redis       │
                        │   (Cache)       │
                        │                 │
-                       │   • Session     │
+                       │                 │
                        │   • Token       │
                        └─────────────────┘
 ```
@@ -257,15 +257,9 @@ redis:
 
 ### **개발 환경**
 - **OS**: Windows 10
-- **IDE**: IntelliJ IDEA / Eclipse
+- **IDE**: IntelliJ IDEA
 - **Database**: MariaDB
 - **Cache**: Redis
-
----
-
-## 📝 라이선스
-
-이 프로젝트는 **MIT License** 하에 배포됩니다.
 
 ---
 

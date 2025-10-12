@@ -1,0 +1,129 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지</title>
+    <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <script type="text/javascript" th:src="@{/js/member/mission.js}"></script>
+</head>
+<body>
+    <link rel="stylesheet" th:href="@{/css/member/mypage.css}">
+    <!-- Header Include (Thymeleaf fragment로 대체 필요) -->
+    <div th:replace="~{fragments/nav :: nav}"></div>
+    <section id="Notice" class="">
+        <!-- =============== container =============== -->
+        <div class="container">
+            <span class="angle2"></span>
+            <span class="angle"></span>
+
+            <div class="row">
+                <div class="col-12 wow zoomIn animated headding" data-wow-delay=".1s">
+                    <section class="cusMainFaqList">
+                        <br><br><br><br><br><br><br>
+
+                        <h3 class="subTitle4C">&nbsp;&nbsp;&nbsp;&nbsp;My page</h3>
+
+                        <div class="container">
+                            <h2 th:text="${history == 'request' ? '요청내역' : '수행내역'}"></h2>
+
+                            <!-- 메인 헤더 -->
+                            <div class="table-responsive">
+                                <table class="table table-bordered mb-3">
+                                    <tr>
+                                        <td class="main-header">
+                                            집에서 심부름을 콕! 집콕!
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <!-- 데이터 테이블 -->
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" style="width: 90%; margin: 0 auto;">
+                                    <thead>
+                                    <tr class="table-header">
+                                        <th style="width: 10%; text-align: center">번호</th>
+                                        <th>제목</th>
+                                        <th style="width: 15%; text-align: center">작성자</th>
+                                        <th style="width: 10%; text-align: center">비용</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!-- 데이터가 없을 때 -->
+                                    <tr th:if="${#lists.isEmpty(lists)}">
+                                        <td colspan="4" class="no-data">
+                                            등록된 게시물이 없습니다 ^^*
+                                        </td>
+                                    </tr>
+
+                                    <!-- 데이터가 있을 때 -->
+                                    <th:block th:if="${!#lists.isEmpty(lists)}">
+                                        <tr th:each="row, loop  : ${lists}">
+                                            <!--th:if="${session.siteUserInfo != null && session.siteUserInfo.member_id == row.mission_Hid}">-->
+                                            <td th:text="${paging.totalCount - (paging.page - 1) * paging.size - loop.index}"></td>
+                                            <td>
+                                                <a th:href="@{/mission/request/detail(missionSeq=${row.missionSeq})}"
+                                                   th:text="${row.missionTitle}"></a>
+                                            </td>
+                                            <td th:text="${row.memberName}"></td>
+                                            <td th:text="${#numbers.formatInteger(row.missionCost, 3, 'COMMA')} + '원'"></td>
+                                        </tr>
+                                    </th:block>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- 페이징 -->
+                            <div class="pagination-wrapper">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center">
+
+                                        <!-- 이전 블록 -->
+                                        <li class="page-item" th:classappend="${!paging.hasPrev} ? ' disabled'">
+                                            <a class="page-link"
+                                               th:if="${paging.hasPrev}"
+                                               th:href="@{|?page=${paging.startPage - 1}&size=${paging.size}|}">«</a>
+                                            <span class="page-link" th:if="${!paging.hasPrev}">«</span>
+                                        </li>
+
+                                        <!-- 페이지 번호 -->
+                                        <li class="page-item"
+                                            th:each="p : ${#numbers.sequence(paging.startPage, paging.endPage)}"
+                                            th:classappend="${p} == ${paging.page} ? ' active'">
+                                            <a class="page-link"
+                                               th:href="@{|?page=${p}&size=${paging.size}|}"
+                                               th:text="${p}">1</a>
+                                        </li>
+
+                                        <!-- 다음 블록 -->
+                                        <li class="page-item" th:classappend="${!paging.hasNext} ? ' disabled'">
+                                            <a class="page-link"
+                                               th:if="${paging.hasNext}"
+                                               th:href="@{|?page=${paging.endPage + 1}&size=${paging.size}|}">»</a>
+                                            <span class="page-link" th:if="${!paging.hasNext}">»</span>
+                                        </li>
+
+                                    </ul>
+                                </nav>
+                            </div>
+
+                            <!-- 메인으로 가기 버튼 -->
+                            <div class="text-center mt-4">
+                                <button type="button"
+                                        class="btn btn-main"
+                                        onclick="location.href='/zipkok/member/mypage';">
+                                    마이페이지로 가기
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <!-- =============== container end =============== -->
+    </section>
+</body>
+</html>

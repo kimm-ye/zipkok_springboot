@@ -5,7 +5,7 @@
     <title th:text="${isModify} ? '회원정보 수정' : '회원가입'">회원가입</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" th:href="@{/css/joinmember.css}">
+    <link rel="stylesheet" th:href="@{/css/member/joinmember.css}">
 
     <!-- 수정 모드 데이터 전달 -->
     <script th:inline="javascript" th:if="${isModify}">
@@ -191,7 +191,7 @@
                         <div id="age">
                             <span class="box">
                                 <select id="age_check" class="sel" name="memberAge" required>
-                                    <option value="">나이</option>
+                                    <option value="">-나이 선택-</option>
                                     <option value="10" th:selected="${info?.memberAge == '10'}">10대</option>
                                     <option value="20" th:selected="${info?.memberAge == '20'}">20대</option>
                                     <option value="30" th:selected="${info?.memberAge == '30'}">30대</option>
@@ -207,9 +207,9 @@
                         <div id="gender">
                             <span class="box gender_code">
                                 <select id="memberGender" class="sel" name="memberGender" required>
-                                    <option value="">성별</option>
-                                    <option value="0" th:selected="${info?.memberGender == 0}">남자</option>
-                                    <option value="1" th:selected="${info?.memberGender == 1}">여자</option>
+                                    <option value="">-성별 선택-</option>
+                                    <option value="1" th:selected="${info?.memberGender == 1}">남자</option>
+                                    <option value="2" th:selected="${info?.memberGender == 2}">여자</option>
                                 </select>
                             </span>
                             <span class="error_next_box">필수 정보입니다.</span>
@@ -253,14 +253,13 @@
                                 <span class="box">
                                     <select id="memberBank" class="sel" name="memberBank" onchange="input_bank(this.form)">
                                         <option value="">은행선택</option>
-                                        <option value="기업은행" th:selected="${info?.memberBank == '기업은행'}">기업은행</option>
-                                        <option value="국민은행" th:selected="${info?.memberBank == '국민은행'}">국민은행</option>
-                                        <option value="우리은행" th:selected="${info?.memberBank == '우리은행'}">우리은행</option>
-                                        <option value="신한은행" th:selected="${info?.memberBank == '신한은행'}">신한은행</option>
-                                        <option value="하나은행" th:selected="${info?.memberBank == '하나은행'}">하나은행</option>
-                                        <option value="농협은행" th:selected="${info?.memberBank == '농협은행'}">농협은행</option>
-                                        <option value="SC은행" th:selected="${info?.memberBank == 'SC은행'}">SC은행</option>
-                                        <option value="카카오뱅크" th:selected="${info?.memberBank == '카카오뱅크'}">카카오뱅크</option>
+                                        <option value="003" th:selected="${info?.memberBank == '003'}">기업은행</option>
+                                        <option value="001" th:selected="${info?.memberBank == '001'}">국민은행</option>
+                                        <option value="020" th:selected="${info?.memberBank == '020'}">우리은행</option>
+                                        <option value="011" th:selected="${info?.memberBank == '011'}">신한은행</option>
+                                        <option value="004" th:selected="${info?.memberBank == '004'}">농협은행</option>
+                                        <option value="023" th:selected="${info?.memberBank == '023'}">SC은행</option>
+                                        <option value="099" th:selected="${info?.memberBank == '099'}">카카오뱅크</option>
                                     </select>
                                 </span> <span class="error_next_box">하나는 필수 선택.</span>
                             </div>
@@ -293,11 +292,11 @@
                         <div id="vehicle_wrap">
                             <div id="vehicle">
                                 <span class="box">
-                                    <label><input type="radio" value="0" name="memberVehicle" th:checked="${info?.memberVehicle == 0 or info?.memberVehicle == null}">&nbsp;자동차&nbsp;</label>
-                                    <label><input type="radio" value="1" name="memberVehicle" th:checked="${info?.memberVehicle == 1}">&nbsp;오토바이&nbsp;</label>
-                                    <label><input type="radio" value="2" name="memberVehicle" th:checked="${info?.memberVehicle == 2}">&nbsp;자전거&nbsp;</label>
-                                    <label><input type="radio" value="3" name="memberVehicle" th:checked="${info?.memberVehicle == 3}">&nbsp;도보&nbsp;</label>
-                                    <label><input type="radio" value="4" name="memberVehicle" th:checked="${info?.memberVehicle == 4}">&nbsp;기타&nbsp;</label>
+                                    <label><input type="radio" value="1" name="memberVehicle" th:checked="${info?.memberVehicle == 1}">&nbsp;자동차&nbsp;</label>
+                                    <label><input type="radio" value="2" name="memberVehicle" th:checked="${info?.memberVehicle == 2}">&nbsp;오토바이&nbsp;</label>
+                                    <label><input type="radio" value="3" name="memberVehicle" th:checked="${info?.memberVehicle == 3}">&nbsp;자전거&nbsp;</label>
+                                    <label><input type="radio" value="4" name="memberVehicle" th:checked="${info?.memberVehicle == 4}">&nbsp;도보&nbsp;</label>
+                                    <label><input type="radio" value="5" name="memberVehicle" th:checked="${info?.memberVehicle == 5}">&nbsp;기타&nbsp;</label>
                                 </span>
                             </div>
                         </div>

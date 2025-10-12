@@ -47,7 +47,6 @@ public class HelperDTO extends MemberDTO{
 			String contentType = getContentType(imageFileEtx);
 			return "data:" + contentType + ";base64," + base64;
 		}
-
 		return "/img/profile/" + getFullImageName();
 	}
 

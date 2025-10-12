@@ -58,8 +58,8 @@ public class RedisService {
 
         TokenDTO tokenDTO = new TokenDTO();
         // Access Token과 Refresh Token 생성
-        String accessToken = jwtUtil.generateAccessToken(memberDTO.getMemberId(), memberDTO.getRole());
-        String refreshToken = jwtUtil.generateRefreshToken(memberDTO.getMemberId());
+        String accessToken = jwtUtil.generateAccessToken(memberDTO.getMemberSeq(), memberDTO.getRole());
+        String refreshToken = jwtUtil.generateRefreshToken(memberDTO.getMemberSeq());
 
         // Refresh Token만 Redis에 저장 (장기 보관, 7일)
         redisTemplate.opsForValue().set(
