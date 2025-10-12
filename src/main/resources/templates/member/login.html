@@ -9,36 +9,9 @@
     <script type="text/javascript" th:src="@{/js/member/login.js}"></script>
     <script type="text/javascript" th:src="@{/js/common.js}"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <!--<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>-->
 </head>
 <body>
-<!--<script>
-    window.Kakao.init('fd6202fdf742e1c361e44f8a65bdba05');
-    console.log(Kakao.isInitialized());
 
-    function kakaoLogin() {
-        Kakao.Auth.login({
-            success: function (response) {
-                Kakao.API.request({
-                    url: '/v2/user/me',
-                    success: function (response) {
-                        const email = response.kakao_account.email;
-                        const name = response.properties.nickname;
-                        $('#kakaoemail').val(email);
-                        $('#kakaoname').val(name);
-                        document.loginForm.submit();
-                    },
-                    fail: function (error) {
-                        console.log(error);
-                    }
-                });
-            },
-            fail: function (error) {
-                console.log(error);
-            }
-        });
-    }
-</script>-->
 
 <div class="container">
     <div id="header">
