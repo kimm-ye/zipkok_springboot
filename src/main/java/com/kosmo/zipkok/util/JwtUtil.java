@@ -71,7 +71,7 @@ public class JwtUtil {
     }
     
      // Refresh Token을 생성합니다.
-    public String generateRefreshToken(String memberSeq) {
+    public String generateRefreshToken(String memberSeq, String role) {
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshExpiration);
@@ -79,6 +79,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .subject(memberSeq)     // 토큰 주인 (사용자 ID)
                 .claim("type", "refresh") // 토큰 타입 (refresh token임을 명시)
+                .claim("role", role)     // 사용자 권한 (Spring Security에서 사용)
                 .issuedAt(now)        // 토큰 발행 시간
                 .expiration(expiryDate) // 토큰 만료 시간 (7일 후)
                 .signWith(getSigningKey()) // HMAC-SHA256으로 서명

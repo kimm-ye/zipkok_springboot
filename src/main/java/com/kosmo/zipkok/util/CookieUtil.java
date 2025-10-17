@@ -13,7 +13,7 @@ public class CookieUtil {
         Cookie tokenCookie = new Cookie(tokenName, token);
         tokenCookie.setHttpOnly(true);
         tokenCookie.setSecure(false); // HTTPS 환경에서는 true로 설정
-        tokenCookie.setMaxAge(exp); // 15분
+        tokenCookie.setMaxAge(exp);
         tokenCookie.setPath(path);
         response.addCookie(tokenCookie);
     }

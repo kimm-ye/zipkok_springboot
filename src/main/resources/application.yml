@@ -55,6 +55,14 @@ jwt:
   refresh:
     expiration: 604800000                         # Refresh Token 만료 시간: 7일 (밀리초)
 
+# 테스트용
+#jwt:
+#  secret: ${JWT_SECRET:default-secret-key}
+#  access:
+#    expiration: 120000          # 2분 (2 * 60 * 1000)
+#  refresh:
+#    expiration: 86400000        # 1일 (24 * 60 * 60 * 1000)
+
 
 # Redis 설정
 redis:

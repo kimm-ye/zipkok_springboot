@@ -59,13 +59,13 @@ public class RedisService {
         TokenDTO tokenDTO = new TokenDTO();
         // Access Token과 Refresh Token 생성
         String accessToken = jwtUtil.generateAccessToken(memberDTO.getMemberSeq(), memberDTO.getRole());
-        String refreshToken = jwtUtil.generateRefreshToken(memberDTO.getMemberSeq());
+        String refreshToken = jwtUtil.generateRefreshToken(memberDTO.getMemberSeq(), memberDTO.getRole());
 
         // Refresh Token만 Redis에 저장 (장기 보관, 7일)
         redisTemplate.opsForValue().set(
-                "refresh:" + memberDTO.getMemberId(),
+                "refresh:" + memberDTO.getMemberSeq(),
                 refreshToken,
-                7,  // 7일
+                2,  // 7일
                 TimeUnit.DAYS
         );
 
@@ -79,8 +79,8 @@ public class RedisService {
         return tokenDTO;
     }
 
-    /* //Refresh Token의 유효성을 검사합니다.
-    public boolean isValidRefreshToken(String memberId, String refreshToken) {
+    //Refresh Token의 유효성을 검사합니다.
+    public boolean isValidRefreshToken(String memberSeq, String refreshToken) {
         // 1단계: JWT 유효성 검사 (서명, 만료시간 등)
         if (!jwtUtil.validateToken(refreshToken) || !jwtUtil.isRefreshToken(refreshToken)) {
             return false;
@@ -88,9 +88,10 @@ public class RedisService {
 
         // 2단계: Redis에서 저장된 Refresh Token과 비교
         // 이는 사용자가 로그아웃했거나 다른 기기에서 로그인했을 때를 대비한 검증
-        String storedToken = (String) redisTemplate.opsForValue().get("refresh:" + memberId);
+        String storedToken = (String) redisTemplate.opsForValue().get("refresh:" + memberSeq);
         return refreshToken.equals(storedToken);
-    }*/
+    }
+
 
     /**
      * Access Token이 블랙리스트에 등록되어 있는지 확인합니다.
@@ -170,7 +171,7 @@ public class RedisService {
      * 
      * @param memberId 로그아웃할 사용자 ID
      */
-    public void deleteAllUserTokens(String memberId) {
+    /*public void deleteAllUserTokens(String memberId) {
         // Refresh Token 삭제
         redisTemplate.delete("refresh:" + memberId);
         
@@ -182,5 +183,5 @@ public class RedisService {
             }
             redisTemplate.delete("user_refresh:" + memberId);
         }
-    }
+    }*/
 }
