@@ -47,7 +47,7 @@
 		LEFT JOIN HELPER_IMAGE IMG
 		ON H.member_seq = IMG.member_seq
 		WHERE
-		    member_useYn = 'Y'
+		    M.member_useYn = 'Y'
 		AND M.MEMBER_SEQ =#{memberSeq}
 	</select>
 
@@ -82,6 +82,41 @@
 		WHERE
 			member_useYn = 'Y'
 		AND MEMBER_ID =#{memberid}
+	</select>
+	
+	<select id="selectSnsLogin" parameterType="Map" resultType="HelperDTO">
+		SELECT
+			M.member_seq AS memberSeq,
+			M.member_id AS memberId,
+			M.member_pass AS memberPass,
+			M.member_name AS memberName,
+			M.member_email AS memberEmail,
+			M.member_age AS memberAge,
+			M.member_gender AS memberGender,
+			M.member_phone AS memberPhone,
+			NVL(M.member_missionN, 0) AS memberMissionN,
+			M.member_status AS memberStatus,
+			H.member_bank AS memberBank,
+			H.member_account AS memberAccount,
+			H.member_vehicle AS memberVehicle,
+			H.member_introduce AS memberIntroduce,
+			H.member_review AS memberReview,
+			NVL(H.member_missionC, 0) AS memberMissionC,
+			NVL(H.member_point, 0) AS memberPoint,
+			IMG.image_name AS imageFileName,
+			IMG.image_etx AS imageFileEtx
+		FROM
+			MEMBER M
+		LEFT JOIN HELPER H
+		ON M.member_seq = H.member_seq
+		LEFT JOIN HELPER_IMAGE IMG
+		ON H.member_seq = IMG.member_seq
+		LEFT JOIN SNS_LOGIN S
+		ON M.member_seq = S.member_seq
+		WHERE
+			M.member_useYn = 'Y'
+		and S.sns_type = #{type}
+		and S.sns_id = #{snsId}
 	</select>
 
 
@@ -182,6 +217,25 @@
 			)
 	</insert>
 
+	<!--  SNS 로그인 정보 저장 -->
+	<insert id="insertSnsLogin" parameterType="Map">
+		INSERT INTO SNS_LOGIN
+			(
+			 MEMBER_SEQ,
+			 SNS_TYPE,
+			 SNS_ID,
+			 CREATE_DT
+			)
+		VALUES
+		    (
+		     #{memberSeq},
+		     #{snsType},
+		     #{snsId},
+		     NOW()
+			)
+	</insert>
+
+
 	<!-- 사용자 수정-->
 	<update id="updateMember" parameterType="HelperDTO" useGeneratedKeys="true" keyProperty="memberSeq">
 		UPDATE MEMBER
@@ -223,9 +277,9 @@
 	<update id="deleteMember" parameterType="String">
 		UPDATE MEMBER
 		SET
-		   MEMBER_USEYN = 'N'
+			MEMBER_USEYN = 'N'
 		WHERE
-		    MEMBER_SEQ = #{memberSeq}
+			MEMBER_SEQ = #{memberSeq}
 	</update>
 
 </mapper>

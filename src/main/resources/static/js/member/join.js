@@ -103,10 +103,13 @@ function joinValidate(form) {
             }
         }
 
-        // 중복체크 확인
-        if (form.idDuplication.value !== "idCheck") {
-            alert("이미 사용 중인 아이디입니다");
-            return false;
+        console.log(form.idDuplication.value);
+        if (isModifyMode) {
+            // 중복체크 확인
+            if (form.idDuplication.value !== "idCheck") {
+                alert("이미 사용 중인 아이디입니다");
+                return false;
+            }
         }
     }
 

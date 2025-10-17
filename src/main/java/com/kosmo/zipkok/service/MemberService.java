@@ -11,7 +11,9 @@ public interface MemberService {
     // 이메일 체크 확인
     boolean selectEmail(String email);
     //비밀번호 검증
-    MemberDTO authenticate(String inputId, String inputPwd);
+    HelperDTO authenticate(String inputId, String inputPwd);
+    // sns로그인
+    HelperDTO selectSnsLogin(Map<String, String> param);
     //아이디 중복체크
     String idCheck(String id);
     HelperDTO selectMemberBySeq(String memberSeq);
@@ -20,6 +22,7 @@ public interface MemberService {
     String findPwd (Map<String, String> param);
     // 회원가입
     void insertMember(HelperDTO dto) throws IOException;
+    void insertSnsMember(HelperDTO dto, Map<String, String> snsInfo) throws IOException;
     void updateMember(HelperDTO dto) throws IOException;
     void deleteMember(String memberSeq) throws Exception;
 

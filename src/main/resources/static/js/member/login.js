@@ -96,9 +96,8 @@ async function findPwd() {
     }
 }
 
-// 로그인 폼 유효성 검사
+// ==================== 일반 로그인 ====================
 async function validateLoginForm(form) {
-
     const id = form.id.value.trim();
     const pass = form.pass.value.trim();
 
@@ -114,18 +113,61 @@ async function validateLoginForm(form) {
         return false;
     }
 
-    const data = {
+    await processLogin({
+        type: 'normal',
         memberId: id,
         memberPass: pass
-    };
+    });
+}
 
+// ==================== 카카오 로그인 ====================
+function loginWithKakao() {
+    Kakao.Auth.login({
+        success: function (authObj) {
+            Kakao.Auth.setAccessToken(authObj.access_token);
+            getKakaoInfo();
+        },
+        fail: function (err) {
+            console.error('카카오 로그인 실패:', err);
+            alert('카카오 로그인에 실패했습니다.');
+        }
+    });
+}
+
+function getKakaoInfo() {
+    Kakao.API.request({
+        url: '/v2/user/me',
+        success: async function (res) {
+            const account = res.kakao_account;
+
+            await processLogin({
+                type: 'kakao',
+                email: account.email,
+                name: account.profile.nickname,
+                snsId: res.id
+            });
+        },
+        fail: function (error) {
+            console.error('카카오 정보 조회 실패:', error);
+            alert('카카오 로그인에 실패했습니다. 관리자에게 문의하세요.');
+        }
+    });
+}
+
+// ==================== 공통 로그인 처리 함수 ====================
+async function processLogin(loginData) {
     try {
-        const response = await fetch('./login/action', {
+        // 로그인 타입에 따라 엔드포인트 분리
+        const endpoint = loginData.type === 'kakao'
+            ? './login/action/kakao'
+            : './login/action';
+
+        const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(loginData)
         });
 
         if (!response.ok) {
@@ -135,69 +177,19 @@ async function validateLoginForm(form) {
         const result = await response.json();
 
         if (result.success) {
-
-           /* localStorage.setItem('memberId', result.memberId || id);
-            localStorage.setItem('memberName', result.memberName || '');*/
-            
             alert(result.message);
-            // 로그인 성공 후 메인 페이지로 이동
-            window.location.href = '/zipkok';
-
+            window.location.href = result.redirectUrl;
         } else {
             alert(result.message);
+            window.location.href = result.redirectUrl;
         }
     } catch (error) {
-        console.error('catch 블록에서 잡힌 에러:');
-        console.error('에러 타입:', error.constructor.name);
-        console.error('에러 메시지:', error.message);
-        console.error('전체 에러 객체:', error);
+        console.error('로그인 처리 중 에러:', error);
 
-        // 네트워크 에러인지 확인
         if (error instanceof TypeError && error.message.includes('fetch')) {
             alert('네트워크 연결을 확인해주세요.');
         } else {
             alert('요청 처리 중 오류: ' + error.message);
         }
     }
-}
-
-
-
-
-
-// ==================== 카카오 로그인 버튼 클릭 ====================
-
-
-//카카오 로그인 후 토근 값 저장.
-function loginWithKakao() {
-
-    Kakao.Auth.login({
-        success: function (authObj) {
-            console.log(authObj); // access토큰 값
-            Kakao.Auth.setAccessToken(authObj.access_token); // access토큰값 저장
-
-            getInfo();
-        },
-        fail: function (err) {
-            console.log(err);
-        }
-    });
-}
-
-// 엑세스 토큰을 발급받고, 아래 함수를 호출시켜서 사용자 정보를 받아옴.
-function getInfo() {
-    Kakao.API.request({
-        url: '/v2/user/me',
-        success: function (res) {
-            var account = res.kakao_account;
-
-            document.getElementById('kakaoemail').val(account.email);
-            document.getElementById('kakaoname').val(account.profile.nickname);
-            // 사용자 정보가 포함된 폼을 서버로 제출한다.
-            document.querySelector('#form-kakao-login').submit();
-        },
-        fail: function (error) {
-            alert('카카오 로그인에 실패했습니다. 관리자에게 문의하세요.' + JSON.stringify(error));
-        }
-    });
 }

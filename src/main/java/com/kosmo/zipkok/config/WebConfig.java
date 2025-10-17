@@ -1,12 +1,6 @@
 package com.kosmo.zipkok.config;
 
-import com.kosmo.zipkok.config.interceptor.LoginInterceptor;
-import com.kosmo.zipkok.service.RedisService;
-import com.kosmo.zipkok.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -19,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * 3. 정적 리소스 핸들러 설정
  * 
  * 전체 요청 처리 흐름:
- * 1. WebConfig (CORS) → 2. SecurityConfig (FilterChain) → 3. JwtAuthenticationFilter → 4. Interceptor (preHandle)
+ * 1. WebConfig (CORS) → 2. SecurityConfig (FilterChain) → 3. JwtAuthenticationFilter
  * 
  * 각 단계별 역할:
  * - WebConfig: CORS 정책 적용, 인터셉터 등록
@@ -36,11 +30,11 @@ public class WebConfig implements WebMvcConfigurer {
         configurer.setUseTrailingSlashMatch(true);
     }
 
-    @Override
+    /*@Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowCredentials(true);        // 쿠키, Authorization 헤더 포함 허용
-    }
+    }*/
 
     /**
      * 인터셉터를 등록하고 경로 패턴을 설정합니다.
@@ -53,7 +47,7 @@ public class WebConfig implements WebMvcConfigurer {
      * 
      * @param registry 인터셉터를 등록하는 레지스트리
      */
-    @Override
+   /* @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // LoginInterceptor 등록
         registry.addInterceptor(new LoginInterceptor())
@@ -77,5 +71,5 @@ public class WebConfig implements WebMvcConfigurer {
                     "/error",                  // 에러 페이지
                     "/actuator/**"             // Spring Boot Actuator (모니터링)
                 );
-    }
+    }*/
 }

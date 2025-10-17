@@ -2,12 +2,14 @@ package com.kosmo.zipkok.config;
 
 import com.kosmo.zipkok.service.CustomUserDetailsService;
 import com.kosmo.zipkok.service.RedisService;
+import com.kosmo.zipkok.util.CookieUtil;
 import com.kosmo.zipkok.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,7 +34,12 @@ import java.io.IOException;
  *
  * OncePerRequestFilter를 상속받아서 한 요청당 한 번만 실행되도록 보장합니다.
  * 이는 성능 최적화와 중복 실행 방지를 위한 것입니다.
+ *
+ * 요청 → JwtAuthenticationFilter (토큰 검증 + 갱신 + 인증 설정)
+ *      → SecurityConfig (권한 체크)
+ *      → Controller
  */
+@Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -69,7 +76,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /*
      * 모든 HTTP 요청에 대해 실행되는 핵심 인증 메서드
-
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -79,22 +85,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestUri = request.getRequestURI();
         System.out.println("요청 URL : " + requestUri);
 
-        // 1단계: 요청 헤더에서 JWT Access Token 추출
+        // 1단계: 요청 헤더에서 JWT access, refresh Token 추출
         // Authorization: Bearer {token} 형식 또는 쿠키에서 추출
-        String token = extractToken(request);
-        System.out.println("token : " + token);
+        String accessToken = extractToken(request);
+        String refreshToken = extractRefreshToken(request);
+
+        log.info("accessToken : {}",  accessToken);
+        log.info("refreshToken : {}",  refreshToken);
 
         // 2단계: 토큰이 존재하고, 유효한 Access Token인 경우에만 인증 처리
-        if (token != null && jwtUtil.validateToken(token) && jwtUtil.isAccessToken(token)) {
+        if (accessToken != null && jwtUtil.validateToken(accessToken) && jwtUtil.isAccessToken(accessToken)) {
 
+            // TODO 이 부분 블랙리스트 되는지 한번 더 확인해야함
             // 3단계: Redis 블랙리스트에서 토큰 확인 (로그아웃된 토큰인지)
             // Access Token은 JWT만으로 검증하지만, 로그아웃된 토큰은 무효화 => 이걸 블랙리스트라고 한다.
-            if (!redisService.isAccessTokenBlacklisted(token)) {
-
+            if (!redisService.isAccessTokenBlacklisted(accessToken)) {
 
                 // 4단계: JWT Access Token에서 사용자명과 권한 추출
                 // JWT 자체에 포함된 정보를 사용하므로 Redis 조회 불필요
-                String memberSeq = jwtUtil.getMemberSeqFromToken(token);
+                String memberSeq = jwtUtil.getMemberSeqFromToken(accessToken);
 
                 // 5단계: 사용자 상세 정보 로드 (권한 정보 포함)
                 // 데이터베이스에서 최신 사용자 정보를 가져와 권한을 확인
@@ -103,33 +112,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 6단계: Spring Security 인증 객체 생성
                 // UsernamePasswordAuthenticationToken은 Spring Security가 인증된 사용자로 인식하는 객체
                 UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                        userDetails,           // 사용자 정보 (UserDetails 객체)
-                        null,                  // 비밀번호 (JWT에서는 불필요하므로 null)
-                        userDetails.getAuthorities()  // 사용자 권한 목록 (ROLE_ADMIN, ROLE_USER 등)
-                    );
-
-                //System.out.println("authentication : " + authentication);
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,           // 사용자 정보 (UserDetails 객체)
+                                null,                  // 비밀번호 (JWT에서는 불필요하므로 null)
+                                userDetails.getAuthorities()  // 사용자 권한 목록 (ROLE_ADMIN, ROLE_USER 등)
+                        );
 
                 // 7단계: Spring Security 컨텍스트에 인증 정보 설정
-                // 이렇게 설정하면 @PreAuthorize, @Secured 등의 보안 어노테이션이 작동
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+
+        // Access Token이 만료되었지만 Refresh Token이 유효한 경우
+        } else if (accessToken == null && !jwtUtil.validateToken(accessToken)
+                    && refreshToken != null && jwtUtil.validateToken(refreshToken)) {
+
+            String memberSeq = jwtUtil.getMemberSeqFromToken(refreshToken);
+
+            // Redis에서 Refresh Token 확인
+            boolean isValidRefresh = redisService.isValidRefreshToken(memberSeq, refreshToken);
+            System.out.println("isValidRefresh================" + isValidRefresh);
+
+            if (isValidRefresh) {
+                // 유효한 refreshToken에서 role 추출
+                String role = jwtUtil.getRoleFromToken(refreshToken);
+
+                // 새로운 Access Token 생성
+                String newAccessToken = jwtUtil.generateAccessToken(memberSeq, role);
+
+                // 쿠키에 새 Access Token 저장 (15분짜리)
+                CookieUtil.createCookie("accessToken", 15 * 60, "/", newAccessToken, response); // 15분
+
+                // 인증 처리
+                UserDetails userDetails = userDetailsService.loadUserByUsername(memberSeq);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                //System.out.println("JWT Access Token 인증 성공: " + memberSeq);
-            } else {
-                System.out.println("블랙리스트에 등록된 Access Token: " + token);
-                // 블랙리스트에 등록된 토큰은 인증 실패로 처리
+                System.out.println("Access Token 자동 갱신 완료: " + memberSeq);
             }
-        } else if (token != null) {
-            // 토큰이 존재하지만 유효하지 않은 경우
-            if (!jwtUtil.isAccessToken(token)) {
-                System.out.println("Access Token이 아님 (Refresh Token 또는 잘못된 토큰)");
-                // Refresh Token이 전송된 경우 Access Token이 필요함을 안내
-            } else {
-                System.out.println("JWT Access Token이 유효하지 않음");
-                // JWT 서명이 잘못되었거나 만료된 경우
-            }
-
         }
 
         // 8단계: 다음 필터로 요청 전달 (인증 성공/실패와 관계없이)
@@ -139,22 +159,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // JWT Access Token을 추출
     private String extractToken(HttpServletRequest request) {
-        // 1순위: Authorization 헤더
+        // Authorization 헤더
+        // TODO 아직 미사용 추후 모바일 붙이면 헤더에 담아서 넘길 예정
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
 
-        // 2순위: accessToken 쿠키 (로그아웃과 일치)
+        // accessToken 쿠키 (로그아웃과 일치)
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("accessToken".equals(cookie.getName())) {
-
                     return cookie.getValue();
                 }
             }
         }
+        return null;
+    }
 
+    // Refresh Token 추출 메서드 추가 (refreshToken은 헤더로 전송하지 않음)
+    private String extractRefreshToken(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
         return null;
     }
 }
