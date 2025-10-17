@@ -1,7 +1,16 @@
+// 공지사항 게시물 클릭시 상세 페이지로 이동
 function viewNotice(id) {
     alert('공지사항 ' + id + '번을 조회합니다.');
 }
 
+// 검색어 입력창에서 엔터클릭시 검색어로 공지사항을 검색한다.
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        searchNotice();
+    }
+});
+
+// 검색어로 공지사항을 검색한다.
 function searchNotice() {
     const keyword = document.getElementById('searchInput').value;
     if (keyword.trim()) {
@@ -11,6 +20,7 @@ function searchNotice() {
     }
 }
 
+// 패이지 이동
 function changePage(page) {
     const buttons = document.querySelectorAll('.page-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
@@ -25,11 +35,6 @@ function changePage(page) {
     }
 }
 
-document.getElementById('searchInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        searchNotice();
-    }
-});
 
 
 
@@ -107,6 +112,7 @@ function handleFileSelect(event) {
         const fileName = file.name;
         document.getElementById('fileName').textContent = fileName;
         document.getElementById('selectedFile').classList.add('show');
+        document.getElementById('labelBoardFile').style.display = 'none';
     }
 }
 
@@ -114,4 +120,5 @@ function handleFileSelect(event) {
 function removeFile() {
     document.getElementById('boardAttachFile').value = '';
     document.getElementById('selectedFile').classList.remove('show');
+    document.getElementById('labelBoardFile').style.display = 'block';
 }

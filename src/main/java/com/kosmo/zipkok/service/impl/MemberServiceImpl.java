@@ -128,9 +128,6 @@ public class MemberServiceImpl implements MemberService {
 			String encryptPwd = passwordEncoder.encode(dto.getMemberPass());
 			dto.setMemberPass(encryptPwd);
 
-			// member_id를 SNS 방식으로 설정
-			dto.setMemberId(snsInfo.get("snsType") + "_" + snsInfo.get("snsId"));
-
 			// member 테이블 저장
 			memberDao.insertMember(dto);
 

@@ -18,7 +18,7 @@ public class MissionViewController {
 
     // 유저 - 심부름 신청
     @GetMapping("/mission/select")
-    public String selectMission(@RequestParam("flag") String flag, Model model) {
+    public String selectMission(@RequestParam(value = "flag", required = false) String flag, Model model) {
 		model.addAttribute("flag", flag); // 모델에 추가 (심부름 카테고리)
 		model.addAttribute("mode", "create"); // 등록 모드
 		return "mission/register";

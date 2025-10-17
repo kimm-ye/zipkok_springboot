@@ -31,8 +31,6 @@ public class NoticeViewController {
 
 		ModelAndView mv = new ModelAndView("board/notice");
 
-
-
 		String token = CookieUtil.getCookieValue(request, "accessToken");
 
 		if (token != null && !token.isBlank()) {
