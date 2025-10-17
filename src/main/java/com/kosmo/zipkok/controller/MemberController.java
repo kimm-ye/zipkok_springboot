@@ -13,6 +13,8 @@ import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.service.MemberService;
 import com.kosmo.zipkok.service.TokenService;
 import com.kosmo.zipkok.util.CookieUtil;
+import com.kosmo.zipkok.util.JwtUtil;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +41,14 @@ public class MemberController {
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
 
+	@Autowired
+	JwtUtil jwtUtil;
+
 	// 회원가입
 	@PostMapping(value="/member/join/action")
-	public Map<String, Object> member(HelperDTO dto) throws Exception {
+	public Map<String, Object> member(HelperDTO dto,
+									  @CookieValue(value = "tempToken", required = false) String tempToken,
+									  HttpServletResponse res) throws Exception {
 		Map<String, Object> result = new HashMap<>();
 
 		try{
@@ -53,12 +60,33 @@ public class MemberController {
 			if(hasEmail) {
 				result.put("success", false);
 				result.put("message", "해당 이메일이 이미 존재합니다.");
-			} else {
-				memberService.insertMember(dto);
-				result.put("success", true);
-				result.put("message", "가입완료! 집콕에 오신것을 환영합니다^^");
-				result.put("redirectUrl", "/zipkok");
+				return result;
 			}
+
+			// 2. tempToken 있으면 SNS 회원가입, 없으면 일반 회원가입
+			if(tempToken != null && !tempToken.isEmpty()) {
+				System.out.println(tempToken);
+				// SNS 회원가입
+				Map<String, String> snsInfo = jwtUtil.validateTempToken(tempToken);
+				memberService.insertSnsMember(dto, snsInfo);
+
+				// tempToken 쿠키 삭제
+				CookieUtil.deleteCookie("tempToken", "/", res);
+			} else {
+				// 일반 회원가입
+				memberService.insertMember(dto);
+			}
+
+			// 3. 자동 로그인 (accessToken, refreshToken 발급)
+			HelperDTO member = memberService.selectMemberBySeq(dto.getMemberSeq());
+			TokenDTO tokens = redisService.saveTokenRedis(member);
+
+			CookieUtil.createCookie("accessToken", 15 * 60, "/", tokens.getAccessToken(), res);
+			CookieUtil.createCookie("refreshToken", 7 * 24 * 60 * 60, "/", tokens.getRefreshToken(), res);
+
+			result.put("success", true);
+			result.put("message", "가입완료! 집콕에 오신것을 환영합니다^^");
+			result.put("redirectUrl", "/zipkok");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -99,7 +127,7 @@ public class MemberController {
 		Map<String, Object> result = new HashMap<>();
 
 		// 입력한 id, pass값을 비교해서 사용자자 정보 조회
-		MemberDTO dto = memberService.authenticate(param.get("memberId"), param.get("memberPass"));
+		HelperDTO dto = memberService.authenticate(param.get("memberId"), param.get("memberPass"));
 
 		// 성공시 Redis 세션 생성
 		// 로그인 성공
@@ -112,6 +140,7 @@ public class MemberController {
 		result.put("memberId", dto.getMemberId());
 		result.put("memberName", dto.getMemberName());
 		result.put("message", "로그인 성공!");
+		result.put("redirectUrl", "/zipkok");
 
 		return result;
 	}
@@ -122,62 +151,44 @@ public class MemberController {
 		type : kakao(카카오)
 		name : 닉네임
 		kakaoId : 카카오 아이디
+		추후 로그인 api가 변경될 걸 감안해서 각자 분리해서 만든다.
 	*/
 	@PostMapping("/member/login/action/kakao")
 	public Map<String, Object> kakao (@RequestBody Map<String, String> param, HttpServletResponse res) throws IOException {
 
 		// {type=kakao, name=.., kakaoId=2125746090}
 
-		System.out.println("===카카오 로그인=== : " + param);
+		System.out.println("===kakao 로그인=== : " + param);
 
 		Map<String, Object> result = new HashMap<>();
 
-		// 입력한 id, pass값을 비교해서 사용자자 정보 조회
-		/*MemberDTO dto = memberService.authenticate(param.get("memberId"), param.get("memberPass"));
+		// TODO 추후 네이버 SNS 로그인 추가예정
+		// sns_type으로 sns_login 확인
+		HelperDTO member = memberService.selectSnsLogin(param);
 
-		// 로그인 성공
-		TokenDTO tokens = redisService.saveTokenRedis(dto);  // JWT 토큰 생성 및 redis 저장
+		// 기존 있는 회원이면 로그인
+		if(!"".equals(member) && member != null) {
+			// 성공시 Redis 세션 생성
+			// 로그인 성공
+			TokenDTO tokens = redisService.saveTokenRedis(member);  // JWT 토큰 생성 및 redis 저장
 
-		CookieUtil.createCookie("accessToken", 15 * 60, "/", tokens.getAccessToken(), res); // 15분
-		CookieUtil.createCookie("refreshToken", 7 * 24 * 60 * 60, "/", tokens.getRefreshToken(), res); // 7일
-*/
-		result.put("success", true);
-		//result.put("memberId", dto.getMemberId());
-		//result.put("memberName", dto.getMemberName());
-		result.put("message", "로그인 성공!");
+			CookieUtil.createCookie("accessToken", 15 * 60, "/", tokens.getAccessToken(), res); // 15분
+			CookieUtil.createCookie("refreshToken", 7 * 24 * 60 * 60, "/", tokens.getRefreshToken(), res); // 7일
 
-		// ==================== 카카오 로그인 ========================
-		/*else if (!"".equals(param.get("kakaoemail"))) {
+			result.put("success", true);
+			result.put("memberId", member.getMemberId());
+			result.put("memberName", member.getMemberName());
+			result.put("message", "로그인 성공!");
+			result.put("redirectUrl", "/zipkok");
+		} else {
+			// 없는 회원이면 임시 JWT 발급
+			String tempToken = jwtUtil.tempSnsToken(param.get("type"), param.get("snsId"));
+			CookieUtil.createCookie("tempToken", 5 * 60, "/", tempToken, res); // 5분
 
-			// kakaoemail을 kakaoid에 저장
-			String kakaoid = param.get("kakaoemail");
-			//System.out.println("kakaoid : "+kakaoid);
-
-			// 카카오계정으로 로그인한 적이 있는지 없는지
-//			MemberDTO result = sqlSession.getMapper(MemberImpl.class).kakaoLogin(req.getParameter("kakaoemail"));
-//			MemberDTO result = new MemberDTO();
-			//System.out.println(result);
-
-			if (result == null) { // 회원이 아닌경우 (카카오 계정으로 처음 방문한 경우) 카카오 회원정보 설정 창으로 이동
-				//System.out.println("카카오 회원 정보 설정한다");
-				resp.setContentType("text/html; charset=UTF-8");
-				PrintWriter out = resp.getWriter();
-				String alertText = "등록된 정보가 없어 회원가입페이지로 이동합니다.";
-				out.println("<script>alert('" + alertText + "');</script> ");
-				out.flush();
-
-				req.setAttribute("kakaoemail", req.getParameter("kakaoemail"));
-				req.setAttribute("kakaoname", req.getParameter("kakaoname"));
-
-				//mv.setViewName("member/join_Kakao");
-				//return mv;
-
-			} else { // 이미 카카오로 로그인한 적이 있을 때 (최초 1회 로그인때 회원가입된 상태)
-				String accessToken = sessionService.createSession(dto);  // JWT 토큰 반환
-				result.put("token", accessToken);                       // 응답에 JWT 토큰 포함
-				result.put("message", "로그인 성공");
-			}
-		}*/
+			result.put("success", false);
+			result.put("message", "이전 로그인 정보가 없어 회원가입 페이지로 이동합니다.");
+			result.put("redirectUrl", "/zipkok/member/join");
+		}
 
 		return result;
 	}

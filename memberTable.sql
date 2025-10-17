@@ -26,7 +26,9 @@ CREATE TABLE member (
     member_gender INT NOT NULL,
     member_phone VARCHAR(20) NOT NULL,
     member_missionN INT,
-    member_status INT DEFAULT 1 NOT NULL -- 관리자(0) / 일반사용자(1) / 헬퍼(2) / 블랙리스트(3)
+    member_status INT DEFAULT 1 NOT NULL, -- 관리자(0) / 일반사용자(1) / 헬퍼(2) / 블랙리스트(3),
+    member_useYn CHAR(1) DEFAULT 1 not null ,
+    create_dt datetime default CURRENT_TIMESTAMP
 );
 
 ALTER TABLE member ADD CONSTRAINT uk_member_email UNIQUE (member_email);
@@ -372,3 +374,22 @@ CREATE TABLE board_file (
     board_file LONGBLOB,
     create_dt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+
+
+CREATE TABLE sns_login(
+   sns_seq int NOT NULL AUTO_INCREMENT COMMENT '소셜 로그인 시퀀스',
+   member_seq INT NOT NULL COMMENT '회원 시퀀스',
+   sns_type VARCHAR(20) NOT NULL COMMENT '제공자(kakao, naver, google 등)',
+   sns_id VARCHAR(100) NOT NULL COMMENT '제공자에서 발급한 고유 ID',
+   create_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+   update_dt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
+   PRIMARY KEY (sns_seq),
+   UNIQUE KEY `uk_provider_id` (`sns_type`, `sns_id`),
+   KEY `idx_member_seq` (`member_seq`),
+   CONSTRAINT `fk_social_login_member`
+       FOREIGN KEY (`member_seq`)
+           REFERENCES `member` (`member_seq`)
+           ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='소셜 로그인 연동 테이블';

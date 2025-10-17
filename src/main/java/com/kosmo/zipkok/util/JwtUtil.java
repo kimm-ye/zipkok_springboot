@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * JWT(JSON Web Token) 토큰을 생성하고 검증하는 유틸리티 클래스
@@ -180,6 +182,57 @@ public class JwtUtil {
             return "refresh".equals(type);
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    // SNS 로그인시 SNS 정보를 담을 임시 JWT를 5분 동안 발급한다
+    public String tempSnsToken(String type, String snsId) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + 5 * 60 * 1000); // 5분 (300000ms)
+
+        return Jwts.builder()
+                .subject(snsId)              // 토큰 주인 (sns ID)
+                .claim("tokenType", "temp")  // ⭐ 추가: 임시 토큰 타입 명시
+                .claim("snsType", type)         // SNS 타입 (kakao, naver 등)
+                .claim("snsId", snsId)       // SNS 고유 ID
+                .issuedAt(now)               // 토큰 발행 시간
+                .expiration(expiryDate)      // 토큰 만료 시간 (5분 후)
+                .signWith(getSigningKey())   // HMAC-SHA256으로 서명
+                .compact();                  // 최종 JWT 문자열 생성
+    }
+
+    public Map<String, String> validateTempToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            // tokenType 확인
+            String tokenType = claims.get("tokenType", String.class);
+            if (!"temp".equals(tokenType)) {
+                throw new IllegalArgumentException("유효하지 않은 토큰 타입입니다.");
+            }
+
+
+            // SNS 정보 추출
+            Map<String, String> snsInfo = new HashMap<>();
+            snsInfo.put("snsId", claims.get("snsId", String.class));
+            snsInfo.put("snsType", claims.get("snsType", String.class));
+
+            return snsInfo;
+
+        } catch (ExpiredJwtException e) {
+            throw new RuntimeException("임시 토큰이 만료되었습니다. 다시 로그인해주세요.", e);
+        } catch (UnsupportedJwtException e) {
+            throw new RuntimeException("지원되지 않는 토큰 형식입니다.", e);
+        } catch (MalformedJwtException e) {
+            throw new RuntimeException("잘못된 형식의 토큰입니다.", e);
+        } catch (SignatureException e) {
+            throw new RuntimeException("토큰 서명이 유효하지 않습니다.", e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("토큰이 비어있거나 유효하지 않습니다.", e);
         }
     }
 } 

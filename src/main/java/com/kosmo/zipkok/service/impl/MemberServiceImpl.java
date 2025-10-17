@@ -37,10 +37,10 @@ public class MemberServiceImpl implements MemberService {
 
 
 	@Override
-	public MemberDTO authenticate(String inputId, String inputPwd) {
+	public HelperDTO authenticate(String inputId, String inputPwd) {
 	    try {
 
-	        MemberDTO member = memberDao.selectMemberById(inputId);
+			HelperDTO member = memberDao.selectMemberById(inputId);
 	        if (member != null) {
 
 	            // 비밀번호 비교: 원본 vs 암호화된 비밀번호
@@ -61,6 +61,11 @@ public class MemberServiceImpl implements MemberService {
 	        e.printStackTrace();
 	        throw e;
 	    }
+	}
+
+	@Override
+	public HelperDTO selectSnsLogin(Map<String, String> param) {
+		return memberDao.selectSnsLogin(param);
 	}
 
 
@@ -113,6 +118,46 @@ public class MemberServiceImpl implements MemberService {
 		} catch (Exception e){
 			e.printStackTrace();
 			throw e; // 컨트롤러에서 예외처리 하기 위함
+		}
+	}
+
+	@Override
+	public void insertSnsMember(HelperDTO dto, Map<String, String> snsInfo) throws IOException {
+		try {
+			// SNS 로그인은 비밀번호 없음
+			String encryptPwd = passwordEncoder.encode(dto.getMemberPass());
+			dto.setMemberPass(encryptPwd);
+
+			// member_id를 SNS 방식으로 설정
+			dto.setMemberId(snsInfo.get("snsType") + "_" + snsInfo.get("snsId"));
+
+			// member 테이블 저장
+			memberDao.insertMember(dto);
+
+			snsInfo.put("memberSeq", dto.getMemberSeq());
+
+			System.out.println("snsInfo ============= " + snsInfo);
+			memberDao.insertSnsLogin(snsInfo);
+
+			// 헬퍼인 경우 추가 정보 저장
+			if(dto.getMemberStatus() == 2) {
+				memberDao.insertHelper(dto);
+
+				if(dto.getAttachFile().getSize() > 0) {
+					String fileName = dto.getAttachFile().getOriginalFilename();
+					String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
+					String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
+
+					dto.setImageFile(dto.getAttachFile().getBytes());
+					dto.setImageFileName(originalName);
+					dto.setImageFileEtx(fileEtx);
+
+					memberDao.insertHelperImage(dto);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
 		}
 	}
 
