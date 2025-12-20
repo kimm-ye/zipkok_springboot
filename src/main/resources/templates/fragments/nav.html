@@ -3,65 +3,194 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <th:block th:fragment="nav">
-<!-- Navbar Fragment -->
-<nav  id="mainNav" class="navbar navbar-default navbar-fixed-top" style="background-color: black">
-    <div class="container">
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+    <style>
+        nav {
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        /* 네비 전체 */
+        .main-nav {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+
+        .logo {
+            font-size: 1.3em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 내부 flex 컨테이너 */
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;  /* 로고 왼쪽, 메뉴 오른쪽 */
+            align-items: center;
+        }
+
+        /* 메뉴 링크 */
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px; /* 링크 간격 */
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links li a,
+        .nav-links .link-button {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links li a:hover {
+            color: #007bff;
+        }
+
+        /* 로그아웃 버튼을 링크처럼 보이게 */
+        .link-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            font: inherit;
+        }
+
+        /* 모바일 토글 버튼 */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            width: 25px;
+            height: 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-toggle .bar {
+            width: 100%;
+            height: 3px;
+            background-color: #333;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+        }
+
+        /* 반응형 (모바일에서 세로로 바꾸기) */
+        @media (max-width: 768px) {
+            .nav-inner {
+                flex-wrap: wrap;
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                display: none;
+                margin-top: 10px;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .nav-links li {
+                text-align: center;
+                padding: 10px 0;
+            }
+        }
+    </style>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-inner container-fluid">
+                <div style="">
+                    <!-- 로고 -->
+                    <a class="logo" th:href="@{/}">
+                        <div class="logo">🏠 집콕</div>
+                    </a>
+                </div>
+
+                <!-- 모바일 토글 -->
+                <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
                 </button>
-                <a class="navbar-brand" href="/zipkok"><img th:src="@{/img/logo.png}" alt="Logo"></a>
-            </div>
 
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a class="page-scroll" href="#about">About</a></li>
-                    <li><a class="page-scroll" href="#Notice">Notice</a></li>
-                    <li><a class="page-scroll" href="#Screenshots">Screenshots</a></li>
-                    <li><a class="page-scroll" th:href="@{/mission/select}">KOK</a></li>
-                    <li><a class="page-scroll" th:href="@{/build/index.html}">Q&A</a></li>
+                <!-- 링크 그룹 -->
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="/zipkok/#about">서비스 소개</a></li>
+                    <li><a href="/zipkok/#services">심부름 카테고리</a></li>
+                    <li><a href="/zipkok/#notice">공지사항</a></li>
+                    <li><a href="/zipkok/#contact">문의하기</a></li>
 
-                    <!-- 로그인 유무에 따른 join/logout -->
+                    <!-- 인증 상태에 따른 링크 -->
                     <th:block sec:authorize="isAnonymous()">
-                        <li><a class="page-scroll" th:href="@{/member/login}">Login</a></li>
-                        <li><a class="page-scroll" th:href="@{/member/join}">Join</a></li>
+                        <li><a th:href="@{/member/login}">Login</a></li>
+                        <li><a th:href="@{/member/join}">Join</a></li>
                     </th:block>
 
-                    <!-- 일반 사용자 & 헬퍼 -->
-                    <th:block sec:authorize="hasAnyRole('USER', 'HELPER')">
+                    <th:block sec:authorize="hasAnyRole('USER','HELPER')">
                         <li>
-                            <a class="page-scroll">
-                                <form th:action="@{/member/logout/action}" method="post" style="display:inline;">
-                                    <button type="submit" style="background:none; border:none; padding:0; cursor:pointer;">
-                                        Logout
-                                    </button>
-                                </form>
-                            </a>
+                            <form th:action="@{/member/logout/action}" method="post" class="logout-form">
+                                <button type="submit" class="link-button">Logout</button>
+                            </form>
                         </li>
-                        <li><a class="page-scroll" th:href="@{/member/mypage}">MyPage</a></li>
+                        <li><a th:href="@{/member/mypage}">MyPage</a></li>
                     </th:block>
 
-                    <!-- 관리자 권한 -->
                     <th:block sec:authorize="hasRole('ADMIN')">
                         <li>
-                            <a class="page-scroll">
-                                <form th:action="@{/member/logout/action}" method="post" style="display:inline;">
-                                    <button type="submit"  style="background:none; border:none; padding:0; cursor:pointer;">
-                                        Logout
-                                    </button>
-                                </form>
-                            </a>
+                            <form th:action="@{/member/logout/action}" method="post" class="logout-form">
+                                <button type="submit" class="link-button">Logout</button>
+                            </form>
                         </li>
-                        <li><a class="page-scroll" th:href="@{/admin}" target="_blank">Admin</a></li>
+                        <li><a th:href="@{/admin}" target="_blank">Admin</a></li>
                     </th:block>
                 </ul>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggle = document.getElementById('navToggle');
+            const links = document.getElementById('navLinks');
+
+            if (!toggle || !links) return;
+
+            toggle.addEventListener('click', () => {
+                links.classList.toggle('open');
+                toggle.classList.toggle('open');
+            });
+
+            // 모바일에서 링크 클릭 시 메뉴 닫기 (선택)
+            links.querySelectorAll('a').forEach(a => {
+                a.addEventListener('click', () => {
+                    if (links.classList.contains('open')) {
+                        links.classList.remove('open');
+                        toggle.classList.remove('open');
+                    }
+                });
+            });
+        });
+    </script>
 </th:block>

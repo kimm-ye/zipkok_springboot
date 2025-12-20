@@ -11,6 +11,7 @@ import java.util.Map;
 public interface MemberDAO{
 
 	boolean selectEmail(String email);
+	HelperDTO selectMemberWithImageBySeq(String memberSeq);
 	HelperDTO selectMemberBySeq(String memberSeq);
 	HelperDTO selectMemberById(String memberId);
 	HelperDTO selectSnsLogin(Map<String, String> param);

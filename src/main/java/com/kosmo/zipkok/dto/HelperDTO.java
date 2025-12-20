@@ -40,14 +40,22 @@ public class HelperDTO extends MemberDTO{
 		}
 	}
 
-
+	// 헬퍼에 프로필 이미지가 있는 경우 가져오고 없으면 default 사진을 사용한다.
 	public String getImageUrl() {
-		if (imageFile != null && imageFile.length > 0) {
-			String base64 = java.util.Base64.getEncoder().encodeToString(imageFile);
+
+		System.out.println("123123 === " + (imageFile != null ? imageFile.length : 0));
+
+		// imageFile이 null이면 빈 배열로 초기화
+		byte[] fileData = (imageFile != null) ? imageFile : new byte[0];
+
+		if (fileData.length > 0) {
+			String base64 = java.util.Base64.getEncoder().encodeToString(fileData);
 			String contentType = getContentType(imageFileEtx);
 			return "data:" + contentType + ";base64," + base64;
 		}
-		return "/img/profile/" + getFullImageName();
+
+		// 기본 이미지 반환
+		return "/img/profile/default.png";
 	}
 
 

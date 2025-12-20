@@ -18,7 +18,8 @@
 		    MEMBER_EMAIL = #{member_email}
 	</select>
 
-	<select id="selectMemberBySeq" parameterType="java.lang.String" resultType="HelperDTO">
+	<!-- 회원정보 수정할때 image까지 조회 -->
+	<select id="selectMemberWithImageBySeq" parameterType="java.lang.String" resultType="HelperDTO">
 		SELECT
 			M.member_seq AS memberSeq,
 			M.member_id AS memberId,
@@ -38,8 +39,39 @@
 			NVL(H.member_missionC, 0) AS memberMissionC,
 			NVL(H.member_point, 0) AS memberPoint,
 			IMG.image_name AS imageFileName,
-			IMG.image_etx AS imageFileEtx
-			/*IMG.image_file AS imageFile*/
+			IMG.image_etx AS imageFileEtx,
+			IMG.image_file AS imageFile
+		FROM
+			MEMBER M
+		LEFT JOIN HELPER H
+		ON M.member_seq = H.member_seq
+		LEFT JOIN HELPER_IMAGE IMG
+		ON H.member_seq = IMG.member_seq
+		WHERE
+			M.member_useYn = 'Y'
+		  AND M.MEMBER_SEQ =#{memberSeq}
+	</select>
+
+	<!-- seq로 member & helper 정보 조회 -->
+	<select id="selectMemberBySeq" parameterType="java.lang.String" resultType="HelperDTO">
+		SELECT
+			M.member_seq AS memberSeq,
+			M.member_id AS memberId,
+			M.member_pass AS memberPass,
+			M.member_name AS memberName,
+			M.member_email AS memberEmail,
+			M.member_age AS memberAge,
+			M.member_gender AS memberGender,
+			M.member_phone AS memberPhone,
+			NVL(M.member_missionN, 0) AS memberMissionN,
+			M.member_status AS memberStatus,
+			H.member_bank AS memberBank,
+			H.member_account AS memberAccount,
+			H.member_vehicle AS memberVehicle,
+			H.member_introduce AS memberIntroduce,
+			H.member_review AS memberReview,
+			NVL(H.member_missionC, 0) AS memberMissionC,
+			NVL(H.member_point, 0) AS memberPoint
 		FROM
 			MEMBER M
 		LEFT JOIN HELPER H
@@ -48,7 +80,7 @@
 		ON H.member_seq = IMG.member_seq
 		WHERE
 		    M.member_useYn = 'Y'
-		AND M.MEMBER_SEQ =#{memberSeq}
+		AND M.MEMBER_SEQ = #{memberSeq}
 	</select>
 
 	<select id="selectMemberById" parameterType="java.lang.String" resultType="HelperDTO">

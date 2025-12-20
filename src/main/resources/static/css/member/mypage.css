@@ -1,195 +1,421 @@
-﻿body{
-  padding: 0;
+﻿* {
   margin: 0;
-}
-div{
-  box-sizing: border-box;
-}
-#header {
-    padding-top: 100px;
-    padding-bottom: 0px;
-    text-align: center;
-}
-/* alert badge */
-.circle{
-  display: inline-block;
-  width: 5px;
-  height: 5px;
-  border-radius: 2.5px;
-  background-color: #ff0000;
-  position: absolute;
-  top: -5px;
-  left: 110%;
-}
-
-/* 녹색 텍스트 */
-.green{
-  color: #24855b;
-}
-
-.wrap{
-  background-color: #F8F8F8;  
-}
-/* 녹색배경 */
-.greenContainer{  
-  height: 132px;
-  background-color: #24855b;    
-  
-  display: flex;
-  align-items: flex-end;
-  padding: 16px;
-}
-
-.greenContainer .name{
-   font-size: 20px;
-  font-weight: bold;
-  color: #ffffff;
-} 
-.greenContainer .modify{
-  margin-left: auto;
-}
-
-/* 단골상점 , 상품후기 , 적립금 박스 */
-.summaryContainer{
-  background-color: white;  
-  display: flex;  
-  padding: 21px 16px;  
-  height: 90px;
-  margin-bottom: 10px;
-  text-align: center;
-  border: 1px solid lightgray;
-  border-radius: 30px;
-}
-/* 단골상점 , 상품후기 , 적립금 */
-.summaryContainer .item{
-  flex-grow: 1
-}
-/* 녹색 숫자 */
-.summaryContainer .number{
-  font-size: 19px;
-  font-weight: bold;
-  color: #24855b;
-}
-/* 텍스트 */
-.summaryContainer .item > div:nth-child(2){
-  font-size: 13px;
-}
-
-/* ================== 주문/배송조회 박스 시작 ==================== */
-.shippingStatusContainer{
-  padding: 21px 16px;
-  background-color: white;
-  margin-bottom: 10px;
-}
-
-/* 주문/배송조회 타이틀 */
-.shippingStatusContainer .title{
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-/* 장바구니 결제완료 배송중 구매확정 [로우] */
-.shippingStatusContainer .status{
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 21px;
-}
-/* 장바구니 결제완료 배송중 구매확정 [아이템]  */
-.shippingStatusContainer .item{
-  display: flex;
-}
-
-.shippingStatusContainer .number{
-  font-size: 31px;
-  font-weight: 500;
-  text-align: center;
-}
-.shippingStatusContainer .text{
-  font-size: 12px;
-  font-weight: normal;
-  color: #c2c2c2;
-  text-align: center;
-}
-.shippingStatusContainer .icon{
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  width: 16px;
-  height: 16px;
-}
-
-
-/*=================== 주문목록 ~ 찜한상품 리스트 ==================*/
-.listContainer{  
   padding: 0;
-  background-color: #ffffff;
-  margin-bottom: 10px;
-}
-.listContainer .item{  
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  color: black;
-  text-decoration: none;  
-  height: 56px;
   box-sizing: border-box;
 }
-.listContainer .icon{  
-  margin-right: 14px;
-}
-.listContainer .text{
-  font-size: 16px;
-  position: relative;
-}
-.listContainer .right{
-  margin-left: auto;
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+  min-height: 100vh;
+  padding: 20px;
 }
 
-
-/*=================== 내지갑의 보유 적립금 들어가는 부분 ================*/
-.listContainer .smallLight{
-  font-size: 14px;
-  color: #c2c2c2;  
-}
-.listContainer .smallLight > span{
-  margin-left: 10px;
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-.listContainer .right .blct{
-  font-size: 14px;
-  font-weight: bold;
-  margin-right: 5px;
-}
-
-
-
-/* 공지사항 이용안내 고객센터 */
-.infoContainer{
-  background-color: white; 
+/* ===== 프로필 헤더 ===== */
+.profile-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   display: flex;
-  height: 100px;
-  margin-bottom: 10px;    
+  align-items: center;
+  gap: 30px;
 }
 
-.infoContainer .item{
-  flex-grow: 1;
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  font-size: 13px;
-  text-decoration: none;
-  color: black;
-}
-.infoContainer .item > div:first-child{
-  margin-bottom: 2px;
+  font-size: 3em;
+  color: white;
+  box-shadow: 0 5px 20px rgba(255, 76, 0, 0.3);
 }
 
-/*  */
-.listContainer .item:hover{
-/*   background-color: #f8f8f8; */
+.profile-info {
+  flex: 1;
 }
-.infoContainer .item:hover{
-/*   background-color: #f8f8f8; */
+
+.profile-name {
+  font-size: 2em;
+  font-weight: bold;
+  color: #2d3748;
+  margin-bottom: 10px;
+}
+
+.profile-email {
+  color: #718096;
+  font-size: 1.1em;
+}
+
+.profile-edit-btn {
+  padding: 12px 25px;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  color: #2d3748;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-edit-btn:hover {
+  border-color: #FFC100;
+  color: #FF4C00;
+  transform: translateY(-2px);
+}
+
+/* ===== 통계 카드 ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(255, 76, 0, 0.15);
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  font-size: 1.8em;
+  color: white;
+}
+
+.stat-number {
+  font-size: 2em;
+  font-weight: bold;
+  color: #FF4C00;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  color: #718096;
+  font-size: 0.95em;
+}
+
+/* ===== 메뉴 섹션 ===== */
+.menu-section {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #2d3748;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f7fafc;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.menu-item {
+  padding: 25px 20px;
+  background: #f7fafc;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  color: #2d3748;
+  border: 2px solid transparent;
+}
+
+.menu-item:hover {
+  background: white;
+  border-color: #FFC100;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(255, 193, 0, 0.2);
+}
+
+.menu-icon {
+  font-size: 2em;
+  margin-bottom: 10px;
+  color: #FF4C00;
+}
+
+.menu-text {
+  font-size: 0.95em;
+  font-weight: 600;
+}
+
+.menu-badge {
+  background: #FF4C00;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7em;
+  margin-left: 5px;
+}
+
+/* ===== 테이블 컨테이너 ===== */
+.table-container {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.table-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #2d3748;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  background: #f7fafc;
+  border: none;
+  border-radius: 8px;
+  color: #718096;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+  color: white;
+}
+
+.tab-btn:hover:not(.active) {
+  background: #e2e8f0;
+}
+
+/* ===== 리스트 아이템 ===== */
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #f7fafc;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.list-item:hover {
+  background: #fffbf5;
+  transform: translateX(5px);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-number {
+  width: 50px;
+  font-weight: bold;
+  color: #a0aec0;
+}
+
+.list-content {
+  flex: 1;
+  padding: 0 20px;
+}
+
+.list-title {
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 5px;
+}
+
+.list-meta {
+  font-size: 0.9em;
+  color: #a0aec0;
+}
+
+.list-price {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #FF4C00;
+}
+
+/* ===== 페이지네이션 ===== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 30px;
+}
+
+.page-btn {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.page-btn:hover {
+  border-color: #FFC100;
+  color: #FF4C00;
+}
+
+.page-btn.active {
+  background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ===== 빈 상태 ===== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #a0aec0;
+}
+
+.empty-state i {
+  font-size: 4em;
+  margin-bottom: 20px;
+  color: #cbd5e0;
+}
+
+.empty-state p {
+  font-size: 1.2em;
+}
+
+/* ===== 버튼 ===== */
+.btn-group {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.btn {
+  padding: 15px 35px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(255, 76, 0, 0.3);
+}
+
+.btn-secondary {
+  background: white;
+  color: #4a5568;
+  border: 2px solid #e2e8f0;
+}
+
+.btn-secondary:hover {
+  border-color: #FFC100;
+  color: #FF4C00;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .list-number {
+    width: 100%;
+  }
+
+  .list-content {
+    padding: 0;
+  }
+
+  .filter-tabs {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    flex: 1;
+    min-width: 80px;
+  }
 }

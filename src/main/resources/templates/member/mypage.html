@@ -1,114 +1,255 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이페이지</title>
+    <title>마이페이지 - 집콕</title>
     <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/member/mypage.css}">
     <script type="text/javascript" th:src="@{/js/member/mypage.js}"></script>
     <script type="text/javascript" th:src="@{/js/mission/mission.js}"></script>
 </head>
 <body>
-    <link rel="stylesheet" th:href="@{/css/member/mypage.css}">
-    <!-- Header Include (Thymeleaf fragment로 대체 필요) -->
-    <div th:replace="~{fragments/nav :: nav}"></div>
 
-    <div class="container">
-        <div id="header">
-            <h1 class="login_title">
-                <label>MY PAGE</label><br>
-            </h1>
+<div class="container">
+    <!-- 프로필 헤더 -->
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <i class="fas fa-user"></i>
         </div>
-
-        <div class="summaryContainer">
-            <div class="item">
-                <div class="number" th:text="${#authentication.name}"></div>
-            </div>
-
-            <!-- member_status가 1인 경우 (고객) -->
-            <th:block sec:authorize="hasAnyRole('USER')">
-                <div class="item" >
-                    <div class="number">
-                        <a href="/zipkok/mission/request/history">요청내역 보기</a>
-                    </div>
-                </div>
-            </th:block>
-
-            <!-- member_status가 2인 경우 (헬퍼) -->
-            <th:block sec:authorize="hasAnyRole('HELPER')">
-                <div class="item" >
-                    <div class="number">
-                        <a href="/zipkok/mission/request/history">요청내역 보기</a>
-                    </div>
-                </div>
-                <div class="item" >
-                    <div class="number">
-                        <a href="/zipkok/mission/performance/history">수행내역 보기</a>
-                    </div>
-                </div>
-                <div class="item" >
-                    <div class="number">
-                        <a href="/zipkok/mission/performance/history/my">나의 수행내역</a>
-                    </div>
-                </div>
-                <!-- 헬퍼인 경우 포인트 표시 -->
-                <div class="item">
-                <div class="number"></div>
-                    <div>보유포인트</div>
-                </div>
-            </th:block>
+        <div class="profile-info">
+            <div class="profile-name" th:text="${#authentication.name} + 님"></div>
+            <!--<div class="profile-email">hong@example.com</div>-->
         </div>
-
-        <div class="listContainer">
-            <a href="./mypage/modify" class="item">
-                <div class="icon">Ⅰ</div>
-                <div class="text">회원정보수정<span class="circle"></span></div>
-                <div class="right"> > </div>
-            </a>
-
-            <a href="#" class="item" id="memberUnregister">
-                <div class="icon">Ⅱ</div>
-                <div class="text">회원탈퇴<span class="circle"></span></div>
-                <div class="right"> > </div>
-            </a>
-
-            <!-- 고객인 경우 -->
-            <th:block sec:authorize="hasAnyRole('USER')" class="item">
-            <a href="review.do" class="item">
-                <div class="icon">Ⅲ</div>
-                <div class="text">내가쓴리뷰관리<span class="circle"></span></div>
-                <div class="right"> > </div>
-            </a>
-            </th:block>
-
-            <!-- 헬퍼인 경우 -->
-            <th:block sec:authorize="hasAnyRole('HELPER')" class="item">
-            <a href="review.do" class="item">
-                <div class="icon">Ⅲ</div>
-                <div class="text">리뷰보기<span class="circle"></span></div>
-                <div class="right"> > </div>
-            </a>
-            </th:block>
-        </div>
-
-        <div class="infoContainer">
-            <a href="Notice.do" class="item">
-                <div>공지사항</div>
-            </a>
-            <a href="/zipkok/resources/build/index.html" class="item">
-                <div>Q&A</div>
-            </a>
-            <a href="download.do" class="item">
-                <div>앱 다운로드</div>
-            </a>
-        </div>
+        <button class="profile-edit-btn" th:onclick="'location.href=\'/zipkok/member/mypage/modify\''">
+            <i class="fas fa-edit"></i>
+            프로필 수정
+        </button>
     </div>
 
-    <!-- Footer -->
-    <footer th:replace="~{fragments/footer :: footer}"></footer>
-    <!-- 챗봇 Include -->
-    <div th:replace="~{fragments/chatBot :: chatBot}"></div>
+    <!-- 통계 카드 -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+            <div class="stat-number">12</div>
+            <div class="stat-label">요청한 심부름</div>
+        </div>
+
+    <!-- member_status가 2인 경우 (헬퍼) -->
+    <th:block sec:authorize="hasAnyRole('HELPER')">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-number">8</div>
+            <div class="stat-label">수행한 심부름</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-number">4.8</div>
+            <div class="stat-label">평균 평점</div>
+        </div>
+
+        <!--<div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-number">15,000</div>
+            <div class="stat-label">보유 포인트</div>
+        </div>-->
+    </th:block>
+
+    </div>
+
+    <!-- 메뉴 섹션 -->
+    <!--<div class="menu-section">
+        <div class="section-title">빠른 메뉴</div>
+        <div class="menu-grid">
+
+        &lt;!&ndash; member_status가 1인 경우 (일반 사용자) &ndash;&gt;
+        <th:block sec:authorize="hasAnyRole('USER')">
+            <a href="/zipkok/mission/request/history" class="menu-item">
+                <div class="menu-icon"><i class="fas fa-list"></i></div>
+                <div class="menu-text">
+                    요청 내역
+                    <span class="menu-badge">3</span>
+                </div>
+            </a>
+        </th:block>
+
+        &lt;!&ndash; member_status가 2인 경우 (헬퍼) &ndash;&gt;
+        <th:block sec:authorize="hasAnyRole('HELPER')">
+            <a href="/zipkok/mission/request/history" class="menu-item">
+                <div class="menu-icon"><i class="fas fa-list"></i></div>
+                <div class="menu-text">
+                    요청 내역
+                    &lt;!&ndash;<span class="menu-badge">3</span>&ndash;&gt;
+                </div>
+            </a>
+
+            <a href="/zipkok/mission/performance/history" class="menu-item">
+                <div class="menu-icon"><i class="fas fa-tasks"></i></div>
+                <div class="menu-text">수행 내역</div>
+            </a>
+        </th:block>
+
+            <a href="#" class="menu-item">
+                <div class="menu-icon"><i class="fas fa-comment-dots"></i></div>
+                <div class="menu-text">내 후기</div>
+            </a>
+
+            &lt;!&ndash;<a href="#" class="menu-item">
+                <div class="menu-icon"><i class="fas fa-wallet"></i></div>
+                <div class="menu-text">내 지갑</div>
+            </a>&ndash;&gt;
+
+            <a href="#" class="menu-item">
+                <div class="menu-icon"><i class="fas fa-cog"></i></div>
+                <div class="menu-text">설정</div>
+            </a>
+        </div>
+    </div>-->
+
+    <!-- 최근 내역 테이블 -->
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-title">최근 심부름 내역</div>
+
+        <th:block sec:authorize="hasAnyRole('USER')">
+            <div class="filter-tabs">
+                <button class="tab-btn active">전체</button>
+            </div>
+        </th:block>
+        <!--member_status가 2인 경우 (헬퍼)-->
+        <th:block sec:authorize="hasAnyRole('HELPER')">
+            <div class="filter-tabs">
+                <button class="tab-btn active">전체</button>
+                <button class="tab-btn">요청</button>
+                <button class="tab-btn">수행</button>
+            </div>
+        </th:block>
+        </div>
+
+        <!-- 리스트 -->
+        <div class="list-wrapper">
+            <div class="list-item" onclick="viewDetail(1)">
+                <div class="list-number">1</div>
+                <div class="list-content">
+                    <div class="list-title">마트에서 생필품 구매해주세요</div>
+                    <div class="list-meta">
+                        <i class="fas fa-user"></i> hong123 ·
+                        <i class="fas fa-calendar"></i> 2025.10.20
+                    </div>
+                </div>
+                <div class="list-price">15,000원</div>
+            </div>
+
+            <div class="list-item" onclick="viewDetail(2)">
+                <div class="list-number">2</div>
+                <div class="list-content">
+                    <div class="list-title">편의점에서 택배 보내주세요</div>
+                    <div class="list-meta">
+                        <i class="fas fa-user"></i> kim456 ·
+                        <i class="fas fa-calendar"></i> 2025.10.19
+                    </div>
+                </div>
+                <div class="list-price">8,000원</div>
+            </div>
+
+            <div class="list-item" onclick="viewDetail(3)">
+                <div class="list-number">3</div>
+                <div class="list-content">
+                    <div class="list-title">청소 도와주세요</div>
+                    <div class="list-meta">
+                        <i class="fas fa-user"></i> park789 ·
+                        <i class="fas fa-calendar"></i> 2025.10.18
+                    </div>
+                </div>
+                <div class="list-price">25,000원</div>
+            </div>
+
+            <div class="list-item" onclick="viewDetail(4)">
+                <div class="list-number">4</div>
+                <div class="list-content">
+                    <div class="list-title">가구 조립 부탁드립니다</div>
+                    <div class="list-meta">
+                        <i class="fas fa-user"></i> lee012 ·
+                        <i class="fas fa-calendar"></i> 2025.10.17
+                    </div>
+                </div>
+                <div class="list-price">30,000원</div>
+            </div>
+
+            <div class="list-item" onclick="viewDetail(5)">
+                <div class="list-number">5</div>
+                <div class="list-content">
+                    <div class="list-title">반려동물 산책 도와주세요</div>
+                    <div class="list-meta">
+                        <i class="fas fa-user"></i> choi345 ·
+                        <i class="fas fa-calendar"></i> 2025.10.16
+                    </div>
+                </div>
+                <div class="list-price">12,000원</div>
+            </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <!--<div class="pagination">
+            <button class="page-btn" disabled>
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">4</button>
+            <button class="page-btn">5</button>
+            <button class="page-btn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>-->
+
+        <!-- 버튼 그룹 -->
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="location.href='/zipkok'">
+                <i class="fas fa-home"></i>
+                홈으로
+            </button>
+            <button class="btn btn-primary" onclick="location.href='/zipkok/mission/select'">
+                <i class="fas fa-plus"></i>
+                새 심부름 요청
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function viewDetail(id) {
+        alert('심부름 상세 ' + id + '번을 조회합니다.');
+    }
+
+    // 탭 전환
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // 페이지 버튼
+    document.querySelectorAll('.page-btn:not([disabled])').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!this.querySelector('i')) {
+                document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            }
+        });
+    });
+</script>
 </body>
 </html>

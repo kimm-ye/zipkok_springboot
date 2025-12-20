@@ -12,8 +12,8 @@ import java.util.Map;
 @Mapper
 public interface MissionDAO {
 
-	List<MissionDTO> getPerformanceHistory(Map<String, Object> params);
 	int getPerformanceHistoryCount();
+	List<MissionDTO> getPerformanceHistory(Map<String, Object> params);
 	List<MissionDTO> getMyPerformanceHistory(Map<String, Object> params);
 	int getMyPerformanceHistoryCount(String helperSeq);
 	List<MissionDTO> getRequestHistory(Map<String, Object> params);

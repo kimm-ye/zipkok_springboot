@@ -19,7 +19,7 @@ public class MissionDTO extends MissionFileDTO {
     private int missionCost;
     private int missionStatus; // 0=신청(대기), 1=진행, 2=완료, 3=취소
 
-    private String memberName;
+    private String memberId; // 수행내역에서 작성자 id 보여주기 위함
 
     // -------------------------------
     // 위치 관련 필드 추가

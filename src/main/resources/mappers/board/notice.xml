@@ -1,0 +1,136 @@
+<!DOCTYPE mapper
+  PUBLIC "-//com.kosmo.zipkok.mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kosmo.zipkok.dao.NoticeDAO">
+
+	<select id="selectNoticeCount" resultType="java.lang.Integer">
+		SELECT
+			COUNT(*)
+		FROM
+			board_notice
+		WHERE
+		    use_yn = 'Y'
+	</select>
+
+	<!-- 공지사항 조회 -->
+	<select id="selectNoticeList" parameterType="Map" resultType="NoticeDTO">
+		SELECT
+		    notice_seq as noticeSeq,
+			notice_type as noticeType,
+			notice_title as noticeTitle,
+			notice_content as noticeContent,
+			DATE_FORMAT(n.create_dt, '%Y-%m-%d') as createDt,
+			notice_view as noticeView
+		FROM
+			board_notice n
+		LEFT JOIN member m
+		ON n.member_seq = m.member_seq
+		WHERE
+			use_yn = 'Y'
+		ORDER BY notice_seq DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<!-- 상세 공지사항 조회 -->
+	<select id="selectNoticeDetail" parameterType="String" resultType="NoticeDTO">
+		SELECT
+			b.notice_seq as noticeSeq,
+			b.notice_type as noticeType,
+			b.notice_title as noticeTitle,
+			b.notice_content as noticeContent,
+			m.member_name as writerName,
+			DATE_FORMAT(b.create_dt, '%Y-%m-%d') as createDt,
+			b.notice_view as noticeView,
+			f.file_id as fileId,
+			f.file_name as boardFileName,
+			f.file_etx as boardFileEtx,
+			f.board_file as boardFile
+		FROM
+			board_notice b
+		LEFT JOIN member m
+		ON b.member_seq = m.member_seq
+		LEFT JOIN board_file f
+		ON b.notice_seq = f.board_seq
+		WHERE
+		    use_yn = 'Y'
+		AND (f.board_type is null or f.board_type = 'notice')
+		AND b.notice_seq = #{noticeId}
+	</select>
+
+	<select id="isExistNotice" parameterType="String" resultType="Integer">
+		SELECT
+		    COUNT(*)
+		FROM
+		    board_notice
+		WHERE
+			use_yn = 'Y'
+		AND notice_seq = #{noticeId}
+	</select>
+
+
+	<insert id="insertNotice" parameterType="NoticeDTO" useGeneratedKeys="true" keyProperty="noticeSeq">
+		INSERT INTO BOARD_NOTICE
+			(
+				notice_type,
+				notice_title,
+				notice_content,
+				member_seq
+			)
+		VALUES
+		    (
+				#{noticeType},
+				#{noticeTitle},
+				#{noticeContent},
+				#{memberSeq}
+			)
+	</insert>
+
+	<insert id="insertBoardFile" parameterType="NoticeDTO">
+		INSERT INTO board_file
+			(
+				board_type,
+				board_seq,
+				file_name,
+				file_etx,
+				board_file,
+				create_dt
+			)
+		VALUES
+		    (
+				#{boardType},
+				#{boardSeq},
+		     	#{boardFileName},
+		     	#{boardFileEtx},
+		     	#{boardFile},
+		     	NOW()
+			)
+	</insert>
+
+	<update id="updateNotice" parameterType="NoticeDTO">
+		UPDATE board_notice
+		SET
+			notice_type = #{noticeType},
+			notice_title = #{noticeTitle},
+			notice_content = #{noticeContent},
+			member_seq = #{memberSeq},
+			update_dt = NOW()
+		WHERE
+		    notice_seq = #{noticeSeq}
+	</update>
+
+	<update id="updateBoardFile" parameterType="NoticeDTO">
+		UPDATE board_file
+		SET
+			file_name = #{boardFileName},
+			file_etx = #{boardFileEtx},
+			board_file = #{boardFile},
+			update_dt = NOW()
+		WHERE
+		    board_type = #{boardType}
+		AND board_seq = #{boardSeq}
+	</update>
+
+
+</mapper>
+

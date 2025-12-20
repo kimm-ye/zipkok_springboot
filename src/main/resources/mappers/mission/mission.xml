@@ -3,12 +3,22 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.kosmo.zipkok.dao.MissionDAO">
+
+	<select id="getPerformanceHistoryCount" resultType="java.lang.Integer">
+		SELECT
+			COUNT(*)
+		FROM
+			MISSION
+		WHERE
+			mission_status = 0
+	</select>
+
 	<!-- 신청 가능한 수행 내역 조회 -->
 	<select id="getPerformanceHistory" parameterType="Map" resultType="MissionDTO">
 		SELECT
 			A.MISSION_SEQ as missionSeq,
 			A.MEMBER_SEQ as memberSeq,
-			B.MEMBER_NAME AS memberName,
+			B.MEMBER_ID AS memberId,
 			A.MISSION_CATEGORY as missionCategory,
 			A.MISSION_TITLE as missionTitle,
 			A.MISSION_CONTENT as missionContent,
@@ -26,15 +36,6 @@
 		AND mission_status = 0
 		ORDER BY MISSION_SEQ DESC
 		LIMIT #{limit} OFFSET #{offset}
-	</select>
-
-	<select id="getPerformanceHistoryCount" resultType="java.lang.Integer">
-		SELECT
-			COUNT(*)
-		FROM
-			MISSION
-		WHERE
-			mission_status = 0
 	</select>
 
 	<!-- 내가 응모한 심부름 내역 조회 -->
@@ -76,7 +77,6 @@
 		SELECT
 			A.MISSION_SEQ as missionSeq,
 			A.MEMBER_SEQ as memberSeq,
-			B.MEMBER_NAME AS memberName,
 			A.MISSION_CATEGORY as missionCategory,
 			A.MISSION_TITLE as missionTitle,
 			A.MISSION_CONTENT as missionContent,
@@ -112,7 +112,7 @@
 		SELECT
 			A.MISSION_SEQ        AS missionSeq,
 			A.MEMBER_SEQ         AS memberSeq,
-			B.MEMBER_NAME        AS memberName,
+-- 			B.MEMBER_NAME        AS memberName,
 			A.MISSION_CATEGORY   AS missionCategory,
 			A.MISSION_TITLE      AS missionTitle,
 			A.MISSION_CONTENT    AS missionContent,

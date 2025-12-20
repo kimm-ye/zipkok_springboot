@@ -4,14 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>공지사항 작성 - 셔틀콕</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <th:block th:replace="~{fragments/header :: header}"></th:block>
     <link rel="stylesheet" th:href="@{/css/board/notice.css}">
-    <script type="text/javascript" th:src="@{/js/board/notice.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+    <script type="text/javascript" th:src="@{/js/board/noticeWrite.js}"></script>
 </head>
 <body>
+
+<!-- 로딩바 -->
+<div th:replace="~{fragments/loading :: loading}"></div>
+
 <div class="container">
     <div class="header">
+
+        <input type="hid-den" id="pageMode" th:value="${mode}">
+        <input type="hid-den" id="noticeId" th:value="${noticeId}">
+        <input type="hid-den" id="isAdmin" th:value="${isAdmin}">
         <h1>
             <i class="fas fa-pen-to-square"></i>
             <span>공지사항 작성</span>
@@ -29,10 +37,10 @@
                     공지 유형
                     <span class="required">*</span>
                 </label>
-                <select id="noticeType" class="form-select" required onchange="updateBadgePreview()">
+                <select id="noticeType" name="noticeType" class="form-select" required onchange="updateBadgePreview()">
                     <option value="">-- 공지 유형을 선택해주세요 --</option>
-                    <option value="important">🔴 중요 공지</option>
-                    <option value="normal">📢 일반 공지</option>
+                    <option value="I">🔴 중요 공지</option>
+                    <option value="N">📢 일반 공지</option>
                 </select>
                 <div class="badge-preview" id="badgePreview"></div>
             </div>
@@ -74,18 +82,18 @@
             </div>
 
             <!-- 첨부파일 -->
-            <div class="form-group">
+            <div class="form-group" id="fileGroup">
                 <label class="form-label">
                     <i class="fas fa-paperclip"></i>
                     첨부파일
                     <span style="color: #a0aec0; font-weight: normal;">(선택사항)</span>
                 </label>
 
-                <!-- ⭐ input 숨김 -->
+                <!-- input 숨김 -->
                 <input type="file" id="boardAttachFile" name="boardAttachFile"
                        onchange="handleFileSelect(event)" style="display: none;">
 
-                <!-- ⭐ label로 감싸서 클릭 가능하게 -->
+                <!-- label로 감싸서 클릭 가능하게 -->
                 <label for="boardAttachFile" class="file-upload" id="labelBoardFile" style="display: block">
                     <div class="file-upload-label">
                         <i class="fas fa-cloud-upload-alt"></i>
@@ -96,7 +104,7 @@
                 <div class="selected-file" id="selectedFile">
                     <i class="fas fa-file-image"></i>
                     <span id="fileName"></span>
-                    <button type="button" onclick="removeFile()"
+                    <button type="button" onclick="removeFile('write')"
                             style="margin-left: auto; background: none; border: none; color: #f56565; cursor: pointer;">
                         <i class="fas fa-times"></i>
                     </button>

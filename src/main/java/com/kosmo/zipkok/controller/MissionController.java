@@ -44,7 +44,7 @@ public class MissionController {
 		return result;
 	}
 
-	// 내가 요청한 내역 조회
+	// 내가 요청한 심부름 내역 조회
 	@GetMapping("/mission/request/history")
 	public ModelAndView request(@AuthenticationPrincipal CustomUserDetail me,
 								@RequestParam(value = "page", defaultValue = "1") int page,

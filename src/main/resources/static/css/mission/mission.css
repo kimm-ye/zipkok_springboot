@@ -6,7 +6,8 @@
 
 body {
   font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  /*background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);*/
+  background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);;
   min-height: 100vh;
   padding: 20px;
 }

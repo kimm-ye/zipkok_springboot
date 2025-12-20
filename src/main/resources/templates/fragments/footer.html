@@ -1,39 +1,44 @@
-<footer id="footer">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12">
-                <p class="copyright">
-                    &copy; 2021 zipkok
-                </p>
+<th:block th:fragment="footer">
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>집콕</h3>
+                <p>당신의 심부름을 책임지는<br>믿을 수 있는 파트너</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>서비스</h3>
+                <a href="#services">심부름 요청</a>
+                <a href="#">심부름 수행</a>
+                <a href="#">이용 가이드</a>
+                <a href="#">요금 안내</a>
+            </div>
+
+            <div class="footer-section">
+                <h3>고객지원</h3>
+                <a href="#notice">공지사항</a>
+                <a href="#">자주 묻는 질문</a>
+                <a href="#">1:1 문의</a>
+                <a href="#">신고하기</a>
+            </div>
+
+            <div class="footer-section">
+                <h3>회사</h3>
+                <a href="#about">회사 소개</a>
+                <a href="#">이용약관</a>
+                <a href="#">개인정보처리방침</a>
+                <a href="#">채용 안내</a>
             </div>
         </div>
-    </div>
-</footer>
 
-<!-- jQuery -->
-<script th:src="@{/js/jquery.js}"></script>
-
-<!-- Bootstrap -->
-<script th:src="@{/js/bootstrap.min.js}"></script>
-
-<!-- Plugin JS -->
-<script th:src="@{/js/jquery.easing.min.js}"></script>
-<script th:src="@{/js/jquery.fittext.js}"></script>
-<script th:src="@{/js/wow.min.js}"></script>
-
-<!-- Custom Theme JS -->
-<script th:src="@{/js/creative.js}"></script>
-
-<!-- Owl Carousel -->
-<script th:src="@{/js/owl.carousel.js}"></script>
-
-<script>
-    $(document).ready(function () {
-        $("#owl-demo").owlCarousel({
-            autoPlay: 3000,
-            items: 3,
-            itemsDesktop: [1199, 3],
-            itemsDesktopSmall: [979, 3]
-        });
-    });
-</script>
+        <div class="footer-bottom">
+            <p>&copy; 2025 집콕. All rights reserved.</p>
+        </div>
+    </footer>
+</th:block>
