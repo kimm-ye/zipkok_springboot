@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.kosmo'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 description = 'Spring Boot기반 사이드 프로젝트'
 
 java {

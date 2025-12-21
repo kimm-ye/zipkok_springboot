@@ -38,31 +38,7 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
-	<!-- 내가 응모한 심부름 내역 조회 -->
-	<select id="getMyPerformanceHistory" parameterType="Map" resultType="MissionDTO">
-		SELECT
-			A.MISSION_SEQ as missionSeq,
-			A.MEMBER_SEQ as memberSeq,
-			B.MEMBER_NAME AS memberName,
-			A.MISSION_CATEGORY as missionCategory,
-			A.MISSION_TITLE as missionTitle,
-			A.MISSION_CONTENT as missionContent,
-			A.MISSION_GENDER as missionGender,
-			A.HELPER_SEQ as helperSeq,
-			A.MISSION_RESERVATION as missionReservation,
-			A.MISSION_RESERVATION_DT as missionReservationDt,
-			A.MISSION_TIME as missionTime,
-			A.MISSION_COST as missionCost,
-			A.MISSION_STATUS as missionStatus
-		FROM
-			MISSION A, MEMBER B
-		WHERE
-			A.member_seq = B.member_seq
-		AND helper_seq = #{helperSeq}
-		ORDER BY MISSION_SEQ DESC
-		LIMIT #{limit} OFFSET #{offset}
-	</select>
-
+	<!-- 내가 응모한 심부름 내역 건수 -->
 	<select id="getMyPerformanceHistoryCount" parameterType="String" resultType="java.lang.Integer">
 		SELECT
 			COUNT(*)
@@ -72,11 +48,12 @@
 			helper_seq = #{helperSeq}
 	</select>
 
-	<!-- 내가 요청한 내역 조회  -->
-	<select id="getRequestHistory" parameterType="Map" resultType="MissionDTO">
+	<!-- 내가 응모한 심부름 내역 조회 -->
+	<select id="getMyPerformanceHistory" parameterType="Map" resultType="MissionDTO">
 		SELECT
 			A.MISSION_SEQ as missionSeq,
 			A.MEMBER_SEQ as memberSeq,
+			B.MEMBER_ID AS memberId,
 			A.MISSION_CATEGORY as missionCategory,
 			A.MISSION_TITLE as missionTitle,
 			A.MISSION_CONTENT as missionContent,
@@ -86,12 +63,39 @@
 			A.MISSION_RESERVATION_DT as missionReservationDt,
 			A.MISSION_TIME as missionTime,
 			A.MISSION_COST as missionCost,
-			A.MISSION_STATUS as missionStatus
+			A.MISSION_STATUS as missionStatus,
+			date_format(A.mission_create_dt, '%Y-%m-%d') as missionCreatDt
+		FROM
+			MISSION A, MEMBER B
+		WHERE
+			A.member_seq = B.member_seq
+		AND helper_seq = #{helperSeq}
+		ORDER BY MISSION_SEQ DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+
+	<!-- 내가 요청한 내역 조회  -->
+	<select id="getRequestHistory" parameterType="Map" resultType="MissionDTO">
+		SELECT
+			A.MISSION_SEQ as missionSeq,
+			A.MEMBER_SEQ as memberSeq,
+			B.MEMBER_ID as memberId,
+			A.MISSION_CATEGORY as missionCategory,
+			A.MISSION_TITLE as missionTitle,
+			A.MISSION_CONTENT as missionContent,
+			A.MISSION_GENDER as missionGender,
+			A.HELPER_SEQ as helperSeq,
+			A.MISSION_RESERVATION as missionReservation,
+			A.MISSION_RESERVATION_DT as missionReservationDt,
+			A.MISSION_TIME as missionTime,
+			A.MISSION_COST as missionCost,
+			A.MISSION_STATUS as missionStatus,
+			date_format(A.mission_create_dt, '%Y-%m-%d') as missionCreatDt
 		FROM
 			MISSION A, MEMBER B
 		WHERE
 			A.MEMBER_SEQ = B.MEMBER_SEQ
-		AND A.mission_status != 9
 		AND A.MEMBER_SEQ = #{memberSeq}
 		ORDER BY MISSION_SEQ DESC
 		LIMIT #{limit} OFFSET #{offset}
@@ -103,8 +107,7 @@
 		FROM
 			MISSION
 		WHERE
-			mission_status != 9
-		AND MEMBER_SEQ = #{memberSeq}
+			MEMBER_SEQ = #{memberSeq}
 	</select>
 
 	<!-- 미션 상세 조회 -->
