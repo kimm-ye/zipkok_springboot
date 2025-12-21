@@ -19,7 +19,7 @@ public class TokenService {
     private MemberService memberService;
 
     // accessToken으로 member정보 조회
-    public HelperDTO getMemberFromAccessToken(HttpServletRequest request) {
+    /*public HelperDTO getMemberFromAccessToken(HttpServletRequest request) {
 
         String token = CookieUtil.getCookieValue(request, "accessToken");
         HelperDTO dto = new HelperDTO();
@@ -28,5 +28,5 @@ public class TokenService {
             dto = memberService.selectMemberBySeq(memberSeq);
         }
         return dto;
-    }
+    }*/
 }

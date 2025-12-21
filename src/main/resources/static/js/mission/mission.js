@@ -39,6 +39,7 @@ function toggleDateInput() {
     }
 }
 
+
 // 파일 업로드 피드백
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('missionAttachFile');
@@ -95,7 +96,7 @@ async function loadKakaoMapScript() {
 }
 
 /* 위도,경도 가져오기 */
-const geocoder = new kakao.maps.services.Geocoder();
+/*const geocoder = new kakao.maps.services.Geocoder();*/
 
 <!-- 카카오 우편번호 검색 api  -->
 //본 예제에서는 도로명 주소 표기 방식에 대한 법령에 따라, 내려오는 데이터를 조합하여 올바른 주소를 구성하는 방법을 설명합니다.
@@ -110,7 +111,6 @@ function wayPostCode() {
                 const geocoder = new kakao.maps.services.Geocoder();
                 geocoder.addressSearch(data.address, function(result, status) {
                     if (status === kakao.maps.services.Status.OK) {
-                        console.log('좌표:', result[0].x, result[0].y);
 
                         // // 필요시 좌표를 hidden input에 저장
                         const latField = document.getElementById('wayLatitude');
@@ -136,7 +136,6 @@ function endPostCode() {
 
             var callback = function(result, status) {
                 if (status === kakao.maps.services.Status.OK) {
-                    console.log(result);
                 }
             };
 
@@ -147,7 +146,6 @@ function endPostCode() {
                 const geocoder = new kakao.maps.services.Geocoder();
                 geocoder.addressSearch(data.address, function(result, status) {
                     if (status === kakao.maps.services.Status.OK) {
-                        console.log('좌표:', result[0].x, result[0].y);
 
                         // // 필요시 좌표를 hidden input에 저장
                         const latField = document.getElementById('endLatitude');
@@ -169,7 +167,6 @@ function endPostCode() {
 
 function settingAdress(data){
 
-    console.log('data : ' + JSON.stringify(data));
     // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
 
     // 도로명 주소의 노출 규칙에 따라 주소를 표시한다.

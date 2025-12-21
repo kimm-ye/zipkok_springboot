@@ -1,114 +1,209 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이페이지</title>
+    <title>마이페이지 - 집콕</title>
     <th:block th:replace="~{fragments/header :: header}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/member/mypage.css}">
     <script type="text/javascript" th:src="@{/js/member/mypage.js}"></script>
     <script type="text/javascript" th:src="@{/js/mission/mission.js}"></script>
 </head>
 <body>
-    <link rel="stylesheet" th:href="@{/css/member/mypage.css}">
-    <!-- Header Include (Thymeleaf fragment로 대체 필요) -->
-    <div th:replace="~{fragments/nav :: nav}"></div>
 
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<section id="mypage" style="margin-top: 75px;">
     <div class="container">
-        <div id="header">
-            <h1 class="login_title">
-                <label>MY PAGE</label><br>
-            </h1>
+        <!-- 프로필 헤더 -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-info">
+                <div class="profile-name" th:text="${#authentication.name} + 님"></div>
+                <!--<div class="profile-email">hong@example.com</div>-->
+            </div>
+            <button class="profile-edit-btn" th:onclick="'location.href=\'/zipkok/member/mypage/modify\''">
+                <i class="fas fa-edit"></i>
+                프로필 수정
+            </button>
         </div>
 
-        <div class="summaryContainer">
-            <div class="item">
-                <div class="number" th:text="${#authentication.name}"></div>
+        <!-- 통계 카드 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="stat-number" th:text="${missionCount}"></div>
+                <div class="stat-label">요청한 심부름</div>
             </div>
 
-            <!-- member_status가 1인 경우 (고객) -->
+        <!-- member_status가 2인 경우 (헬퍼) -->
+        <th:block sec:authorize="hasAnyRole('HELPER')">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-number" th:text="${performanceCount}"></div>
+                <div class="stat-label">수행한 심부름</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-number">4.8</div>
+                <div class="stat-label">평균 평점</div>
+            </div>
+
+            <!--<div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="stat-number">15,000</div>
+                <div class="stat-label">보유 포인트</div>
+            </div>-->
+        </th:block>
+
+        </div>
+
+        <!-- 최근 내역 테이블 -->
+        <div class="table-container">
+            <div class="table-header">
+                <div class="table-title">최근 심부름 내역</div>
+
             <th:block sec:authorize="hasAnyRole('USER')">
-                <div class="item" >
-                    <div class="number">
-                        <a href="/zipkok/mission/request/history">요청내역 보기</a>
-                    </div>
+                <div class="filter-tabs">
+                    <button class="tab-btn active">전체</button>
                 </div>
+                <button class="view-more-btn" onclick="location.href='/zipkok/add/history'">
+                    <i class="fas fa-plus-circle"></i> 더보기
+                </button>
             </th:block>
-
-            <!-- member_status가 2인 경우 (헬퍼) -->
+            <!--member_status가 2인 경우 (헬퍼)-->
             <th:block sec:authorize="hasAnyRole('HELPER')">
-                <div class="item" >
-                    <div class="number">
-                        <a href="/zipkok/mission/request/history">요청내역 보기</a>
-                    </div>
-                </div>
-                <div class="item" >
-                    <div class="number">
-                        <a href="/zipkok/mission/performance/history">수행내역 보기</a>
-                    </div>
-                </div>
-                <div class="item" >
-                    <div class="number">
-                        <a href="/zipkok/mission/performance/history/my">나의 수행내역</a>
-                    </div>
-                </div>
-                <!-- 헬퍼인 경우 포인트 표시 -->
-                <div class="item">
-                <div class="number"></div>
-                    <div>보유포인트</div>
+                <div class="filter-tabs">
+                    <button class="tab-btn active" onclick="switchTab('request')">요청</button>
+                    <button class="tab-btn" onclick="switchTab('perform')">수행</button>
+                    <button class="view-more-btn" onclick="location.href='/zipkok/add/history'">
+                        <i class="fas fa-plus-circle"></i> 더보기
+                    </button>
                 </div>
             </th:block>
-        </div>
+            </div>
 
-        <div class="listContainer">
-            <a href="./mypage/modify" class="item">
-                <div class="icon">Ⅰ</div>
-                <div class="text">회원정보수정<span class="circle"></span></div>
-                <div class="right"> > </div>
-            </a>
+            <!-- 요청 리스트 (공통) -->
+            <div id="requestList" class="list-wrapper">
+                <!-- 데이터가 없을 때 -->
+                <div th:if="${#lists.isEmpty(mission)}" class="no-data-msg" style="padding: 40px; text-align: center; color: #999;">
+                    <i class="fas fa-exclamation-circle"></i> 요청한 내역이 없습니다.
+                </div>
+                
+                <!-- 데이터가 있을 때 -->
+                <div th:unless="${#lists.isEmpty(mission)}" th:each="item, stat : ${mission}"
+                     class="list-item"
+                     th:data-mission-seq="${item.missionSeq}"
+                     onclick="goToDetail(this)">
+                    <div class="list-number" th:text="${stat.count}">1</div>
+                    <div class="list-content">
+                        <div class="list-title" th:text="${item.missionTitle}"></div>
+                        <div class="list-meta">
+                            <i class="fas fa-calendar"></i> [[${item.missionCreatDt}]] ·
+                            <span th:switch="${item.missionStatus}">
+                                <span th:case="0" class="status-badge" style="color: #2ecc71;">신청</span>
+                                <span th:case="1" class="status-badge" style="color: #3498db;">진행중</span>
+                                <span th:case="2" class="status-badge" style="color: #95a5a6;">완료</span>
+                                <span th:case="9" class="status-badge" style="color: #e74c3c;">취소</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="list-price" th:text="${#numbers.formatInteger(item.missionCost, 0, 'COMMA')} + '원'">15,000원</div>
+                </div>
+            </div>
 
-            <a href="#" class="item" id="memberUnregister">
-                <div class="icon">Ⅱ</div>
-                <div class="text">회원탈퇴<span class="circle"></span></div>
-                <div class="right"> > </div>
-            </a>
+            <!-- 수행 리스트 (헬퍼 전용) -->
+            <th:block sec:authorize="hasAnyRole('HELPER')">
+                <div id="performList" class="list-wrapper" style="display: none;">
+                    <div th:if="${#lists.isEmpty(performance)}" class="no-data-msg" style="padding: 40px; text-align: center; color: #999;">
+                        <i class="fas fa-exclamation-circle"></i> 수행한 내역이 없습니다.
+                    </div>
 
-            <!-- 고객인 경우 -->
-            <th:block sec:authorize="hasAnyRole('USER')" class="item">
-            <a href="review.do" class="item">
-                <div class="icon">Ⅲ</div>
-                <div class="text">내가쓴리뷰관리<span class="circle"></span></div>
-                <div class="right"> > </div>
-            </a>
+                    <div th:unless="${#lists.isEmpty(performance)}" th:each="item, stat : ${performance}"
+                         class="list-item"
+                         th:data-mission-seq="${item.missionSeq}"
+                         onclick="goToDetail(this)">
+                        <div class="list-number" th:text="${stat.count}">1</div>
+                        <div class="list-content">
+                            <div class="list-title" th:text="${item.missionTitle}">제목</div>
+                            <div class="list-meta">
+                                <i class="fas fa-user"></i> [[${item.memberId}]] ·
+                                <i class="fas fa-calendar"></i> [[${item.missionCreatDt}]]
+                            </div>
+                        </div>
+                        <div class="list-price" th:text="${#numbers.formatInteger(item.missionCost, 0, 'COMMA')} + '원'">15,000원</div>
+                    </div>
+                </div>
             </th:block>
 
-            <!-- 헬퍼인 경우 -->
-            <th:block sec:authorize="hasAnyRole('HELPER')" class="item">
-            <a href="review.do" class="item">
-                <div class="icon">Ⅲ</div>
-                <div class="text">리뷰보기<span class="circle"></span></div>
-                <div class="right"> > </div>
-            </a>
-            </th:block>
-        </div>
-
-        <div class="infoContainer">
-            <a href="Notice.do" class="item">
-                <div>공지사항</div>
-            </a>
-            <a href="/zipkok/resources/build/index.html" class="item">
-                <div>Q&A</div>
-            </a>
-            <a href="download.do" class="item">
-                <div>앱 다운로드</div>
-            </a>
+            <!-- 버튼 그룹 -->
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="location.href='/zipkok'">
+                    <i class="fas fa-home"></i>
+                    홈으로
+                </button>
+                <button class="btn btn-primary" onclick="location.href='/zipkok/mission/select'">
+                    <i class="fas fa-plus"></i>
+                    새 심부름 요청
+                </button>
+            </div>
         </div>
     </div>
+</section>
 
-    <!-- Footer -->
-    <footer th:replace="~{fragments/footer :: footer}"></footer>
-    <!-- 챗봇 Include -->
-    <div th:replace="~{fragments/chatBot :: chatBot}"></div>
+    <script>
+        function goToDetail(element) {
+            const missionSeq = element.getAttribute('data-mission-seq');
+            location.href = '/zipkok/mission/request/detail?missionSeq=' + missionSeq;
+        }
+
+        function viewDetail(id) {
+            alert('심부름 상세 ' + id + '번을 조회합니다.');
+        }
+
+        // 탭 전환 로직
+        function switchTab(type) {
+            const requestList = document.getElementById('requestList');
+            const performList = document.getElementById('performList');
+
+            if (type === 'request') {
+                requestList.style.display = 'block';
+                if(performList) performList.style.display = 'none';
+            } else {
+                requestList.style.display = 'none';
+                if(performList) performList.style.display = 'block';
+            }
+        }
+
+        // 탭 버튼 활성화 스타일
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 페이지 버튼
+        document.querySelectorAll('.page-btn:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.querySelector('i')) {
+                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

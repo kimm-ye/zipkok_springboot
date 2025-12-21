@@ -157,6 +157,9 @@ function getKakaoInfo() {
 // ==================== 공통 로그인 처리 함수 ====================
 async function processLogin(loginData) {
     try {
+
+        showLoading();
+
         // 로그인 타입에 따라 엔드포인트 분리
         const endpoint = loginData.type === 'kakao'
             ? './login/action/kakao'
@@ -191,5 +194,7 @@ async function processLogin(loginData) {
         } else {
             alert('요청 처리 중 오류: ' + error.message);
         }
+    } finally {
+        hideLoading();
     }
 }

@@ -120,30 +120,43 @@ public class MemberController {
 		httpOnly로 쿠키를 만들어 저장하면 XSS 공격에 방어할 수 있기에 쿠키에 저장한다.
 	*/
 	@PostMapping("/member/login/action")
-	public Map<String, Object> login (@RequestBody Map<String, String> param, HttpServletResponse res) throws IOException {
+	public Map<String, Object> login(@RequestBody Map<String, String> param, HttpServletResponse res) throws IOException {
 
 		System.out.println("===일반 로그인=== : " + param);
 
 		Map<String, Object> result = new HashMap<>();
 
-		// 입력한 id, pass값을 비교해서 사용자자 정보 조회
-		HelperDTO dto = memberService.authenticate(param.get("memberId"), param.get("memberPass"));
+		try {
+			// 입력한 id, pass값을 비교해서 사용자 정보 조회
+			HelperDTO dto = memberService.authenticate(param.get("memberId"), param.get("memberPass"));
 
-		// 성공시 Redis 세션 생성
-		// 로그인 성공
-		TokenDTO tokens = redisService.saveTokenRedis(dto);  // JWT 토큰 생성 및 redis 저장
+			// 로그인 성공시 Redis 세션 생성 및 JWT 토큰 발급
+			TokenDTO tokens = redisService.saveTokenRedis(dto);
 
-		CookieUtil.createCookie("accessToken", 15 * 60, "/", tokens.getAccessToken(), res); // 15분
-		CookieUtil.createCookie("refreshToken", 7 * 24 * 60 * 60, "/", tokens.getRefreshToken(), res); // 7일
+			CookieUtil.createCookie("accessToken", 15 * 60, "/", tokens.getAccessToken(), res); // 15분
+			CookieUtil.createCookie("refreshToken", 7 * 24 * 60 * 60, "/", tokens.getRefreshToken(), res); // 7일
 
-		result.put("success", true);
-		result.put("memberId", dto.getMemberId());
-		result.put("memberName", dto.getMemberName());
-		result.put("message", "로그인 성공!");
-		result.put("redirectUrl", "/zipkok");
+			result.put("success", true);
+			result.put("memberId", dto.getMemberId());
+			result.put("memberName", dto.getMemberName());
+			result.put("message", "로그인 성공!");
+			result.put("redirectUrl", "/zipkok");
+
+		} catch (RuntimeException e) {
+			// 사용자 없음 또는 비밀번호 불일치
+			result.put("success", false);
+			result.put("message", "해당하는 사용자가 없습니다.");
+
+		} catch (Exception e) {
+			// 그 외 예외
+			e.printStackTrace();
+			result.put("success", false);
+			result.put("message", "로그인 처리 중 오류가 발생했습니다.");
+		}
 
 		return result;
 	}
+
 
 
 	/*
@@ -183,6 +196,7 @@ public class MemberController {
 		} else {
 			// 없는 회원이면 임시 JWT 발급
 			String tempToken = jwtUtil.tempSnsToken(param.get("type"), param.get("snsId"));
+			System.out.println("kakao action : " + tempToken);
 			CookieUtil.createCookie("tempToken", 5 * 60, "/", tempToken, res); // 5분
 
 			result.put("success", false);
@@ -246,7 +260,8 @@ public class MemberController {
 
     //회원탈퇴
     @GetMapping("/member/unregister")
-    public Map<String, Object>  unregister(@AuthenticationPrincipal CustomUserDetail me, HttpServletResponse response) throws Exception {
+    public Map<String, Object>  unregister(@AuthenticationPrincipal CustomUserDetail me,
+										   HttpServletResponse response) throws Exception {
 
 		Map<String, Object> result = new HashMap<>();
 
@@ -272,15 +287,27 @@ public class MemberController {
 
 	// 로그아웃시 토큰 쿠키삭제, redis에서도 삭제
 	@PostMapping("/member/logout/action")
-	public ModelAndView logout(@AuthenticationPrincipal CustomUserDetail me, HttpServletResponse res) {
+	public ModelAndView logout(@AuthenticationPrincipal CustomUserDetail me,
+							   @CookieValue(value = "accessToken", required = false) String accessToken,
+							   @CookieValue(value = "refreshToken", required = false) String refreshToken,
+							   HttpServletResponse res) {
 
+
+		// 1. Access Token을 블랙리스트에 추가 (탈취방지하기 위함)
+		if (accessToken != null) {
+			redisService.blacklistToken(accessToken);
+			log.info("Access Token 블랙리스트 추가: {}", me.getMemberSeq());
+		}
+
+		// 2. Redis에서 Refresh Token 삭제 -> redis에서 삭제하면 되므로 블랙리스트에는 추가하지 않는다.
+		redisTemplate.delete("refresh:" + me.getMemberSeq());
+
+		// 3. 쿠키 삭제 (브라우저에서 제거)
 		CookieUtil.deleteCookie("accessToken", "/", res);
 		CookieUtil.deleteCookie("refreshToken", "/", res);
 
-		//Redis에서도 삭제
-		redisTemplate.delete("refresh:" + me.getMemberSeq());
 
-	    return new ModelAndView("redirect:/");
+		return new ModelAndView("redirect:/");
 	}
 
 

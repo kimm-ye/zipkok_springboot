@@ -38,29 +38,23 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public HelperDTO authenticate(String inputId, String inputPwd) {
-	    try {
-
+		try {
 			HelperDTO member = memberDao.selectMemberById(inputId);
-	        if (member != null) {
+			if (member == null) {
+				throw new RuntimeException("사용자 없음: " + inputId);
+			}
 
-	            // 비밀번호 비교: 원본 vs 암호화된 비밀번호
-	            boolean isMatch = passwordEncoder.matches(inputPwd, member.getMemberPass());
+			boolean isMatch = passwordEncoder.matches(inputPwd, member.getMemberPass());
+			if (!isMatch) {
+				throw new RuntimeException("비밀번호 불일치: " + inputId);
+			}
 
-	            if (isMatch) {
-	                return member;
-	            } else {
-	                System.out.println("비밀번호 불일치: " + inputId);
-	            }
-	        } else {
-	            System.out.println("사용자 없음: " + inputId);
-	        }
+			return member;
 
-	        return null;
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw e;
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 
 	@Override
@@ -74,6 +68,18 @@ public class MemberServiceImpl implements MemberService {
 		return memberDao.idCheck(id);
 	}
 
+	// helper 이미지까지조회
+	@Override
+	public HelperDTO selectMemberWithImageBySeq(String memberSeq) {
+		return memberDao.selectMemberWithImageBySeq(memberSeq);
+	}
+
+	// member 정보만 죄회
+	@Override
+	public HelperDTO selectMemberBySeq(String memberSeq) {
+		return memberDao.selectMemberBySeq(memberSeq);
+	}
+
 	@Override
 	public String findId(Map<String, String> param) {
 		return memberDao.findId(param);
@@ -82,11 +88,6 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public String findPwd(Map<String, String> param) {
 		return memberDao.findPwd(param);
-	}
-
-	@Override
-	public HelperDTO selectMemberBySeq(String memberSeq) {
-		return  memberDao.selectMemberBySeq(memberSeq);
 	}
 
 	@Override

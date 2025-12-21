@@ -1,0 +1,386 @@
+let isAdmin ;
+let noticeId;
+document.addEventListener('DOMContentLoaded', () => {
+
+    const mode = document.getElementById('pageMode')?.value;
+    noticeId = document.getElementById('noticeId')?.value;
+    isAdmin = document.getElementById('isAdmin')?.value === 'true';
+
+    console.log(mode);
+    console.log(noticeId);
+    console.log(isAdmin);
+
+    // 권한 체크: 관리자가 아닌데 edit 모드로 접근하면 view로 강제 전환
+    if (mode === 'edit' && !isAdmin) {
+        alert('수정 권한이 없습니다.');
+        location.href = `/zipkok/notice/form?noticeId=${noticeId}&mode=view`;
+        return;
+    }
+
+    if ((mode === 'view' || mode === 'edit') && noticeId) {
+        // 상세보기 모드
+        loadNoticeDetail(noticeId, isAdmin, mode);
+    } else {
+        // 작성 모드
+        //initWriteMode();
+    }
+});
+
+
+////////////////////////*  공지사항 작성  *//////////////////////
+
+// 공지유형 미리보기
+function updateBadgePreview() {
+    const type = document.getElementById('noticeType').value;
+    const preview = document.getElementById('badgePreview');
+
+    const badges = {
+        I: '<span class="badge-preview-item badge-important">중요</span>',
+        N: '<span class="badge-preview-item badge-normal">일반</span>'
+    };
+
+    preview.innerHTML = type ? '미리보기: ' + badges[type] : '';
+}
+
+
+/** 공지사항 등록 ->
+ *
+ * 공지사항은 컨트롤러에서 Map으로 전달하는 방법 말고
+ * ResponseEntity로 받는 방법으로 변경해보았다.
+ *
+ * @param form
+ * @param mode
+ * @returns {Promise<void>}
+ */
+async function submitNotice(form, mode) {
+    event.preventDefault();
+
+    try {
+        showLoading();
+
+        const formData = new FormData(form);
+
+        let response;
+
+        if(mode === 'edit') {
+            // noticeId 세팅
+            formData.append("noticeSeq", noticeId);
+            response = await fetch('/zipkok/api/notice/update', {
+                method: 'PATCH',
+                body: formData,
+                credentials: 'same-origin' // 같은 도메인에서 쿠키 전송
+            });
+        } else {
+            response = await fetch('./write/action', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin' // 같은 도메인에서 쿠키 전송
+            });
+        }
+
+        // JSON 파싱 시 오류 방지
+        let result = null;
+        try {
+            result = await response.json();
+        } catch (e) {
+            console.error('JSON 파싱 실패', e);
+        }
+
+        // 상태 코드 체크
+        if (!response.ok) {
+            // result.message 존재하면 사용, 없으면 fallback
+            let msg = '서버 오류: ' + response.status;
+            if (result && result.message) {
+                msg = result.message;
+            }
+            alert(msg);
+            return;
+        }
+
+        // 성공(200) 처리
+        if (result && result.success) {
+            alert(result.message);
+            if (result.redirectUrl) {
+                window.location.href = result.redirectUrl;
+            }
+        } else {
+            // 성공 코드지만 success=false인 경우
+            let msg = '처리 실패';
+            if (result && result.message) {
+                msg = result.message;
+            }
+            alert(msg);
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('처리 중 오류가 발생했습니다.');
+    } finally {
+        hideLoading();
+    }
+}
+
+// 취소버튼 클릭시
+function goBack() {
+    if (confirm('작성 중인 내용이 사라집니다. 취소하시겠습니까?')) {
+        window.history.back();
+    }
+}
+
+
+// 첨부파일 체인지 이벤트
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+
+    const maxSize = 10 * 1024 * 1024; // 10MB (바이트 단위)
+
+    if (file && file.size > maxSize) {
+        alert("파일 크기는 10MB를 초과할 수 없습니다.");
+        e.target.value = ""; // 선택된 파일 초기화
+    } else {
+        if (file) {
+            const fileName = file.name;
+            document.getElementById('fileName').textContent = fileName;
+            document.getElementById('selectedFile').classList.add('show');
+            document.getElementById('labelBoardFile').style.display = 'none';
+        }
+    }
+}
+
+// 첨부파일 제거 이벤트
+function removeFile(mode) {
+
+    if (mode === 'edit') {
+        document.getElementById('selectedFile').classList.remove('show');
+        document.getElementById('labelBoardFile').style.display = 'block';
+    } else {
+        document.getElementById('boardAttachFile').value = '';
+        document.getElementById('selectedFile').classList.remove('show');
+        document.getElementById('labelBoardFile').style.display = 'block';
+    }
+}
+
+
+///////////////////////////////공지사항 상세///////////////////////////////////////////
+
+
+// 공지사항 상세 정보 로드
+async function loadNoticeDetail(noticeId, isAdmin, mode) {
+    showLoading();
+
+    try {
+        const response = await fetch(`/zipkok/api/notice/detail?noticeId=${noticeId}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            renderNoticeForm(result.data, isAdmin, mode);
+        } else {
+            alert(result.message || '공지사항을 불러오는데 실패했습니다.');
+        }
+    }catch (error) {
+        console.error('Error:', error);
+        alert('공지사항을 불러오는 중 오류가 발생했습니다.');
+    } finally {
+        hideLoading();
+    }
+}
+
+// 공지사항 폼 렌더링 (view/edit 통합)
+function renderNoticeForm(data, isAdmin, mode) {
+    const form = document.getElementById('noticeForm');
+
+    // 데이터 채우기
+    document.getElementById('noticeType').value = data.noticeType;
+    document.getElementById('noticeTitle').value = data.noticeTitle;
+    document.getElementById('noticeContent').value = data.noticeContent;
+
+    // mode에 따라 readonly 설정
+    const isReadOnly = (mode === 'view');
+
+    document.getElementById('noticeType').disabled = isReadOnly;
+    document.getElementById('noticeTitle').readOnly = isReadOnly;
+    document.getElementById('noticeContent').readOnly = isReadOnly;
+
+    // readonly 스타일 적용
+    if (isReadOnly) {
+        document.getElementById('noticeTitle').style.backgroundColor = '#f7fafc';
+        document.getElementById('noticeContent').style.backgroundColor = '#f7fafc';
+        document.getElementById('noticeContent').style.minHeight = '300px';
+    } else {
+        document.getElementById('noticeTitle').style.backgroundColor = '#ffffff';
+        document.getElementById('noticeContent').style.backgroundColor = '#ffffff';
+    }
+
+    // 첨부파일 처리
+    const fileGroup = document.getElementById('fileGroup');
+    if (fileGroup) {
+        if (isReadOnly) {
+            // view 모드: 다운로드만
+            if (data.fileId && data.boardFileName) {
+                fileGroup.innerHTML = `
+                    <label class="form-label">
+                        <i class="fas fa-paperclip"></i>
+                        첨부파일
+                    </label>
+                    <div style="padding: 15px; background: #f7fafc; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-file-${data.boardFileEtx === 'pdf' ? 'pdf' : 'alt'}" style="color: #4299e1;"></i>
+                        <a href="/zipkok/file/download?fileId=${data.fileId}" 
+                           download="${data.boardFileName}"
+                           style="color: #2d3748; text-decoration: none; flex: 1;">
+                            ${data.boardFileName}
+                        </a>
+                        <i class="fas fa-download" style="color: #718096; cursor: pointer"></i>
+                    </div>
+                `;
+            } else {
+                fileGroup.innerHTML = `
+                    <label class="form-label">
+                        <i class="fas fa-paperclip"></i>
+                        첨부파일
+                    </label>
+                    <div style="padding: 15px; background: #f7fafc; border-radius: 8px; color: #a0aec0;">
+                        첨부파일이 없습니다
+                    </div>
+                `;
+            }
+        } else {
+            // edit 모드: 수정 가능
+            let fileHTML = `
+                <label class="form-label">
+                    <i class="fas fa-paperclip"></i>
+                    첨부파일2!!!!!
+                </label>
+            `;
+
+            if (data.fileId && data.boardFileName) {
+                /*fileHTML += `
+                    <div style="padding: 10px; background: #f7fafc; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-file-${data.boardFileEtx === 'pdf' ? 'pdf' : 'alt'}" style="color: #4299e1;"></i>
+                            <span style="flex: 1; color: #2d3748;">${data.fullFileName}</span>
+                            <button type="button" onclick="removeFile('write')"
+                                    style="margin-left: auto; background: none; border: none; color: #f56565; cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;*/
+                fileHTML += `
+                    <div style="padding: 10px; background: #f7fafc; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="selected-file" id="selectedFile">
+                                <i class="fas fa-file-image"></i>
+                                <span id="fileName" >${data.fullFileName}</span>
+                                <button type="button" onclick="removeFile('edit')"
+                                        style="margin-left: auto; background: none; border: none; color: #f56565; cursor: pointer;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                fileHTML += `
+                    <input type="file" id="boardAttachFile" name="boardAttachFile"
+                       onchange="handleFileSelect(event)" style="display: none;">
+                       
+                       <label for="boardAttachFile" class="file-upload" id="labelBoardFile" style="display: block">
+                            <div class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>클릭하여 파일을 업로드하세요</span>
+                            </div>
+                        </label>
+                `;
+            }
+
+            fileGroup.innerHTML = fileHTML;
+        }
+    }
+
+    // 버튼 그룹
+    const buttonGroup = document.querySelector('.button-group');
+
+    if (mode === 'view') {
+        // 상세보기 모드
+        if (isAdmin) {
+            buttonGroup.innerHTML = `
+                <div>
+                    <button type="button" class="cancel-btn" onclick="goToList()">
+                        <i class="fas fa-list"></i> 목록
+                    </button>
+                    <button type="button" class="submit-btn" onclick="switchToEditMode('${data.noticeSeq}')" 
+                            style="background: #4299e1;">
+                        <i class="fas fa-edit"></i> 수정
+                    </button>
+                    <button type="button" class="submit-btn" onclick="deleteNotice('${data.noticeSeq}')"
+                            style="background: #f56565;">
+                        <i class="fas fa-trash"></i> 삭제
+                    </button>
+                </div>
+            `;
+        } else {
+            buttonGroup.innerHTML = `
+                <div>
+                    <button type="button" class="cancel-btn" onclick="goToList()">
+                        <i class="fas fa-list"></i> 목록
+                    </button>
+                </div>
+            `;
+        }
+
+        // form submit 비활성화
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            return false;
+        };
+
+    } else if (mode === 'edit') {
+        // 수정 모드
+        buttonGroup.innerHTML = `
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="cancel-btn" onclick="goBack()">
+                    <i class="fas fa-times"></i> 취소
+                </button>
+                <button type="submit" class="submit-btn"">
+                    <i class="fas fa-save"></i> 저장
+                </button>
+            </div>
+        `;
+
+        // form submit 이벤트
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            submitNotice(form, 'edit');
+            return false;
+        };
+    }
+}
+
+// 목록 버튼 클릭
+function goToList(){
+    location.href = "/zipkok/notice";
+}
+
+// 수정버튼 클릭
+function switchToEditMode(noticeId) {
+    // 공지사항 상세 조회
+    loadNoticeDetail(noticeId, isAdmin, 'edit');
+}
+
+// 삭제버튼 클릭시
+async function deleteNotice(noticeId) {
+    showLoading();
+
+    try {
+        const response = await fetch('/zipkok/api/notice/delete', {
+            method: 'DELETE',
+            body: noticeId,
+            credentials: 'same-origin' // 같은 도메인에서 쿠키 전송
+        });
+    }catch (error) {
+        console.error('Error:', error);
+        alert('공지사항을 불러오는 중 오류가 발생했습니다.');
+    } finally {
+        hideLoading();
+    }
+}

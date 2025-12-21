@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // 수정인 경우 thymeleaf로 정보 전달
+    // 회원정보 수정인 경우 thymeleaf로 정보 전달
     if (window.memberData && window.memberData.isModify) {
         // 회원 유형에 따른 헬퍼 필드 표시
         const memberStatus = window.memberData.info.memberStatus;
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById("attachFile").addEventListener("change", previewImage);
     }
 
-    // 타입 토글설정
+    // 가입 유형 토글설정
     toggleMemberType();
 
     // 아이디 중복확인 검사
@@ -40,16 +40,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // 유효성 검사...
+            // ✅ 입력 즉시 "확인 중" 메시지 표시
+            showMsg("중복 확인 중...", "blue");
 
-            // 500ms 후 중복체크 (디바운싱)
+            // 200ms 디바운스 후 서버 요청
             debounceTimer = setTimeout(async () => {
                 try {
                     currentController = new AbortController();
 
                     const response = await fetch(`./join/check?memberId=${memberId}`, {
                         method: "POST",
-                        signal: currentController.signal
+                        signal: currentController.signal,
                     });
                     const data = await response.json();
 
@@ -59,14 +60,58 @@ document.addEventListener('DOMContentLoaded', function() {
                         showMsg("사용 가능한 아이디입니다 ✅", "green");
                     }
                 } catch (err) {
-                    if (err.name !== 'AbortError') {
+                    if (err.name !== "AbortError") {
                         showMsg("중복 확인 중 오류 발생", "red");
                     }
                 }
-            }, 500);
+            }, 200);
         });
     }
+
+    // 이메일 도메인 목록
+    const domains = ['gmail.com', 'naver.com', 'kakao.com', 'nate.com'];
+
+    // 이메일 select 찾기
+    const emailSelect = document.querySelector('select[name="email_check"]');
+
+    if (emailSelect) {
+        // 기본 옵션들 추가
+        domains.forEach(domain => {
+            const option = document.createElement('option');
+            option.value = domain;
+            option.textContent = domain;
+            emailSelect.appendChild(option);
+        });
+
+        // 수정 모드일 때 기존 값 선택
+        if (window.memberData && window.memberData.info && window.memberData.info.memberEmail) {
+            const email = window.memberData.info.memberEmail;
+            const domain = email.split('@')[1]; // @ 뒤의 도메인 추출
+
+            // 해당 도메인으로 선택
+            emailSelect.value = domain;
+
+            // email_input 함수 호출해서 email_2 필드도 채우기
+            email_input(emailSelect.form);
+        }
+    }
 });
+
+// 이메일 도메인 선택 처리
+function email_input(form) {
+    const domain = form.email_check.value;
+    if (domain === '') {
+        form.email_2.value = '';
+    } else if (domain === '1') {
+        form.email_2.readOnly = false;
+        form.email_2.value = '';
+        form.email_2.focus();
+    } else {
+        form.email_2.value = domain;
+        form.email_2.readOnly = true;
+    }
+}
+
 
 // 아이디 중복체크 여부 메세지 표시
 function showMsg(msg, color) {
@@ -103,7 +148,6 @@ function joinValidate(form) {
             }
         }
 
-        console.log(form.idDuplication.value);
         if (isModifyMode) {
             // 중복체크 확인
             if (form.idDuplication.value !== "idCheck") {
@@ -177,6 +221,9 @@ async function submitFormWithFetch(form) {
     }
 
     try {
+
+        showLoading();
+
         const formData = new FormData(form);
 
         const email1 = formData.get('email_1');
@@ -215,6 +262,8 @@ async function submitFormWithFetch(form) {
         console.error('Error:', error);
         alert('처리 중 오류가 발생했습니다.');
         alert('error :' + error);
+    } finally {
+        hideLoading();
     }
 }
 
@@ -227,7 +276,7 @@ function toggleMemberType() {
     var helperFields = document.getElementById('helper_fields');
     var form = document.forms['joinForm'];
 
-    if (memberStatus == "2") { // 헬퍼 선택
+    if (memberStatus === "2") { // 헬퍼 선택
         if (helperFields) helperFields.style.display = 'block';
 
         // 헬퍼 필수 필드 설정
@@ -259,13 +308,6 @@ function toggleMemberType() {
     }
 }
 
-// 취소버튼 클릭
-function cancelModify() {
-    if (confirm('수정을 취소하고 마이페이지로 돌아가시겠습니까?')) {
-        window.location.href = '/zipkok/member/mypage';
-    }
-}
-
 // 프로필 이미지 사진 미리보기
 function previewImage(event) {
     const file = event.target.files[0];
@@ -275,11 +317,9 @@ function previewImage(event) {
     reader.onload = function(e) {
         const preview = document.getElementById('previewImage');
         preview.src = e.target.result;
-        preview.style.display = 'block';
 
         const container = document.getElementById('previewContainer');
         container.style.display = 'block';
-
 
         const current = document.getElementById('currentProfileContainer');
         if (current) current.style.display = 'none';
@@ -287,5 +327,55 @@ function previewImage(event) {
     reader.readAsDataURL(file);
 }
 
+// 폼 전체 초기화 함수
+function resetJoinForm() {
+    const form = document.forms['joinForm'];
+    if (!form) return;
+
+    // 1️⃣ form의 모든 입력 초기화
+    form.reset();
+
+    // 2️⃣ 파일 입력 초기화 (보안 정책상 직접 처리 필요)
+    const fileInput = document.getElementById("attachFile");
+    if (fileInput) {
+        try {
+            fileInput.value = "";
+        } catch (e) {
+            const newInput = fileInput.cloneNode(true);
+            fileInput.parentNode.replaceChild(newInput, fileInput);
+            newInput.addEventListener("change", previewImage);
+        }
+    }
+
+    // 3️⃣ 미리보기/기존 프로필 표시 복원
+    const previewContainer = document.getElementById("previewContainer");
+    const previewImageEl = document.getElementById("previewImage");
+    const currentProfile = document.getElementById("currentProfileContainer");
+
+    if (previewImageEl) previewImageEl.src = "";
+    if (previewContainer) previewContainer.style.display = "none";
+    if (currentProfile) currentProfile.style.display = "block";
+}
+
+
+// 취소버튼 클릭
+function cancelModify() {
+    if (confirm('수정을 취소하고 마이페이지로 돌아가시겠습니까?')) {
+        resetJoinForm();
+        window.location.href = '/zipkok/member/mypage';
+    }
+}
+
+
+// 정보를 수정하지 않고 홈버튼을 누를 경우 폼 초기화 하고 메인으로 돌아간다.
+function goHome() {
+    // 프로필 이미지 선택 취소 (미리보기 제거, 파일 입력 초기화)
+    resetJoinForm();
+
+    // 약간의 지연 후 메인으로 이동 (UI 변경이 반영되도록)
+    setTimeout(() => {
+        window.location.href = '/zipkok';
+    }, 100);
+}
 
 

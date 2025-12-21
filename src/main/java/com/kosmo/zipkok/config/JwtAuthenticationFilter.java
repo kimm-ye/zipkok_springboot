@@ -97,8 +97,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (accessToken != null && jwtUtil.validateToken(accessToken) && jwtUtil.isAccessToken(accessToken)) {
 
             // TODO 이 부분 블랙리스트 되는지 한번 더 확인해야함
-            // 3단계: Redis 블랙리스트에서 토큰 확인 (로그아웃된 토큰인지)
-            // Access Token은 JWT만으로 검증하지만, 로그아웃된 토큰은 무효화 => 이걸 블랙리스트라고 한다.
+            /*
+            3단계: Redis 블랙리스트에서 토큰 확인 (로그아웃된 토큰인지)
+            Access Token은 JWT만으로 검증하지만, 로그아웃된 토큰은 무효화 => 이걸 블랙리스트라고 한다.
+
+            ### 실제 문제 상황
+                ```
+                1. 사용자가 로그인 → Access Token 발급 (15분 유효)
+                2. 5분 후 사용자가 로그아웃
+                3. ❌ 문제: 남은 10분 동안 Access Token은 여전히 유효!
+                4. 누군가 그 토큰을 탈취했다면? → 10분 동안 계속 사용 가능!
+             */
             if (!redisService.isAccessTokenBlacklisted(accessToken)) {
 
                 // 4단계: JWT Access Token에서 사용자명과 권한 추출
@@ -149,6 +158,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 System.out.println("Access Token 자동 갱신 완료: " + memberSeq);
+            } else {
+                //redis에서 삭제되어 refreshToken도 쿠키에서 삭제한다.
+                CookieUtil.deleteCookie("refreshToken", "/", response);
             }
         }
 

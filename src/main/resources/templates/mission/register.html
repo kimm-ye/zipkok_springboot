@@ -235,7 +235,8 @@
                     <i class="fas fa-paper-plane"></i>
                     <span th:text="${mode == 'edit' ? '심부름 수정하기' : '심부름 등록하기'}">심부름 등록하기</span>
                 </button>
-                <button type="button" th:if="${mode == 'edit'}"
+                <button type="button"
+                        th:if="${mode == 'edit' && mission?.missionStatus == 0}"
                         class="submit-btn delete-btn"
                         onclick="deleteMission()">
                     <i class="fas fa-trash-alt"></i>
@@ -243,7 +244,7 @@
                 </button>
             </div>
 
-            <button type="button" class="submit-btn back-btn" onclick="history.back()">
+            <button type="button" class="submit-btn back-btn" style="background: #6c757d;" onclick="history.back()">
                 <i class="fas fa-arrow-left"></i>
                 이전으로
             </button>

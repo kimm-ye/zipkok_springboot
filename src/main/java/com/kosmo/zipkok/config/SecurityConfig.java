@@ -26,7 +26,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/", "/member/login/**", "/member/logout/**", "/member/join/**", "/member/find/**",
-                            "/notice",
+                            "/notice", "/notice/history/**", "/notice/detail", "/api/notice/detail",
                             "/resources/**", "/css/**", "/js/**", "/img/**", "/webjars/**",
                             "/favicon.ico", "/error", "/403", "/404").permitAll()
                     .anyRequest().authenticated() // 나머지는 인증 필요 (인증정보 없으면 403)

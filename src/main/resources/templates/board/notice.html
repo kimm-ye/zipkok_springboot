@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>공지사항 - 셔틀콕</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <th:block th:replace="~{fragments/header :: header}"></th:block>
     <link rel="stylesheet" th:href="@{/css/board/notice.css}">
     <script type="text/javascript" th:src="@{/js/board/notice.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
 </head>
+
 <body>
+<!-- 로딩바 -->
+<div th:replace="~{fragments/loading :: loading}"></div>
+
 <div class="container">
     <div class="header">
         <h1>
@@ -30,7 +34,7 @@
     </div>
 
     <div class="notice-list" id="noticeList">
-        <div class="notice-item" onclick="viewNotice(1)">
+        <div class="notice-item" onclick="loadNoticeDetail(1)">
             <i class="fas fa-star notice-icon"></i>
             <div class="notice-content">
                 <div class="notice-title">
@@ -44,7 +48,7 @@
             </div>
         </div>
 
-        <div class="notice-item" onclick="viewNotice(2)">
+        <div class="notice-item" onclick="loadNoticeDetail(2)">
             <i class="fas fa-gift notice-icon"></i>
             <div class="notice-content">
                 <div class="notice-title">
@@ -58,7 +62,7 @@
             </div>
         </div>
 
-        <div class="notice-item" onclick="viewNotice(3)">
+        <div class="notice-item" onclick="loadNoticeDetail(3)">
             <i class="fas fa-bell notice-icon"></i>
             <div class="notice-content">
                 <div class="notice-title">
@@ -72,7 +76,7 @@
             </div>
         </div>
 
-        <div class="notice-item" onclick="viewNotice(4)">
+        <div class="notice-item" onclick="loadNoticeDetail(4)">
             <i class="fas fa-wrench notice-icon"></i>
             <div class="notice-content">
                 <div class="notice-title">
@@ -85,7 +89,7 @@
             </div>
         </div>
 
-        <div class="notice-item" onclick="viewNotice(5)">
+        <div class="notice-item" onclick="loadNoticeDetail(5)">
             <i class="fas fa-shield-alt notice-icon"></i>
             <div class="notice-content">
                 <div class="notice-title">
@@ -98,7 +102,7 @@
             </div>
         </div>
 
-        <div class="notice-item" onclick="viewNotice(6)">
+        <div class="notice-item" onclick="loadNoticeDetail(6)">
             <i class="fas fa-mobile-alt notice-icon"></i>
             <div class="notice-content">
                 <div class="notice-title">
@@ -111,7 +115,7 @@
             </div>
         </div>
 
-        <div class="notice-item" onclick="viewNotice(7)">
+        <div class="notice-item" onclick="loadNoticeDetail(7)">
             <i class="fas fa-users notice-icon"></i>
             <div class="notice-content">
                 <div class="notice-title">
@@ -124,7 +128,7 @@
             </div>
         </div>
 
-        <div class="notice-item" onclick="viewNotice(8)">
+        <div class="notice-item" onclick="loadNoticeDetail(8)">
             <i class="fas fa-question-circle notice-icon"></i>
             <div class="notice-content">
                 <div class="notice-title">
@@ -142,12 +146,12 @@
         <button class="page-btn" onclick="changePage('prev')">
             <i class="fas fa-chevron-left"></i>
         </button>
-        <button class="page-btn active" onclick="changePage(1)">1</button>
-        <button class="page-btn" onclick="changePage(2)">2</button>
-        <button class="page-btn" onclick="changePage(3)">3</button>
-        <button class="page-btn" onclick="changePage(4)">4</button>
-        <button class="page-btn" onclick="changePage(5)">5</button>
-        <button class="page-btn" onclick="changePage('next')">
+        <button class="page-btn active" >1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">4</button>
+        <button class="page-btn">5</button>
+        <button class="page-btn">
             <i class="fas fa-chevron-right"></i>
         </button>
     </div>

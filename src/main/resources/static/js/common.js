@@ -21,48 +21,23 @@ document.addEventListener('keypress', function(e) {
 });
 
 
-document.addEventListener('DOMContentLoaded', function() {
-    // 이메일 도메인 목록
-    const domains = ['gmail.com', 'naver.com', 'daum.net', 'kakao.com', 'hotmail.com'];
+// 로딩 오버레이 표시
+function showLoading() {
+    document.getElementById('loadingOverlay').classList.add('active');
+}
 
-    // 이메일 select 찾기
-    const emailSelect = document.querySelector('select[name="email_check"]');
+// 로딩 오버레이 숨김
+function hideLoading() {
+    document.getElementById('loadingOverlay').classList.remove('active');
+}
 
-    if (emailSelect) {
-        // 기본 옵션들 추가
-        domains.forEach(domain => {
-            const option = document.createElement('option');
-            option.value = domain;
-            option.textContent = domain;
-            emailSelect.appendChild(option);
-        });
+// 데이터 로딩 시뮬레이션
+function handleLoadData() {
+    showLoading();
 
-        // 수정 모드일 때 기존 값 선택
-        if (window.memberData && window.memberData.info && window.memberData.info.memberEmail) {
-            const email = window.memberData.info.memberEmail;
-            const domain = email.split('@')[1]; // @ 뒤의 도메인 추출
-
-            // 해당 도메인으로 선택
-            emailSelect.value = domain;
-
-            // email_input 함수 호출해서 email_2 필드도 채우기
-            email_input(emailSelect.form);
-        }
-    }
-});
-
-
-// 이메일 도메인 선택 처리
-function email_input(form) {
-    const domain = form.email_check.value;
-    if (domain === '') {
-        form.email_2.value = '';
-    } else if (domain === '1') {
-        form.email_2.readOnly = false;
-        form.email_2.value = '';
-        form.email_2.focus();
-    } else {
-        form.email_2.value = domain;
-        form.email_2.readOnly = true;
-    }
+    // 실제 프로젝트에서는 여기에 Ajax 호출이나 폼 제출 등을 넣으세요
+    setTimeout(() => {
+        hideLoading();
+        alert('데이터 로딩 완료!');
+    }, 3000);
 }

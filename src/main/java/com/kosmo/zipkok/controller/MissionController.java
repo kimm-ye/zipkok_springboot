@@ -44,25 +44,6 @@ public class MissionController {
 		return result;
 	}
 
-	// 내가 요청한 내역 조회
-	@GetMapping("/mission/request/history")
-	public ModelAndView request(@AuthenticationPrincipal CustomUserDetail me,
-								@RequestParam(value = "page", defaultValue = "1") int page,
-								@RequestParam(value = "size", defaultValue = "10") int size) {
-
-		ModelAndView mv = new ModelAndView("mission/performance");
-
-		int totalCount = missionService.getRequestHistoryCount(me.getMemberSeq());
-		PagingDTO paging = PagingDTO.of(page, size, totalCount);
-		List<MissionDTO> missionHistory = missionService.getRequestHistory(me.getMemberSeq(), paging);
-
-		mv.addObject("history", "request");
-		mv.addObject("lists", missionHistory);
-		mv.addObject("paging", paging);
-
-		return mv;
-	}
-
 	// 상세페이지 이동 (이동시 본인이 작성한 글이 아니면 view, 맞으면 edit)
 	@GetMapping("/mission/request/detail")
 	public ModelAndView detail(@AuthenticationPrincipal CustomUserDetail me,
@@ -177,24 +158,6 @@ public class MissionController {
 	}
 
 
-	// 헬퍼 - 나의 수행내역 조회
-	@GetMapping("/mission/performance/history/my")
-	public ModelAndView myPerformance(@AuthenticationPrincipal CustomUserDetail me,
-									  @RequestParam(value = "page", defaultValue = "1") int page,
-									  @RequestParam(value = "size", defaultValue = "10") int size) {
-
-		ModelAndView mv = new ModelAndView("mission/performance");
-
-		int totalCount = missionService.getMyPerformanceHistoryCount(me.getMemberSeq());
-		PagingDTO paging = PagingDTO.of(page, size, totalCount);
-		List<MissionDTO> missionHistory = missionService.getMyPerformanceHistory(me.getMemberSeq(), paging);
-
-		mv.addObject("history", "performance");
-		mv.addObject("lists", missionHistory);
-		mv.addObject("paging", paging);
-
-		return mv;
-	}
 
 	// 헬퍼 - 심부름 수행 버튼 클릭하여 상태 변경
 	// TODO @AuthenticationPrincipal 사용하면 JWT 토큰을 쿠키에 저장하지 않고도 member 정보를 확인할 수 있따.

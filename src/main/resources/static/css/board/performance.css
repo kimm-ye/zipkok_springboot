@@ -1,0 +1,482 @@
+/* ===== 기본 설정 ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #f8f9fa;
+    color: #2d3748;
+}
+
+/* ===== 섹션 컨테이너 ===== */
+#Notice {
+    padding: 100px;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.row {
+    width: 100%;
+}
+
+.col-12 {
+    width: 100%;
+}
+
+/* ===== 숨김 요소 ===== */
+.angle,
+.angle2 {
+    display: none;
+}
+
+/* ===== 페이지 헤더 ===== */
+.performanceList {
+    background: white;
+    border-radius: 20px;
+    padding: 50px 40px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+}
+
+.subTitle4C {
+    font-size: 0.9em;
+    color: #718096;
+    font-weight: 500;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.performanceList h2 {
+    font-size: 2.0em;
+    font-weight: bold;
+    color: #2d3748;
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 3px solid #FF4C00;
+    position: relative;
+}
+
+.performanceList h2::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 100px;
+    height: 3px;
+    background: #FFC100;
+}
+
+/* ===== 메인 헤더 테이블 ===== */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive:first-of-type {
+    margin-bottom: 30px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+}
+
+.table-bordered {
+    border: none;
+}
+
+.mb-3 {
+    margin-bottom: 20px;
+}
+
+.main-header {
+    background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+    font-size: 1.6em;
+    font-weight: bold;
+    border-radius: 15px;
+    border: none !important;
+    box-shadow: 0 5px 20px rgba(255, 76, 0, 0.25);
+}
+
+/* ===== 데이터 테이블 래퍼 ===== */
+.table-responsive:nth-of-type(2) {
+    background: white;
+    border-radius: 15px;
+    padding: 35px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0;
+}
+
+/* ===== 테이블 스타일 ===== */
+#dataTable {
+    width: 90%;
+    margin: 0 auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: none;
+}
+
+/* ===== 테이블 헤더 ===== */
+#dataTable thead {
+    background: #f8f9fa;
+}
+
+#dataTable thead tr {
+    border: none;
+}
+
+.table-header th {
+    padding: 20px 15px;
+    font-weight: 600;
+    font-size: 1em;
+    color: #2d3748;
+    border: none !important;
+    text-align: center;
+    background: #f8f9fa;
+}
+
+.table-header th:first-child {
+    border-radius: 12px 0 0 0;
+}
+
+.table-header th:last-child {
+    border-radius: 0 12px 0 0;
+}
+
+/* ===== 테이블 바디 ===== */
+#dataTable tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+#dataTable tbody tr:hover {
+    background: #fffbf5;
+}
+
+#dataTable tbody tr:last-child {
+    border-bottom: none;
+}
+
+#dataTable tbody td {
+    padding: 22px 15px;
+    vertical-align: middle;
+    border: none !important;
+}
+
+/* 번호 셀 */
+#dataTable tbody td:first-child {
+    text-align: center;
+    font-weight: 600;
+    color: #718096;
+    width: 10%;
+}
+
+/* 제목 셀 */
+#dataTable tbody td:nth-child(2) {
+    padding-left: 25px;
+}
+
+#dataTable tbody td:nth-child(2) a {
+    color: #2d3748;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+#dataTable tbody td:nth-child(2) a:hover {
+    color: #FF4C00;
+}
+
+/* 작성자 ID 셀 */
+#dataTable tbody td:nth-child(3) {
+    text-align: center;
+    color: #718096;
+    font-size: 0.95em;
+    width: 15%;
+}
+
+/* 비용 셀 */
+#dataTable tbody td:last-child {
+    text-align: center;
+    font-weight: bold;
+    color: #FF4C00;
+    font-size: 1.1em;
+    width: 10%;
+}
+
+/* ===== 빈 데이터 ===== */
+.no-data {
+    text-align: center;
+    padding: 100px 20px !important;
+    color: #a0aec0;
+    font-size: 1.2em;
+    background: #fafafa;
+    border: none !important;
+}
+
+.no-data::before {
+    content: '📋';
+    display: block;
+    font-size: 5em;
+    margin-bottom: 25px;
+    opacity: 0.5;
+}
+
+/* ===== 페이지네이션 ===== */
+.pagination-wrapper {
+    margin-bottom: 20px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.page-item {
+    list-style: none;
+}
+
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 45px;
+    height: 45px;
+    padding: 0 15px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    color: #4a5568;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.page-link:hover {
+    border-color: #FF4C00;
+    color: #FF4C00;
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(255, 76, 0, 0.3);
+}
+
+.page-item.disabled .page-link {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: #e2e8f0;
+}
+
+.page-item.disabled .page-link:hover {
+    border-color: #e2e8f0;
+    color: #4a5568;
+}
+
+/* ===== 버튼 ===== */
+.text-center {
+    text-align: center;
+}
+
+.mt-4 {
+    margin-top: 40px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 45px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-main {
+    background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+    color: white;
+    box-shadow: 0 5px 20px rgba(255, 76, 0, 0.3);
+}
+
+.btn-main:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(255, 76, 0, 0.4);
+}
+
+.btn-main::before {
+    content: '🏠';
+    font-size: 1.3em;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 992px) {
+    #Notice {
+        padding: 100px 15px 50px;
+    }
+
+    .performanceList {
+        padding: 40px 30px;
+    }
+
+    .performanceList h2 {
+        font-size: 2em;
+    }
+
+    #dataTable {
+        width: 95%;
+    }
+}
+
+@media (max-width: 768px) {
+    #Notice {
+        padding: 90px 15px 40px;
+    }
+
+    .performanceList {
+        padding: 30px 20px;
+    }
+
+    .performanceList h2 {
+        font-size: 1.8em;
+        margin-bottom: 35px;
+    }
+
+    .main-header {
+        font-size: 1.3em;
+        padding: 25px 20px;
+    }
+
+    .table-responsive:nth-of-type(2) {
+        padding: 25px 15px;
+        overflow-x: auto;
+    }
+
+    #dataTable {
+        width: 100%;
+        min-width: 600px;
+    }
+
+    .table-header th {
+        padding: 18px 12px;
+        font-size: 0.95em;
+    }
+
+    #dataTable tbody td {
+        padding: 18px 12px;
+        font-size: 0.95em;
+    }
+
+    #dataTable tbody td:first-child {
+        width: 60px;
+    }
+
+    .pagination {
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .page-link {
+        min-width: 40px;
+        height: 40px;
+        font-size: 0.95em;
+    }
+
+    .btn-main {
+        width: 100%;
+        padding: 16px 30px;
+    }
+
+    .mt-4 {
+        margin-top: 30px;
+    }
+}
+
+@media (max-width: 576px) {
+    .performanceList h2 {
+        font-size: 1.5em;
+    }
+
+    .main-header {
+        font-size: 1.1em;
+        padding: 20px 15px;
+    }
+
+    #dataTable {
+        min-width: 550px;
+    }
+
+    .table-header th {
+        padding: 15px 10px;
+        font-size: 0.9em;
+    }
+
+    #dataTable tbody td {
+        padding: 15px 10px;
+        font-size: 0.9em;
+    }
+}
+
+/* ===== 스크롤바 스타일링 ===== */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #e04300 0%, #e0a800 100%);
+}
+
+/* ===== Bootstrap 클래스 호환성 ===== */
+.wow {
+    visibility: visible;
+    animation-name: none;
+}
+
+.animated {
+    animation-duration: 0s;
+}
+
+.zoomIn {
+    animation-name: none;
+}
+
+.headding {
+    /* 기존 스타일 유지 */
+}
+
+/* ===== 추가 유틸리티 ===== */
+.justify-content-center {
+    justify-content: center;
+}

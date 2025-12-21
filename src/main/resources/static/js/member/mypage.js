@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById("memberUnregister").addEventListener("click", async function (e) {
+    /*document.getElementById("memberUnregister").addEventListener("click", async function (e) {
         e.preventDefault();
         await handleMemberUnregister();
     });
+*/
+
 });
 
 

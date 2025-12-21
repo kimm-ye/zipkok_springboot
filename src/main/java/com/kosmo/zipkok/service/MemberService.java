@@ -16,6 +16,7 @@ public interface MemberService {
     HelperDTO selectSnsLogin(Map<String, String> param);
     //아이디 중복체크
     String idCheck(String id);
+    HelperDTO selectMemberWithImageBySeq(String memberSeq);
     HelperDTO selectMemberBySeq(String memberSeq);
     //아이디찾기
     String findId (Map<String, String> param);
