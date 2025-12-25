@@ -36,9 +36,6 @@ public class MemberController {
 	RedisService redisService;
 
 	@Autowired
-	TokenService tokenService;
-
-	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
 
 	@Autowired
