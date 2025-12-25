@@ -31,7 +31,7 @@
     <div id="wrapper">
         <div id="content">
 
-            <form name="loginForm" >
+            <form name="loginForm" onsubmit="return false;">
                 <input type="hidden" name="login_ok" value="1"/>
                 <input type="hidden" name="backUrl" th:value="${param.backUrl}"/>
 
@@ -44,7 +44,6 @@
                     <h3 class="join_title"><label for="pass">비밀번호</label></h3>
                     <span class="box int_pass">
                         <input type="password" id="pass" class="join_H" maxlength="16" name="pass" value="1111" required>
-                        <span id="alertTxt">사용불가</span>
                         <img th:src="@{/img/login/m_icon_pass.png}" id="pass1_img" class="passImg">
                     </span>
 
@@ -52,25 +51,25 @@
 
                     <div class="btn_area">
                         <p style="text-align: right;"><a th:href="@{/member/find}">아이디/비밀번호 찾기</a></p>
-                        <input type="button" class="loginBtn" value="로그인" onclick="validateLoginForm(this.form)">
+                        <input type="submit" class="loginBtn" value="로그인" onclick="validateLoginForm(this.form)">
                         <br>
                         <button type="button" class="joinBtn" th:onclick="'location.href=\'/zipkok/member/join\''">
                             <span>회원가입</span>
                         </button>
                         <br>
-                        <div id="kakaologin">
-                            <form id="kakaoForm" class="kakaobtn">
-                                <input type="hidden" name="kakaoemail" id="kakaoemail" value=""/>
-                                <input type="hidden" name="kakaoname" id="kakaoname" value=""/>
-                                <input type="hidden" name="isKakao" id="isKakao" value="1"/>
-                                <a id="kakao-login-btn" href="javascript:loginWithKakao()">
-                                    <img th:src="@{/img/login/kakao_login_medium_wide.png}" style="width: 100%;" alt="카카오 로그인" />
-                                </a>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </form>
+            <div id="kakaologin">
+                <form id="kakaoForm" class="kakaobtn">
+                    <input type="hidden" name="kakaoemail" id="kakaoemail" value=""/>
+                    <input type="hidden" name="kakaoname" id="kakaoname" value=""/>
+                    <input type="hidden" name="isKakao" id="isKakao" value="1"/>
+                    <a id="kakao-login-btn" href="javascript:loginWithKakao()">
+                        <img th:src="@{/img/login/kakao_login_medium_wide.png}" alt="카카오 로그인" />
+                    </a>
+                </form>
+            </div>
         </div>
     </div>
 </div>

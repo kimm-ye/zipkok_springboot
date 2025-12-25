@@ -73,7 +73,7 @@ jwt:
 
 # Redis 설정
 redis:
-  host: ${REDIS_HOST:localhost}                   # Redis 서버 호스트
+  host: ${REDIS_HOST:132.145.98.236}                   # Redis 서버 호스트
   port: ${REDIS_PORT:6379}                       # Redis 서버 포트
 
 

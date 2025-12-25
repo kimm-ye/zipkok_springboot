@@ -406,7 +406,6 @@ input[type="file"]:hover {
 .btn_area {
     display: flex;
     flex-direction: column;
-    gap: 5px;
 }
 
 .loginBtn {
@@ -583,4 +582,28 @@ textarea:focus {
     100% {
         box-shadow: 0 0 0 3px rgba(255, 193, 0, 0.1);
     }
+}
+
+.password-hint {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    line-height: 1.5;
+}
+
+.password-hint.error {
+    color: #ff4444;
+}
+
+.password-hint.success {
+    color: #00aa00;
+}
+
+/* 입력 필드 스타일 */
+.join_H.invalid {
+    border-color: #ff4444;
+}
+
+.join_H.valid {
+    border-color: #00aa00;
 }

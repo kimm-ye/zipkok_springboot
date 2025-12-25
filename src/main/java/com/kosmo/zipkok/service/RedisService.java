@@ -89,6 +89,7 @@ public class RedisService {
         // 2단계: Redis에서 저장된 Refresh Token과 비교
         // 이는 사용자가 로그아웃했거나 다른 기기에서 로그인했을 때를 대비한 검증
         String storedToken = (String) redisTemplate.opsForValue().get("refresh:" + memberSeq);
+        System.out.println("storedToken : " + storedToken);
         return refreshToken.equals(storedToken);
     }
 

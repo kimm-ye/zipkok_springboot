@@ -13,7 +13,6 @@ body {
 
 /* ===== 히어로 섹션 ===== */
 .hero {
-    margin-top: 70px;
     background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
     padding: 100px 20px;
     text-align: center;

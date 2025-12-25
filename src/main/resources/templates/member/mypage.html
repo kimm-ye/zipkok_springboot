@@ -8,13 +8,13 @@
     <th:block th:replace="~{fragments/header :: header}"></th:block>
     <link rel="stylesheet" th:href="@{/css/member/mypage.css}">
     <script type="text/javascript" th:src="@{/js/member/mypage.js}"></script>
-    <script type="text/javascript" th:src="@{/js/mission/mission.js}"></script>
+    <!--<script type="text/javascript" th:src="@{/js/mission/mission.js}"></script>-->
 </head>
 <body>
 
 <div th:replace="~{fragments/nav :: nav}"></div>
 
-<section id="mypage" style="margin-top: 75px;">
+<section id="mypage" style="margin-top: 15px;">
     <div class="container">
         <!-- 프로필 헤더 -->
         <div class="profile-header">
@@ -23,7 +23,6 @@
             </div>
             <div class="profile-info">
                 <div class="profile-name" th:text="${#authentication.name} + 님"></div>
-                <!--<div class="profile-email">hong@example.com</div>-->
             </div>
             <button class="profile-edit-btn" th:onclick="'location.href=\'/zipkok/member/mypage/modify\''">
                 <i class="fas fa-edit"></i>
@@ -76,10 +75,7 @@
                 <div class="table-title">최근 심부름 내역</div>
 
             <th:block sec:authorize="hasAnyRole('USER')">
-                <div class="filter-tabs">
-                    <button class="tab-btn active">전체</button>
-                </div>
-                <button class="view-more-btn" onclick="location.href='/zipkok/add/history'">
+                <button class="view-more-btn" onclick="location.href='/zipkok/mission/add?flag=request'">
                     <i class="fas fa-plus-circle"></i> 더보기
                 </button>
             </th:block>
@@ -88,7 +84,7 @@
                 <div class="filter-tabs">
                     <button class="tab-btn active" onclick="switchTab('request')">요청</button>
                     <button class="tab-btn" onclick="switchTab('perform')">수행</button>
-                    <button class="view-more-btn" onclick="location.href='/zipkok/add/history'">
+                    <button class="view-more-btn" onclick="showMoreMenu()">
                         <i class="fas fa-plus-circle"></i> 더보기
                     </button>
                 </div>
@@ -150,6 +146,24 @@
 
             <!-- 버튼 그룹 -->
             <div class="btn-group">
+            <!-- HELPER인 경우 3개 버튼 -->
+            <th:block sec:authorize="hasAnyRole('HELPER')">
+                <button class="btn btn-secondary" onclick="location.href='/zipkok'">
+                    <i class="fas fa-home"></i>
+                    홈으로
+                </button>
+                <button class="btn btn-helper" onclick="location.href='/zipkok/mission/list'">
+                    <i class="fas fa-hands-helping"></i>
+                    심부름 수행하러가기
+                </button>
+                <button class="btn btn-primary" onclick="location.href='/zipkok/mission/select'">
+                    <i class="fas fa-plus"></i>
+                    새 심부름 요청
+                </button>
+            </th:block>
+
+            <!-- USER인 경우 2개 버튼 -->
+            <th:block sec:authorize="hasAnyRole('USER') and !hasAnyRole('HELPER')">
                 <button class="btn btn-secondary" onclick="location.href='/zipkok'">
                     <i class="fas fa-home"></i>
                     홈으로
@@ -158,52 +172,10 @@
                     <i class="fas fa-plus"></i>
                     새 심부름 요청
                 </button>
-            </div>
+            </th:block>
+        </div>
         </div>
     </div>
 </section>
-
-    <script>
-        function goToDetail(element) {
-            const missionSeq = element.getAttribute('data-mission-seq');
-            location.href = '/zipkok/mission/request/detail?missionSeq=' + missionSeq;
-        }
-
-        function viewDetail(id) {
-            alert('심부름 상세 ' + id + '번을 조회합니다.');
-        }
-
-        // 탭 전환 로직
-        function switchTab(type) {
-            const requestList = document.getElementById('requestList');
-            const performList = document.getElementById('performList');
-
-            if (type === 'request') {
-                requestList.style.display = 'block';
-                if(performList) performList.style.display = 'none';
-            } else {
-                requestList.style.display = 'none';
-                if(performList) performList.style.display = 'block';
-            }
-        }
-
-        // 탭 버튼 활성화 스타일
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // 페이지 버튼
-        document.querySelectorAll('.page-btn:not([disabled])').forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (!this.querySelector('i')) {
-                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                }
-            });
-        });
-    </script>
 </body>
 </html>

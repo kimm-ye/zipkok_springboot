@@ -21,54 +21,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // 가입 유형 토글설정
     toggleMemberType();
 
-    // 아이디 중복확인 검사
-    let debounceTimer = null;
-    let currentController = null;
+    // 아이디 글자수 && 중복확인 검사
+    idDoubleCheck();
 
-    const memberInput = document.querySelector("#memberId");
-    if (memberInput) {
-        memberInput.addEventListener("input", function(e) {
-            const memberId = e.target.value.trim();
+    // 비밀번호 글자수 && 유효성 검사
+    pwdDoubleCheck();
 
-            // 이전 요청들 정리
-            clearTimeout(debounceTimer);
-            if (currentController) currentController.abort();
-
-            // 4글자 미만이면 체크 안함
-            if (memberId.length < 4) {
-                showMsg("아이디는 4글자 이상 입력하세요", "gray");
-                return;
-            }
-
-            // ✅ 입력 즉시 "확인 중" 메시지 표시
-            showMsg("중복 확인 중...", "blue");
-
-            // 200ms 디바운스 후 서버 요청
-            debounceTimer = setTimeout(async () => {
-                try {
-                    currentController = new AbortController();
-
-                    const response = await fetch(`./join/check?memberId=${memberId}`, {
-                        method: "POST",
-                        signal: currentController.signal,
-                    });
-                    const data = await response.json();
-
-                    if (data.exists) {
-                        showMsg("이미 사용 중인 아이디입니다 ❌", "red");
-                    } else {
-                        showMsg("사용 가능한 아이디입니다 ✅", "green");
-                    }
-                } catch (err) {
-                    if (err.name !== "AbortError") {
-                        showMsg("중복 확인 중 오류 발생", "red");
-                    }
-                }
-            }, 200);
-        });
-    }
-
-    // 이메일 도메인 목록
+    // 이메일 도메인 목록 TODO 나중에 db에서 가져오는 걸로 변경하자
     const domains = ['gmail.com', 'naver.com', 'kakao.com', 'nate.com'];
 
     // 이메일 select 찾기
@@ -97,6 +56,166 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// 아이디 글자수 검사 && 중복확인 검사
+function idDoubleCheck() {
+    let debounceTimer = null;
+    let currentController = null;
+
+    const memberInput = document.getElementById("memberId");
+    if (memberInput) {
+        memberInput.addEventListener("input", function(e) {
+            // 영문만 입력되도록한다.
+            e.target.value = e.target.value.replace(/[^a-zA-Z]/g, "");
+            // 공백을 제거한다.
+            const memberId = e.target.value.trim();
+
+            // 이전 요청들 정리
+            clearTimeout(debounceTimer);
+            if (currentController) currentController.abort();
+
+            // 4글자 미만이면 체크 안함
+            if (memberId.length < 4) {
+                showMsg("아이디는 4글자 이상 입력하세요", "gray");
+                return;
+            } else if(memberId.length > 13) {
+                showMsg("아이디는 13글자 이하로 입력하세요", "gray");
+                return;
+            }
+
+            // ✅ 입력 즉시 "확인 중" 메시지 표시
+            showMsg("중복 확인 중...", "blue");
+
+            // 100ms 디바운스 후 서버 요청
+            debounceTimer = setTimeout(async () => {
+                try {
+                    currentController = new AbortController();
+
+                    const response = await fetch(`./join/check?memberId=${memberId}`, {
+                        method: "POST",
+                        signal: currentController.signal,
+                    });
+                    const data = await response.json();
+
+                    if (data.exists) {
+                        showMsg("이미 사용 중인 아이디입니다 ❌", "red");
+                    } else {
+                        showMsg("사용 가능한 아이디입니다 ✅", "green");
+                    }
+                } catch (err) {
+                    if (err.name !== "AbortError") {
+                        showMsg("중복 확인 중 오류 발생", "red");
+                    }
+                }
+            }, 100);
+        });
+    }
+}
+
+// 아이디 중복체크 여부 메세지 표시
+function showMsg(msg, color) {
+    const msgEl = document.getElementById("idCheckMsg");
+    msgEl.innerText = msg;
+    msgEl.style.display = "block";
+    msgEl.style.color = color;
+}
+
+
+// 비밀번호 글자수 && 유효성 검사
+function pwdDoubleCheck() {
+
+    const memberPass = document.getElementById('memberPass');
+    const memberPass2 = document.getElementById('memberPass2');
+    const passwordHint = document.getElementById('passwordHint');
+    const confirmHint = document.getElementById('confirmHint');
+    const alertTxt = document.getElementById('alertTxt');
+
+    memberPass.addEventListener('input', function() {
+        const password = this.value;
+
+        if (password.length === 0) {
+            passwordHint.textContent = '8자 이상, 특수문자(!@#$%^&*), 숫자, 영문자 포함 필수';
+            passwordHint.className = 'password-hint';
+            this.classList.remove('valid', 'invalid');
+            alertTxt.style.display = 'none';
+            return;
+        }
+
+        const result = validatePassword(password);
+
+        if (result.isValid) {
+            passwordHint.textContent = '✓ 사용 가능한 비밀번호입니다';
+            passwordHint.className = 'password-hint success';
+            this.classList.add('valid');
+            this.classList.remove('invalid');
+            alertTxt.style.display = 'none';
+        } else {
+            let errors = [];
+            if (!result.length) errors.push('8자 이상');
+            if (!result.special) errors.push('특수문자');
+            if (!result.number) errors.push('숫자');
+            if (!result.letter) errors.push('영문자');
+
+            passwordHint.textContent = '✗ 필요: ' + errors.join(', ');
+            passwordHint.className = 'password-hint error';
+            this.classList.add('invalid');
+            this.classList.remove('valid');
+            alertTxt.style.display = 'block';
+        }
+
+        if (memberPass2.value.length > 0) checkPasswordMatch();
+    });
+
+    // 비밀번호 확인
+    memberPass2.addEventListener('input', checkPasswordMatch);
+
+    function checkPasswordMatch() {
+        const password = memberPass.value;
+        const confirmPwd = memberPass2.value;
+
+        if (confirmPwd.length === 0) {
+            confirmHint.textContent = '';
+            memberPass2.classList.remove('valid', 'invalid');
+            return;
+        }
+
+        const result = validatePassword(password);
+
+        if (!result.isValid) {
+            confirmHint.textContent = '✗ 먼저 유효한 비밀번호를 입력하세요';
+            confirmHint.className = 'password-hint error';
+            memberPass2.classList.add('invalid');
+            return;
+        }
+
+        if (password === confirmPwd) {
+            confirmHint.textContent = '✓ 비밀번호가 일치합니다';
+            confirmHint.className = 'password-hint success';
+            memberPass2.classList.add('valid');
+            memberPass2.classList.remove('invalid');
+        } else {
+            confirmHint.textContent = '✗ 비밀번호가 일치하지 않습니다';
+            confirmHint.className = 'password-hint error';
+            memberPass2.classList.add('invalid');
+            memberPass2.classList.remove('valid');
+        }
+    }
+}
+
+
+// 비밀번호 유효성 검사 (각각 true/false를 반환)
+function validatePassword(password) {
+    return {
+        isValid: password.length >= 8 &&
+            /[!@#$%^&*(),.?":{}|<>]/.test(password) &&
+            /[0-9]/.test(password) &&
+            /[a-zA-Z]/.test(password),
+        length: password.length >= 8,
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+        number: /[0-9]/.test(password),
+        letter: /[a-zA-Z]/.test(password)
+    };
+}
+
 // 이메일 도메인 선택 처리
 function email_input(form) {
     const domain = form.email_check.value;
@@ -112,22 +231,30 @@ function email_input(form) {
     }
 }
 
+// 은행 선택시 계좌번호 입력 활성화 (통합 폼용)
+function input_bank(frm) {
+    var bank = frm.memberBank.value;
 
-// 아이디 중복체크 여부 메세지 표시
-function showMsg(msg, color) {
-    const msgEl = document.getElementById("idCheckMsg");
-    msgEl.innerText = msg;
-    msgEl.style.display = "block";
-    msgEl.style.color = color;
+    if (bank === "") {
+        frm.memberAccount.readOnly = true;
+        frm.memberAccount.value = '';
+    }
+    else {
+        frm.memberAccount.readOnly = false;
+        frm.memberAccount.focus();
+    }
 }
 
+
+/*===========================================================================*/
 
 // 회원가입 유효성 검사
 function joinValidate(form) {
 
     const isModifyMode = window.memberData && window.memberData.isModify;
     if (!isModifyMode) {
-        // ID 길이 체크
+        idDoubleCheck();
+        /*// ID 길이 체크
         if (!(form.memberId.value.length >= 4 && form.memberId.value.length <= 12)) {
             alert("4자 이상 12자 이내의 값만 입력하세요");
             form.memberId.value = '';
@@ -154,26 +281,13 @@ function joinValidate(form) {
                 alert("이미 사용 중인 아이디입니다");
                 return false;
             }
-        }
+        }*/
     }
 
-    // 패스워드 검사 (수정 모드에서는 입력했을 때만)
+    // 비밀번호 검사 (수정 모드에서는 입력했을 때만)
     const hasPassword = form.memberPass.value || form.memberPass2.value;
     if (!isModifyMode || hasPassword) {
-        if (form.memberPass.value !== form.memberPass2.value) {
-            alert('입력한 패스워드가 일치하지 않습니다.');
-            form.memberPass.value = "";
-            form.memberPass2.value = "";
-            form.memberPass.focus();
-            return false;
-        }
-
-        // 신규 가입시에는 비밀번호 필수
-        if (!isModifyMode && !form.memberPass.value) {
-            alert("비밀번호를 입력해주세요");
-            form.memberPass.focus();
-            return false;
-        }
+        pwdDoubleCheck();
     }
 
     // 통합 폼에서 헬퍼 선택시 추가 유효성 검사
@@ -192,36 +306,19 @@ function joinValidate(form) {
             return false;
         }
     }
-
     return true; // 모든 검증 통과
 }
 
 
-
-// 은행 선택시 계좌번호 입력 활성화 (통합 폼용)
-function input_bank(frm) {
-    var bank = frm.memberBank.value;
-
-    if (bank === "") {
-        frm.memberAccount.readOnly = true;
-        frm.memberAccount.value = '';
-    }
-    else {
-        frm.memberAccount.readOnly = false;
-        frm.memberAccount.focus();
-    }
-}
-
 // 폼 제출을 fetch로 처리하는 공통 함수
 async function submitFormWithFetch(form) {
     event.preventDefault(); // 기본 submit 방지
-
+    // 유효성 검사를 진행한다.
     if (!joinValidate(form)) {
         return false;
     }
 
     try {
-
         showLoading();
 
         const formData = new FormData(form);

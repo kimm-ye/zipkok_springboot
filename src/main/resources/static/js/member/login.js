@@ -180,7 +180,7 @@ async function processLogin(loginData) {
         const result = await response.json();
 
         if (result.success) {
-            alert(result.message);
+            //alert(result.message);
             window.location.href = result.redirectUrl;
         } else {
             alert(result.message);
