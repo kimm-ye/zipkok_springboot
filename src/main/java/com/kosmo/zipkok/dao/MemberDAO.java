@@ -21,7 +21,7 @@ public interface MemberDAO{
 	void insertMember(HelperDTO dto);
 	void insertHelper(HelperDTO dto);
 	void insertSnsLogin(Map<String, String> snsInfo);
-	void insertHelperImage(HelperDTO dto);
+	void insertImageImage(HelperDTO dto);
 	void updateMember(HelperDTO dto);
 	void updateHelper(HelperDTO dto);
 	int updateHelperImage(HelperDTO dto);

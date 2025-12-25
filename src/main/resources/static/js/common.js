@@ -1,17 +1,17 @@
-// common.js - 기본 동작
-document.addEventListener('keypress', function(e) {
-    console.log("엔터 입력");
-
+// 엔터키
+/*
+document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.target.hasAttribute('data-no-enter')) {
-        // textarea는 기본 제외
+
+        // textarea 제외
         if (e.target.tagName.toLowerCase() === 'textarea') {
             return;
         }
 
-        // 기본: 폼 제출
         const form = e.target.closest('form');
         if (form && !form.hasAttribute('data-custom-enter')) {
             e.preventDefault();
+
             const submitBtn = form.querySelector('[type="submit"]');
             if (submitBtn) {
                 submitBtn.click();
@@ -19,6 +19,7 @@ document.addEventListener('keypress', function(e) {
         }
     }
 });
+*/
 
 
 // 로딩 오버레이 표시

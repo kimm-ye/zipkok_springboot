@@ -106,7 +106,7 @@ create or replace table helper
             on delete cascade
 );
 
-create or replace table helper_image
+create or replace table member_image
 (
     image_seq  int auto_increment
         primary key,
@@ -115,13 +115,13 @@ create or replace table helper_image
     image_etx  varchar(20)                           null,
     image_file longblob                              null,
     create_dt  timestamp default current_timestamp() not null,
-    constraint helper_image_ibfk_1
+    constraint member_image_ibfk_1
         foreign key (member_seq) references helper (member_seq)
             on delete cascade
 );
 
 create or replace index member_seq
-    on helper_image (member_seq);
+    on member_image (member_seq);
 
 create or replace table mission
 (

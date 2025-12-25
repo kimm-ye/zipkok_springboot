@@ -45,7 +45,7 @@
 			MEMBER M
 		LEFT JOIN HELPER H
 		ON M.member_seq = H.member_seq
-		LEFT JOIN HELPER_IMAGE IMG
+		LEFT JOIN MEMBER_IMAGE IMG
 		ON H.member_seq = IMG.member_seq
 		WHERE
 			M.member_useYn = 'Y'
@@ -76,7 +76,7 @@
 			MEMBER M
 		LEFT JOIN HELPER H
 		ON M.member_seq = H.member_seq
-		LEFT JOIN HELPER_IMAGE IMG
+		LEFT JOIN MEMBER_IMAGE IMG
 		ON H.member_seq = IMG.member_seq
 		WHERE
 		    M.member_useYn = 'Y'
@@ -109,7 +109,7 @@
 			MEMBER M
 		LEFT JOIN HELPER H
 		ON M.member_seq = H.member_seq
-		LEFT JOIN HELPER_IMAGE IMG
+		LEFT JOIN MEMBER_IMAGE IMG
 		ON H.member_seq = IMG.member_seq
 		WHERE
 			member_useYn = 'Y'
@@ -141,7 +141,7 @@
 			MEMBER M
 		LEFT JOIN HELPER H
 		ON M.member_seq = H.member_seq
-		LEFT JOIN HELPER_IMAGE IMG
+		LEFT JOIN MEMBER_IMAGE IMG
 		ON H.member_seq = IMG.member_seq
 		LEFT JOIN SNS_LOGIN S
 		ON M.member_seq = S.member_seq
@@ -230,8 +230,8 @@
 			)
 	</insert>
 
-	<insert id="insertHelperImage" parameterType="HelperDTO">
-		INSERT INTO HELPER_IMAGE
+	<insert id="insertImageImage" parameterType="HelperDTO">
+		INSERT INTO MEMBER_IMAGE
 			(
 				MEMBER_SEQ,
 				IMAGE_NAME,
@@ -295,7 +295,7 @@
 	</update>
 
 	<update id="updateHelperImage" parameterType="HelperDTO">
-		UPDATE HELPER_IMAGE
+		UPDATE MEMBER_IMAGE
 		SET
 			IMAGE_NAME = #{imageFileName},
 			IMAGE_ETX = #{imageFileEtx},

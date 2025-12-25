@@ -43,7 +43,7 @@ public class HelperDTO extends MemberDTO{
 	// 헬퍼에 프로필 이미지가 있는 경우 가져오고 없으면 default 사진을 사용한다.
 	public String getImageUrl() {
 
-		System.out.println("123123 === " + (imageFile != null ? imageFile.length : 0));
+		System.out.println("getImageUrl === " + (imageFile != null ? imageFile.length : 0));
 
 		// imageFile이 null이면 빈 배열로 초기화
 		byte[] fileData = (imageFile != null) ? imageFile : new byte[0];

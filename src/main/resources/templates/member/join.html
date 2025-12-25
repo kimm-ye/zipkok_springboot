@@ -79,6 +79,7 @@
                                class="join_H"
                                maxlength="20"
                                name="memberName"
+                               placeholder="이름을 입력하세요"
                                th:readonly="${isModify}"
                                th:value="${info?.memberName}"
                                required>
@@ -93,7 +94,8 @@
                                id="memberId"
                                name="memberId"
                                class="join_H"
-                               placeholder="아이디 입력"
+                               maxlength="12"
+                               placeholder="아이디를 입력하세요"
                                th:value="${info?.memberId}"
                                th:readonly="${isModify}"
                                th:style="${isModify} ? 'background-color: #f5f5f5; cursor: not-allowed;' : ''">
@@ -120,9 +122,13 @@
                                name="memberPass"
                                th:placeholder="${isModify} ? '변경하려면 입력하세요' : '비밀번호를 입력하세요'"
                                th:required="${!isModify}">
-                        <span id="alertTxt">사용불가</span>
+                        <span id="alertTxt"></span>
                         <img th:src="@{/img/login/m_icon_pass.png}" id="pass1_img" class="passImg">
-                    </span> <span class="error_next_box"></span>
+                    </span>
+                    <div class="password-hint" id="passwordHint">
+                        8자 이상, 특수문자(!@#$%^&*), 숫자, 영문자 포함 필수
+                    </div>
+                    <span class="error_next_box"></span>
                 </div>
 
                 <!-- pass2 -->
@@ -139,7 +145,9 @@
                                th:placeholder="${isModify} ? '변경하려면 다시 입력하세요' : '비밀번호를 다시 입력하세요'"
                                th:required="${!isModify}">
                         <img th:src="@{/img/login/m_icon_check_disable.png}" id="pass2_img" class="passImg">
-                    </span> <span class="error_next_box"></span>
+                    </span>
+                    <div class="password-hint" id="confirmHint"></div>
+                    <span class="error_next_box"></span>
                 </div>
 
                 <!-- Email -->
@@ -151,7 +159,7 @@
                         <input type="text"
                                id="email_1"
                                class="join_email"
-                               maxlength="20"
+                               maxlength="30"
                                name="email_1"
                                th:value="${info?.memberEmail != null} ? ${#strings.substringBefore(info.memberEmail, '@')} : ''"
                                required>
@@ -161,7 +169,7 @@
                         <input type="text"
                                id="email_2"
                                class="join_email"
-                               maxlength="20"
+                               maxlength="30"
                                name="email_2"
                                th:value="${info?.memberEmail != null} ? ${#strings.substringAfter(info.memberEmail, '@')} : ''"
                                readonly
@@ -238,6 +246,39 @@
                     </span> <span class="error_next_box"></span>
                 </div>
 
+                <div>
+                    <h3 class="join_title"><label>프로필사진</label></h3>
+                    <span class="box int_picture">
+
+
+                        <!-- 새 이미지 업로드 -->
+                        <input type="file"
+                               name="attachFile"
+                               id="attachFile"
+                               accept="image/png, image/jpeg"
+                               onchange="previewImage(event)">
+                        <small th:if="${isModify}">새 이미지를 선택하면 기존 이미지가 교체됩니다.</small>
+
+                        <!-- 기존 프로필 사진 표시 (수정 모드) -->
+                        <div th:if="${isModify}" class="current-image" id="currentProfileContainer">
+                            <img th:src="@{${info.getImageUrl()}}"
+                                 id="currentProfileImage"
+                                 alt="현재 프로필"
+                                 style="max-width: 100px; max-height: 100px; margin-bottom: 10px;">
+                            <p>현재 프로필: <span th:text="${info.fullImageName}"></span></p>
+                        </div>
+
+                        <!-- 미리보기 영역 -->
+                        <div id="previewContainer" style="margin-top: 10px; display: none;">
+                            <img id="previewImage"
+                                 alt="미리보기"
+                                 style="max-width: 100px; max-height: 100px; border: 1px solid #ccc;"
+                                 onerror="this.src='/img/profile/default.png'"/> <!-- 기본 이미지마저 로딩 실패할 경우 무한 루프 방지-->
+                            <p style="font-size: 12px; color: #666;">선택한 이미지 미리보기</p>
+                        </div>
+                    </span>
+                </div>
+
                 <!-- 헬퍼 전용 필드들 -->
                 <div id="helper_fields"
                      th:style="${info?.memberStatus == 2} ? 'display: block;' : 'display: none;'">
@@ -274,7 +315,6 @@
                             <input type="text"
                                    id="account"
                                    class="join_H"
-                                   maxlength="30"
                                    placeholder="계좌번호 입력"
                                    name="memberAccount"
                                    th:value="${info?.memberAccount}"
@@ -317,12 +357,12 @@
                         </span> <span class="error_next_box"></span>
                     </div>
 
-                    <div>
+                    <!--<div>
                         <h3 class="join_title"><label>프로필사진</label></h3>
                         <span class="box int_picture">
 
 
-                        <!-- 새 이미지 업로드 -->
+                        &lt;!&ndash; 새 이미지 업로드 &ndash;&gt;
                         <input type="file"
                                name="attachFile"
                                id="attachFile"
@@ -330,7 +370,7 @@
                                onchange="previewImage(event)">
                         <small th:if="${isModify}">새 이미지를 선택하면 기존 이미지가 교체됩니다.</small>
 
-                            <!-- 기존 프로필 사진 표시 (수정 모드) -->
+                            &lt;!&ndash; 기존 프로필 사진 표시 (수정 모드) &ndash;&gt;
                         <div th:if="${isModify}" class="current-image" id="currentProfileContainer">
                             <img th:src="@{${info.getImageUrl()}}"
                                  id="currentProfileImage"
@@ -339,16 +379,16 @@
                             <p>현재 프로필: <span th:text="${info.fullImageName}"></span></p>
                         </div>
 
-                        <!-- 미리보기 영역 -->
+                        &lt;!&ndash; 미리보기 영역 &ndash;&gt;
                         <div id="previewContainer" style="margin-top: 10px; display: none;">
                             <img id="previewImage"
                                  alt="미리보기"
                                  style="max-width: 100px; max-height: 100px; border: 1px solid #ccc;"
-                                 onerror="this.src='/img/profile/default.png'"/> <!-- 기본 이미지마저 로딩 실패할 경우 무한 루프 방지-->
+                                 onerror="this.src='/img/profile/default.png'"/> &lt;!&ndash; 기본 이미지마저 로딩 실패할 경우 무한 루프 방지&ndash;&gt;
                             <p style="font-size: 12px; color: #666;">선택한 이미지 미리보기</p>
                         </div>
                     </span>
-                    </div>
+                    </div>-->
 
                     <!-- 헬퍼 통계 정보 (수정 모드에서만 표시) -->
                     <!--<div th:if="${isModify}" class="helper-stats" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
@@ -389,9 +429,6 @@
                         홈으로
                     </button>
                 </div>
-
-
-
             </form>
             <!-- form out -->
 

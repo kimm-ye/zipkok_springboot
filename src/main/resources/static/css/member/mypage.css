@@ -353,7 +353,6 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  display: inline-flex;
   align-items: center;
   gap: 10px;
 }
@@ -361,6 +360,7 @@ body {
 .btn-primary {
   background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
   color: white;
+  box-shadow: 0 4px 15px rgba(255, 76, 0, 0.2);
 }
 
 .btn-primary:hover {
@@ -377,6 +377,25 @@ body {
 .btn-secondary:hover {
   border-color: #FFC100;
   color: #FF4C00;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(255, 193, 0, 0.2);
+}
+
+/* Helper 전용 버튼 */
+.btn-helper {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(76, 110, 245, 0.2);
+}
+
+.btn-helper:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(76, 110, 245, 0.3);
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.btn i {
+  font-size: 1.1em;
 }
 
 /* ===== 반응형 ===== */
@@ -416,5 +435,16 @@ body {
   .tab-btn {
     flex: 1;
     min-width: 80px;
+  }
+
+  /* 버튼 그룹 반응형 */
+  .btn-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
   }
 }

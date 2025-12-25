@@ -36,9 +36,6 @@ public class MemberController {
 	RedisService redisService;
 
 	@Autowired
-	TokenService tokenService;
-
-	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
 
 	@Autowired
@@ -65,7 +62,6 @@ public class MemberController {
 
 			// 2. tempToken 있으면 SNS 회원가입, 없으면 일반 회원가입
 			if(tempToken != null && !tempToken.isEmpty()) {
-				System.out.println(tempToken);
 				// SNS 회원가입
 				Map<String, String> snsInfo = jwtUtil.validateTempToken(tempToken);
 				memberService.insertSnsMember(dto, snsInfo);
@@ -81,7 +77,9 @@ public class MemberController {
 			HelperDTO member = memberService.selectMemberBySeq(dto.getMemberSeq());
 			TokenDTO tokens = redisService.saveTokenRedis(member);
 
+			// 15분
 			CookieUtil.createCookie("accessToken", 15 * 60, "/", tokens.getAccessToken(), res);
+			// 7일
 			CookieUtil.createCookie("refreshToken", 7 * 24 * 60 * 60, "/", tokens.getRefreshToken(), res);
 
 			result.put("success", true);
@@ -122,8 +120,6 @@ public class MemberController {
 	@PostMapping("/member/login/action")
 	public Map<String, Object> login(@RequestBody Map<String, String> param, HttpServletResponse res) throws IOException {
 
-		System.out.println("===일반 로그인=== : " + param);
-
 		Map<String, Object> result = new HashMap<>();
 
 		try {
@@ -139,7 +135,6 @@ public class MemberController {
 			result.put("success", true);
 			result.put("memberId", dto.getMemberId());
 			result.put("memberName", dto.getMemberName());
-			result.put("message", "로그인 성공!");
 			result.put("redirectUrl", "/zipkok");
 
 		} catch (RuntimeException e) {
