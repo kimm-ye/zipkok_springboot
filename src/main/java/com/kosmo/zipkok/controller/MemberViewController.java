@@ -6,7 +6,6 @@ import com.kosmo.zipkok.dto.MissionDTO;
 import com.kosmo.zipkok.dto.PagingDTO;
 import com.kosmo.zipkok.service.MemberService;
 import com.kosmo.zipkok.service.MissionService;
-import com.kosmo.zipkok.service.TokenService;
 import com.kosmo.zipkok.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,10 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -79,6 +76,13 @@ public class MemberViewController {
 
 		return mv;
 	}
+
+	// 프로필 수정하기 전 비밀번호 확인 페이지로 이동
+	@GetMapping("/member/mypage/verify")
+	public String showVerifyPage() {
+		return "member/pwdVerify";
+	}
+
 
 	//회원정보 수정 페이지 이동
 	@GetMapping("/member/mypage/modify")

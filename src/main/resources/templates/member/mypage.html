@@ -24,7 +24,7 @@
             <div class="profile-info">
                 <div class="profile-name" th:text="${#authentication.name} + 님"></div>
             </div>
-            <button class="profile-edit-btn" th:onclick="'location.href=\'/zipkok/member/mypage/modify\''">
+            <button class="profile-edit-btn" onclick="location.href='/zipkok/member/mypage/verify'">
                 <i class="fas fa-edit"></i>
                 프로필 수정
             </button>

@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     @Lazy //  @Lazy 어노테이션을 사용하여 순환 참조 임시 방지
-    private CustomUserDetailsService userDetailsService;  
+    private CustomUserDetailsService userDetailsService;
 
     // 필터를 적용하지 않을 경로를 정의
     @Override
@@ -132,11 +132,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         // Access Token이 만료되었지만 Refresh Token이 유효한 경우
-        } else if (accessToken == null && !jwtUtil.validateToken(accessToken)
-                    && refreshToken != null && jwtUtil.validateToken(refreshToken)) {
+        } else if ((accessToken == null || jwtUtil.isExpired(accessToken))
+                && refreshToken != null
+                && jwtUtil.validateToken(refreshToken)) {
 
             String memberSeq = jwtUtil.getMemberSeqFromToken(refreshToken);
+            log.warn("⚠️ 일단 accessToken은 없거나 만료됨");
+            // 1. Redis 연결 상태 확인
+            if (!redisService.isRedisAvailable()) {
+                log.warn("⚠️ Redis 일시적 연결 오류 - 인증 실패하지만 쿠키는 유지");
+                // 쿠키 삭제 X
+                filterChain.doFilter(request, response);
+                return;
+            }
 
+            // 2. Redis에서 토큰 검증
             // Redis에서 Refresh Token 확인
             boolean isValidRefresh = redisService.isValidRefreshToken(memberSeq, refreshToken);
             System.out.println("isValidRefresh================" + isValidRefresh);
@@ -159,7 +169,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 System.out.println("Access Token 자동 갱신 완료: " + memberSeq);
             } else {
-                //redis에서 삭제되어 refreshToken도 쿠키에서 삭제한다.
+                // Redis는 정상인데 토큰이 없음 → 로그아웃 처리
+                log.warn("❌ 유효하지 않은 토큰 - 쿠키 삭제");
                 CookieUtil.deleteCookie("refreshToken", "/", response);
             }
         }
@@ -168,6 +179,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 인증에 실패해도 요청은 계속 진행되며, 이후 필터나 컨트롤러에서 처리
         filterChain.doFilter(request, response);
     }
+
+
 
     // JWT Access Token을 추출
     private String extractToken(HttpServletRequest request) {

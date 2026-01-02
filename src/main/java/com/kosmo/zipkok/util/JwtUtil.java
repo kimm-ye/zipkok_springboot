@@ -235,4 +235,20 @@ public class JwtUtil {
             throw new RuntimeException("토큰이 비어있거나 유효하지 않습니다.", e);
         }
     }
+
+    // token 만료여부 체크 (나중에 오류 여부를 좀 더 쉽게 파악할 수 있기 때문에 !validationToken을 사용하지 않고 isExpired를 사용)
+    public boolean isExpired(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return false; // 만료 안 됨
+        } catch (ExpiredJwtException e) {
+            return true;  // 만료됨
+        } catch (JwtException | IllegalArgumentException e) {
+            return false; // 위조/깨짐 → 재발급 대상 아님
+        }
+    }
+
 } 

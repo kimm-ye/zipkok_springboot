@@ -1,9 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    /*document.getElementById("memberUnregister").addEventListener("click", async function (e) {
-        e.preventDefault();
-        await handleMemberUnregister();
-    });
-*/
 
     // 탭 버튼 활성화 스타일
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -79,3 +74,6 @@ function goToDetail(element) {
     const missionSeq = element.getAttribute('data-mission-seq');
     location.href = '/zipkok/mission/request/detail?missionSeq=' + missionSeq;
 }
+
+
+

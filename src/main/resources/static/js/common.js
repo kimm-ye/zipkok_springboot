@@ -1,44 +1,63 @@
-// 엔터키
-/*
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.target.hasAttribute('data-no-enter')) {
+// =======================
+// 로딩 유틸
+// =======================
 
-        // textarea 제외
-        if (e.target.tagName.toLowerCase() === 'textarea') {
-            return;
-        }
+function showLoading() {
+    document.getElementById('loadingOverlay')?.classList.add('active');
+}
 
-        const form = e.target.closest('form');
-        if (form && !form.hasAttribute('data-custom-enter')) {
-            e.preventDefault();
+function hideLoading() {
+    document.getElementById('loadingOverlay')?.classList.remove('active');
+}
 
-            const submitBtn = form.querySelector('[type="submit"]');
-            if (submitBtn) {
-                submitBtn.click();
-            }
-        }
+// =======================
+// 메인 트리거
+// =======================
+
+// a 태그 이동
+document.addEventListener('click', function (e) {
+    const link = e.target.closest('a[href]');
+    if (!link) return;
+
+    if (
+        link.target === '_blank' ||
+        link.getAttribute('href')?.startsWith('#') ||
+        link.getAttribute('href')?.startsWith('javascript:')
+    ) {
+        return;
+    }
+
+    showLoading();
+});
+
+// form submit
+document.addEventListener('submit', function () {
+    showLoading();
+});
+
+// =======================
+// 페이지 진입 / 복원 시 hide
+// =======================
+
+// 최초 페이지 로드
+window.addEventListener('load', function () {
+    hideLoading();
+});
+
+// BFCache (뒤로/앞으로)
+window.addEventListener('pageshow', function (event) {
+    if (event.persisted) {
+        hideLoading();
     }
 });
-*/
 
+// =======================
+// 보조 트리거 (보험)
+// =======================
 
-// 로딩 오버레이 표시
-function showLoading() {
-    document.getElementById('loadingOverlay').classList.add('active');
-}
+window.addEventListener('beforeunload', function () {
+    const overlay = document.getElementById('loadingOverlay');
+    if (!overlay || overlay.classList.contains('active')) return;
 
-// 로딩 오버레이 숨김
-function hideLoading() {
-    document.getElementById('loadingOverlay').classList.remove('active');
-}
-
-// 데이터 로딩 시뮬레이션
-function handleLoadData() {
     showLoading();
-
-    // 실제 프로젝트에서는 여기에 Ajax 호출이나 폼 제출 등을 넣으세요
-    setTimeout(() => {
-        hideLoading();
-        alert('데이터 로딩 완료!');
-    }, 3000);
-}
+});

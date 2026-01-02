@@ -1,28 +1,25 @@
 package com.kosmo.zipkok.controller;
 
 
-import java.io.IOException;
-import java.util.*;
-
-import com.kosmo.zipkok.config.RedisConfig;
 import com.kosmo.zipkok.dto.CustomUserDetail;
 import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.dto.TokenDTO;
-import com.kosmo.zipkok.service.RedisService;
-import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.service.MemberService;
-import com.kosmo.zipkok.service.TokenService;
+import com.kosmo.zipkok.service.RedisService;
 import com.kosmo.zipkok.util.CookieUtil;
 import com.kosmo.zipkok.util.JwtUtil;
-import io.jsonwebtoken.Jwts;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Slf4j
@@ -40,6 +37,9 @@ public class MemberController {
 
 	@Autowired
 	JwtUtil jwtUtil;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	// 회원가입
 	@PostMapping(value="/member/join/action")
@@ -229,6 +229,29 @@ public class MemberController {
 		info.put("email", email);
 
 		return memberService.findPwd(info);
+	}
+
+	// 회원정보 수정 전 패스워드 비교
+	@PostMapping("/member/mypage/verify")
+	public Map<String, Object> verify(@RequestBody Map<String, String> password,
+									  @AuthenticationPrincipal CustomUserDetail me) {
+		Map<String, Object> result = new HashMap<>();
+
+		try{
+			if(password == null || password.get("password") == null){
+				throw new IllegalArgumentException("Password cannot be null");
+			}
+
+			boolean isPwdValid = passwordEncoder.matches(password.get("password"), me.getPassword());
+			result.put("success", isPwdValid);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			result.put("success", false);
+			result.put("message", "비밀번호 확인 중 오류가 발생하였습니다.\n관리자에게 문의 바랍니다.");
+		}
+
+		return result;
 	}
 
 	//회원정보 수정
