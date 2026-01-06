@@ -184,7 +184,7 @@ async function processLogin(loginData) {
             window.location.href = result.redirectUrl;
         } else {
             alert(result.message);
-            window.location.href = result.redirectUrl;
+            //window.location.href = result.redirectUrl;
         }
     } catch (error) {
         console.error('로그인 처리 중 에러:', error);

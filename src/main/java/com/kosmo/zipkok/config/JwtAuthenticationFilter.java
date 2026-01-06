@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.util.Collections;
 
 /**
- * 🚀 성능 최적화된 JWT 인증 필터 (DB 조회 제거)
+ * 성능 최적화된 JWT 인증 필터 (DB 조회 제거)
  *
- * ⚡ 핵심 개선: userDetailsService.loadUserByUsername() 호출 제거
+ * 핵심 개선: userDetailsService.loadUserByUsername() 호출 제거
  * - 기존: 매 요청마다 DB 조회 (50-100ms)
  * - 개선: JWT에서 정보 추출 (5-10ms)
  */
@@ -52,6 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 path.endsWith(".jpg");
     }
 
+    // TODO 권한을 복수권한으로 할지 좀 더 생각해봐야함
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -78,32 +79,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     && jwtUtil.validateToken(accessToken)
                     && jwtUtil.isAccessToken(accessToken)) {
 
-                // 블랙리스트 체크
+                // 블랙리스트 체크 (// TODO 해당 내용 테스트 필요
                 if (!redisService.isAccessTokenBlacklisted(accessToken)) {
-                    // ⚡ 핵심: DB 조회 없이 JWT에서 직접 정보 추출
+                    // DB 조회 없이 JWT에서 직접 정보 추출
                     String memberSeq = jwtUtil.getMemberSeqFromToken(accessToken);
                     String role = jwtUtil.getRoleFromToken(accessToken);
 
                     setAuthenticationFromJwt(memberSeq, role);
-                    log.debug("✅ Access Token 인증 성공 (DB 조회 X): {}", memberSeq);
+                    log.debug("✅ Access Token 인증 성공 (DB 조회 X) memberSeq : {}", memberSeq);
                 }
 
-                // 3️⃣ Access Token 만료 → Refresh Token으로 갱신
+            // 3️⃣ Access Token 만료 → Refresh Token으로 갱신
             } else if ((accessToken == null || jwtUtil.isExpired(accessToken))
                     && refreshToken != null
                     && jwtUtil.validateToken(refreshToken)) {
 
                 String memberSeq = jwtUtil.getMemberSeqFromToken(refreshToken);
 
-                // Redis 연결 확인
-                if (!redisService.isRedisAvailable()) {
-                    log.warn("⚠️ Redis 일시적 연결 오류 - 인증 스킵");
-                    filterChain.doFilter(request, response);
-                    return;
-                }
-
                 // Redis에서 Refresh Token 검증
-                if (redisService.isValidRefreshToken(memberSeq, refreshToken)) {
+                Boolean isValid = redisService.isValidRefreshToken(memberSeq, refreshToken);
+
+                if(isValid == null) {
+                    log.warn("❌ Redis 서버 오류 - Redis 서버와 비교 인증 스킵");
+                } else if (isValid) {
                     String role = jwtUtil.getRoleFromToken(refreshToken);
 
                     // 새 Access Token 발급
@@ -112,10 +110,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     // ⚡ 핵심: DB 조회 없이 JWT에서 직접 인증
                     setAuthenticationFromJwt(memberSeq, role);
-                    log.info("✅ Access Token 자동 갱신 완료 (DB 조회 X): {}", memberSeq);
+                    log.info("✅ Access Token 자동 갱신 완료 (DB 조회 X) memberSeq: {}", memberSeq);
                 } else {
                     log.warn("❌ 유효하지 않은 Refresh Token - 쿠키 삭제");
-                    CookieUtil.deleteCookie("refreshToken", "/", response);
+                    CookieUtil.deleteCookie("refreshToken", "/", response); // TODO 이부분을 어떻게 해야할지 해결 필요
                 }
             }
 
@@ -127,7 +125,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * 🚀 핵심 성능 개선: DB 조회 없이 JWT 정보만으로 인증
+     * DB 조회 없이 JWT 정보만으로 인증으로 수정 - 속도개선
      *
      * 기존 방식 (느림):
      * UserDetails userDetails = userDetailsService.loadUserByUsername(memberSeq);
@@ -141,11 +139,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 경량 CustomUserDetail 생성 (DB 조회 X)
         CustomUserDetail userDetails = new CustomUserDetail(
                 memberSeq,              // memberId (JWT에서는 memberSeq 사용)
-                "",                     // password (JWT 인증이므로 불필요)
-                Collections.singletonList(new SimpleGrantedAuthority(role)),
-                memberSeq,              // memberSeq
-                null,                   // memberName (필요시 컨트롤러에서 조회)
-                -1                      // memberStatus (필요시 컨트롤러에서 조회)
+                Collections.singletonList(new SimpleGrantedAuthority(role))
         );
 
         UsernamePasswordAuthenticationToken authentication =

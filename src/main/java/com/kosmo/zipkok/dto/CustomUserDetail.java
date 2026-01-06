@@ -10,21 +10,11 @@ import java.util.Collection;
 public class CustomUserDetail extends User {
 
     private final String memberSeq;      // 회원 시퀀스 (PK)
-    private final String memberId;       // 아이디
-    private final String memberName;     // 이름
-    private final int memberStatus;      // 상태 (0:관리자, 1:일반, 2:헬퍼, 3:블랙)
 
-    public CustomUserDetail(String memberId,
-                            String password,
-                            Collection<? extends GrantedAuthority> authorities,
-                            String memberSeq,
-                            String memberName,
-                            int memberStatus) {
-        super(memberId, password, authorities);
+    public CustomUserDetail(String memberSeq,
+                            Collection<? extends GrantedAuthority> authorities) {
+        super(memberSeq,"", authorities);
         this.memberSeq = memberSeq;
-        this.memberId = memberId;
-        this.memberName = memberName;
-        this.memberStatus = memberStatus;
     }
 
     /**

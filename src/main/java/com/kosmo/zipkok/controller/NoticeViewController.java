@@ -61,10 +61,11 @@ public class NoticeViewController {
 		boolean isAdmin = false;
 
 		if(me != null) {
-			if(me.getMemberStatus() == 0) {
+			if("ROLE_ADMIN".equals(me.getRole())) {
 				isAdmin = true;
 			}
 		}
+
 
 		System.out.println("isAdmin ===== " + isAdmin);
 

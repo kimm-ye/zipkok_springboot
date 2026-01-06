@@ -81,19 +81,31 @@ public class RedisService {
     }
 
     //Refresh Token의 유효성을 검사합니다.
-    public boolean isValidRefreshToken(String memberSeq, String refreshToken) {
-        // 1단계: JWT 유효성 검사 (서명, 만료시간 등)
-        if (!jwtUtil.validateToken(refreshToken) || !jwtUtil.isRefreshToken(refreshToken)) {
-            System.out.println("refreshToken이 만료됨");
-            return false;
-        }
+    public Boolean isValidRefreshToken(String memberSeq, String refreshToken) {
 
-        // 2단계: Redis에서 저장된 Refresh Token과 비교
-        // 이는 사용자가 로그아웃했거나 다른 기기에서 로그인했을 때를 대비한 검증
-        String storedToken = (String) redisTemplate.opsForValue().get("refresh:" + memberSeq);
-        System.out.println("storedToken : " + storedToken);
-        System.out.println("refreshToken : " + refreshToken);
-        return refreshToken.equals(storedToken);
+        try{
+            // 1단계: JWT 유효성 검사 (서명, 만료시간 등)
+            if (!jwtUtil.validateToken(refreshToken) || !jwtUtil.isRefreshToken(refreshToken)) {
+                log.warn("❌ refreshToken 만료됨");
+                return false;
+            }
+
+            // 2. Redis에서 토큰 조회 (여기서 연결 오류 발생 가능)
+            String storedToken = (String) redisTemplate.opsForValue().get("refresh:" + memberSeq);
+
+            if (storedToken == null) {
+                log.warn("⚠️ Redis에 Refresh Token 없음: {}", memberSeq);
+                return false;
+            }
+
+            boolean isValid = refreshToken.equals(storedToken);
+            log.info("🔍 Refresh Token 검증 결과: {}", isValid);
+            return isValid;
+
+        } catch (Exception e) {
+            log.error("❌ Redis 연결 오류: {}", e.getMessage());
+            return null; // null인 경우는 Redis연결 오류임
+        }
     }
 
 
