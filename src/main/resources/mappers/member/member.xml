@@ -182,6 +182,16 @@
 		AND member_email = #{email}
 	</select>
 
+	<!-- 회원정보 수정 전 패스워드 비교 -->
+	<select id="findPwdBySeq" parameterType="String" resultType="java.lang.String">
+		SELECT
+			member_pass AS memberPass
+		FROM
+			member
+		WHERE
+			member_seq = #{memberSeq}
+	</select>
+
 	<!-- 사용자 등록 -->
 	<insert id="insertMember" parameterType="HelperDTO" useGeneratedKeys="true" keyProperty="memberSeq">
 		INSERT INTO MEMBER

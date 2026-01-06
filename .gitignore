@@ -38,3 +38,10 @@ out/
 
 ### setting ###
 .env
+
+
+# macOS
+.DS_Store
+
+# backup files
+*_bak.java

@@ -52,7 +52,12 @@ public class MemberViewController {
 	//마이페이지
 	@RequestMapping("/member/mypage")
 	public ModelAndView mypage(@AuthenticationPrincipal CustomUserDetail me) {
-		ModelAndView mv = new ModelAndView("member/mypage");
+
+		ModelAndView mv = new ModelAndView();
+
+		if (me == null) {
+			return new ModelAndView("redirect:/member/login");
+		}
 
 		// 공통: 요청한 심부름 내역
 		int missionCount = missionService.getRequestHistoryCount(me.getMemberSeq());
@@ -74,6 +79,7 @@ public class MemberViewController {
 
 		}
 
+		mv.setViewName("member/mypage");
 		return mv;
 	}
 

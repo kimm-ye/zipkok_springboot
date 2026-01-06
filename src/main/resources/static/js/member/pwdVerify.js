@@ -1,3 +1,4 @@
+// 비밀번호 재입력 시도 횟수
 let attemptCount = 0;
 const maxAttempts = 5;
 
@@ -99,11 +100,5 @@ function showAttemptWarning() {
     attemptInfo.classList.add('show');
 }
 
-// Enter 키 처리
-document.getElementById('password').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        document.getElementById('verifyForm').dispatchEvent(new Event('submit'));
-    }
-});
 
 

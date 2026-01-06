@@ -2,20 +2,16 @@ package com.kosmo.zipkok.service.impl;
 
 import com.kosmo.zipkok.dao.MemberDAO;
 import com.kosmo.zipkok.dto.HelperDTO;
-import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.service.MemberService;
 import com.kosmo.zipkok.util.JwtUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -88,6 +84,11 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public String findPwd(Map<String, String> param) {
 		return memberDao.findPwd(param);
+	}
+
+	@Override
+	public String findPwdBySeq(String memberSeq) {
+		return memberDao.findPwdBySeq(memberSeq);
 	}
 
 	@Override

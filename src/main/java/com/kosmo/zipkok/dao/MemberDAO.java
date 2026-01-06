@@ -1,10 +1,8 @@
 package com.kosmo.zipkok.dao;
 
 import com.kosmo.zipkok.dto.HelperDTO;
-import com.kosmo.zipkok.dto.MemberDTO;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.io.IOException;
 import java.util.Map;
 
 @Mapper
@@ -17,6 +15,7 @@ public interface MemberDAO{
 	HelperDTO selectSnsLogin(Map<String, String> param);
 	String findId (Map<String, String> param);
 	String findPwd (Map<String, String> param);
+	String findPwdBySeq (String memberSeq);
 	String idCheck(String id);
 	void insertMember(HelperDTO dto);
 	void insertHelper(HelperDTO dto);

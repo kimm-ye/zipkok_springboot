@@ -239,10 +239,16 @@ public class MemberController {
 
 		try{
 			if(password == null || password.get("password") == null){
-				throw new IllegalArgumentException("Password cannot be null");
+				throw new IllegalArgumentException("비밀번호는 공란으로 입력할 수 없습니다.");
 			}
 
-			boolean isPwdValid = passwordEncoder.matches(password.get("password"), me.getPassword());
+
+			String memberPwd = memberService.findPwdBySeq(me.getMemberSeq());
+
+			boolean isPwdValid = passwordEncoder.matches(
+					password.get("password"),
+					memberPwd
+			);
 			result.put("success", isPwdValid);
 		}
 		catch(Exception e){
@@ -310,6 +316,7 @@ public class MemberController {
 							   @CookieValue(value = "refreshToken", required = false) String refreshToken,
 							   HttpServletResponse res) {
 
+		System.out.println("로그아웃을 요청합니다!!!!!!!!!!!!!!!!!!");
 
 		// 1. Access Token을 블랙리스트에 추가 (탈취방지하기 위함)
 		if (accessToken != null) {
