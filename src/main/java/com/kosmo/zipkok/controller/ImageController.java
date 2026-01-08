@@ -148,13 +148,13 @@ public class ImageController {
 		}
 	}
 
-	// 확장자 별로 HTTP 응답 헤더에 캐시 정책을 설정 (캐시된 이미지가 있는 경우 더 이상 해당 함수를 호출하지 않음
+	// 확장자 별로 HTTP 응답 헤더에 캐시 정책을 설정 (캐시된 이미지가 있는 경우 더 이상 해당 함수를 호출하지 않음)
 	private HttpHeaders headerSetting(String imageFileEtx) {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(getMediaType(imageFileEtx)); // 확장자 별로 세팅한다.
 		headers.setCacheControl(
-				CacheControl.maxAge(1, TimeUnit.HOURS).cachePublic()
+				CacheControl.maxAge(24, TimeUnit.HOURS).cachePublic()
 		);
 
 		return headers;
