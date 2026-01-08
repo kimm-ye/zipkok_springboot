@@ -1,6 +1,8 @@
 package com.kosmo.zipkok.service;
 
 import com.kosmo.zipkok.dto.HelperDTO;
+import com.kosmo.zipkok.dto.ImageDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
@@ -21,12 +23,13 @@ public interface MemberService {
     String findId (Map<String, String> param);
     String findPwd (Map<String, String> param);
     String findPwdBySeq (String memberSeq);
-    byte[] selectMemberImage (String memberSeq);
+    ImageDTO selectMemberImage (String memberSeq);
     Map<String, String> selectMemberBasicInfo(String memberSeq);
+
     // 회원가입
-    void insertMember(HelperDTO dto) throws IOException;
-    void insertSnsMember(HelperDTO dto, Map<String, String> snsInfo) throws IOException;
-    void updateMember(HelperDTO dto) throws IOException;
+    void insertMember(HelperDTO dto, MultipartFile profileImage) throws IOException;
+    void insertSnsMember(HelperDTO dto, Map<String, String> snsInfo, MultipartFile profileImage) throws IOException;
+    void updateMember(HelperDTO dto, MultipartFile profileImage) throws IOException;
     void deleteMember(String memberSeq) throws Exception;
 
 }

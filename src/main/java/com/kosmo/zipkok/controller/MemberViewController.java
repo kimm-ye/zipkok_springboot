@@ -62,6 +62,11 @@ public class MemberViewController {
 
 		Map<String, String> basicInfo = memberService.selectMemberBasicInfo(me.getMemberSeq());
 
+		// imageVersion이 null이면 0으로 설정
+		if(basicInfo.get("imageVersion") == null) {
+			basicInfo.put("imageVersion", "0");
+		}
+
 		// 공통: 요청한 심부름 내역
 		int missionCount = missionService.getRequestHistoryCount(me.getMemberSeq());
 		PagingDTO requestPaging = PagingDTO.of(1, 5, missionCount);
@@ -102,7 +107,6 @@ public class MemberViewController {
 		HelperDTO member = memberService.selectMemberWithImageBySeq(me.getMemberSeq());
 
 		if(member != null) {
-			System.out.println(member.getFullImageName());
 
 			mv.addObject("info", member);
 			mv.addObject("isModify", true);      // 수정 모드 플래그

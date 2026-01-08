@@ -19,11 +19,37 @@
 	</select>
 
 	<!-- 회원정보 수정할때 image까지 조회 -->
-	<select id="selectMemberWithImageBySeq" parameterType="java.lang.String" resultType="HelperDTO">
+	<resultMap id="helperWithImageMap" type="HelperDTO">
+		<!-- HelperDTO 기본 필드 -->
+		<id property="memberSeq" column="memberSeq"/>
+		<result property="memberId" column="memberId"/>
+		<result property="memberName" column="memberName"/>
+		<result property="memberEmail" column="memberEmail"/>
+		<result property="memberAge" column="memberAge"/>
+		<result property="memberGender" column="memberGender"/>
+		<result property="memberPhone" column="memberPhone"/>
+		<result property="memberMissionN" column="memberMissionN"/>
+		<result property="memberStatus" column="memberStatus"/>
+		<result property="imageVersion" column="imageVersion"/>
+		<result property="memberBank" column="memberBank"/>
+		<result property="memberAccount" column="memberAccount"/>
+		<result property="memberVehicle" column="memberVehicle"/>
+		<result property="memberIntroduce" column="memberIntroduce"/>
+		<result property="memberReview" column="memberReview"/>
+		<result property="memberMissionC" column="memberMissionC"/>
+		<result property="memberPoint" column="memberPoint"/>
+
+		<!-- ImageDTO 매핑 -->
+		<association property="imageDTO" javaType="ImageDTO">
+			<result property="imageFileName" column="imageFileName"/>
+			<result property="imageFileEtx" column="imageFileEtx"/>
+		</association>
+	</resultMap>
+
+	<select id="selectMemberWithImageBySeq" parameterType="java.lang.String" resultMap="helperWithImageMap">
 		SELECT
 			M.member_seq AS memberSeq,
 			M.member_id AS memberId,
-			/*M.member_pass AS memberPass,*/
 			M.member_name AS memberName,
 			M.member_email AS memberEmail,
 			M.member_age AS memberAge,
@@ -31,6 +57,7 @@
 			M.member_phone AS memberPhone,
 			NVL(M.member_missionN, 0) AS memberMissionN,
 			M.member_status AS memberStatus,
+			M.image_version AS imageVersion,
 			H.member_bank AS memberBank,
 			H.member_account AS memberAccount,
 			H.member_vehicle AS memberVehicle,
@@ -40,7 +67,6 @@
 			NVL(H.member_point, 0) AS memberPoint,
 			IMG.image_name AS imageFileName,
 			IMG.image_etx AS imageFileEtx
-			/*IMG.image_file AS imageFile*/
 		FROM
 			MEMBER M
 		LEFT JOIN HELPER H
@@ -209,7 +235,8 @@
 	<!-- 마이페이지에 보여줄 정보 -->
 	<select id="selectMemberBasicInfo" parameterType="java.lang.String" resultType="map">
 		SELECT
-			member_name AS memberName
+			member_name AS memberName,
+			image_version AS imageVersion
 		FROM
 			MEMBER
 		WHERE
@@ -266,24 +293,31 @@
 			)
 	</insert>
 
-	<insert id="insertImageImage" parameterType="HelperDTO">
+	<insert id="insertMemberImage">
 		INSERT INTO MEMBER_IMAGE
-			(
-				MEMBER_SEQ,
-				IMAGE_NAME,
-			 	IMAGE_ETX,
-				IMAGE_FILE,
-				CREATE_DT
-			)
+		(
+			MEMBER_SEQ,
+			IMAGE_NAME,
+			IMAGE_ETX,
+			IMAGE_FILE,
+			CREATE_DT
+		)
 		VALUES
 			(
 				#{memberSeq},
-				#{imageFileName},
-				#{imageFileEtx},
-				#{imageFile},
+				#{image.imageFileName},
+				#{image.imageFileEtx},
+				#{image.imageFile},
 				NOW()
 			)
 	</insert>
+
+	<!-- 이미지 버전 초기화 -->
+	<update id="initImageVersion">
+		UPDATE member
+		SET image_version = 1
+		WHERE member_seq = #{memberSeq}
+	</update>
 
 	<!--  SNS 로그인 정보 저장 -->
 	<insert id="insertSnsLogin" parameterType="Map">
@@ -330,17 +364,23 @@
 			MEMBER_SEQ = #{memberSeq}
 	</update>
 
-	<update id="updateHelperImage" parameterType="HelperDTO">
+	<update id="updateMemberImage" >
 		UPDATE MEMBER_IMAGE
 		SET
-			IMAGE_NAME = #{imageFileName},
-			IMAGE_ETX = #{imageFileEtx},
-			IMAGE_FILE = #{imageFile},
+			IMAGE_NAME = #{image.imageFileName},
+			IMAGE_ETX = #{image.imageFileEtx},
+			IMAGE_FILE = #{image.imageFile},
 			CREATE_DT = NOW()
 		WHERE
 			MEMBER_SEQ = #{memberSeq}
 	</update>
-	
+
+	<!-- 이미지 버전 증가 (캐시 무효화용) -->
+	<update id="incrementImageVersion">
+		UPDATE member
+		SET image_version = image_version + 1
+		WHERE member_seq = #{memberSeq}
+	</update>
 
 	<update id="deleteMember" parameterType="String">
 		UPDATE MEMBER

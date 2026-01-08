@@ -47,14 +47,14 @@ public class NoticeServiceImpl implements NoticeService {
         // board_notice 테이블에 insert
         noticeDao.insertNotice(noticeDTO);
 
-        if (noticeDTO.getBoardAttachFile() != null && noticeDTO.getBoardAttachFile().getSize() > 0) {
-            String fileName = noticeDTO.getBoardAttachFile().getOriginalFilename();
+        if (noticeDTO.getAttachFile() != null && noticeDTO.getAttachFile().getSize() > 0) {
+            String fileName = noticeDTO.getAttachFile().getOriginalFilename();
             String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
             String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
 
-            noticeDTO.setBoardFile(noticeDTO.getBoardAttachFile().getBytes());
-            noticeDTO.setBoardFileName(originalName);
-            noticeDTO.setBoardFileEtx(fileEtx);
+            noticeDTO.setImageFile(noticeDTO.getAttachFile().getBytes());
+            noticeDTO.setImageFileName(originalName);
+            noticeDTO.setImageFileEtx(fileEtx);
             noticeDTO.setBoardType("notice");
             noticeDTO.setBoardSeq(noticeDTO.getNoticeSeq());
 
@@ -66,14 +66,14 @@ public class NoticeServiceImpl implements NoticeService {
     public void updateNotice(NoticeDTO noticeDTO) throws IOException {
         noticeDao.updateNotice(noticeDTO);
 
-        if (noticeDTO.getBoardAttachFile() != null && noticeDTO.getBoardAttachFile().getSize() > 0) {
-            String fileName = noticeDTO.getBoardAttachFile().getOriginalFilename();
+        if (noticeDTO.getAttachFile() != null && noticeDTO.getAttachFile().getSize() > 0) {
+            String fileName = noticeDTO.getAttachFile().getOriginalFilename();
             String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
             String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
 
-            noticeDTO.setBoardFile(noticeDTO.getBoardAttachFile().getBytes());
-            noticeDTO.setBoardFileName(originalName);
-            noticeDTO.setBoardFileEtx(fileEtx);
+            noticeDTO.setImageFile(noticeDTO.getAttachFile().getBytes());
+            noticeDTO.setImageFileName(originalName);
+            noticeDTO.setImageFileEtx(fileEtx);
             noticeDTO.setBoardType("notice");
             noticeDTO.setBoardSeq(noticeDTO.getNoticeSeq());
 

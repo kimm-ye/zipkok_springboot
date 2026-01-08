@@ -15,6 +15,7 @@ public class MemberDTO {
 	private int memberMissionN;
 	private int memberStatus;  // 구분 : 관리자(0) / 일반사용자(1) / 헬퍼(2) / 블랙리스트(3)
 
+	private Long imageVersion;  // 이미지 버전 (캐시 무효화용)
 	/**
      * JWT 토큰 생성 시 사용할 권한 정보를 반환합니다.
      * 

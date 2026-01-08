@@ -18,10 +18,13 @@
         <!-- 프로필 헤더 -->
         <div class="profile-header">
             <div class="profile-avatar">
-                <!--<i class="fas fa-user"></i>-->
                 <!-- ⭐ 이미지로 변경 -->
-                <img th:src="@{/member/image/profile}"
+                <!--<img th:src="@{/member/image/profile}"
                      alt="프로필 이미지"
+                     onerror="this.src='/zipkok/img/profile/default.png'">-->
+                <img th:src="@{/member/image/profile(v=${basicInfo.imageVersion})}"
+                     alt="프로필 이미지"
+                     id="profilePreview"
                      onerror="this.src='/zipkok/img/profile/default.png'">
             </div>
             <div class="profile-info">

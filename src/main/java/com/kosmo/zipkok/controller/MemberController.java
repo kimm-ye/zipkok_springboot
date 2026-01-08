@@ -15,6 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ public class MemberController {
 	// 회원가입
 	@PostMapping(value="/member/join/action")
 	public Map<String, Object> member(HelperDTO dto,
+									  @RequestParam(value = "attachFile", required = false) MultipartFile profileImage,
 									  @CookieValue(value = "tempToken", required = false) String tempToken,
 									  HttpServletResponse res) throws Exception {
 		Map<String, Object> result = new HashMap<>();
@@ -64,16 +66,16 @@ public class MemberController {
 			if(tempToken != null && !tempToken.isEmpty()) {
 				// SNS 회원가입
 				Map<String, String> snsInfo = jwtUtil.validateTempToken(tempToken);
-				memberService.insertSnsMember(dto, snsInfo);
+				memberService.insertSnsMember(dto, snsInfo, profileImage);
 
 				// tempToken 쿠키 삭제
 				CookieUtil.deleteCookie("tempToken", "/", res);
 			} else {
 				// 일반 회원가입
-				memberService.insertMember(dto);
+				memberService.insertMember(dto, profileImage);
 			}
 
-			// 3. 자동 로그인 (accessToken, refreshToken 발급)
+			// 4. 자동 로그인 (accessToken, refreshToken 발급)
 			HelperDTO member = memberService.selectMemberBySeq(dto.getMemberSeq());
 			TokenDTO tokens = redisService.saveTokenRedis(member);
 
@@ -242,7 +244,6 @@ public class MemberController {
 				throw new IllegalArgumentException("비밀번호는 공란으로 입력할 수 없습니다.");
 			}
 
-
 			String memberPwd = memberService.findPwdBySeq(me.getMemberSeq());
 
 			boolean isPwdValid = passwordEncoder.matches(
@@ -262,12 +263,13 @@ public class MemberController {
 
 	//회원정보 수정
 	@PatchMapping("/member/mypage/modify/action")
-	public Map<String, Object> modify(HelperDTO dto) throws Exception {
+	public Map<String, Object> modify(HelperDTO dto,
+									  @RequestParam(value = "attachFile", required = false) MultipartFile profileImage) throws Exception {
 		Map<String, Object> result = new HashMap<>();
 
 		try{
 			// 정보 업데이트
-			memberService.updateMember(dto);
+			memberService.updateMember(dto, profileImage);
 
 			result.put("success", true);
 			result.put("message", "회원정보 변경 완료!");
