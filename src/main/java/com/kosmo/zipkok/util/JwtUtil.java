@@ -2,6 +2,7 @@ package com.kosmo.zipkok.util;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ import java.util.Map;
  * - Payload: 사용자 정보, 만료시간, 토큰 타입 등
  * - Signature: 서명 (무결성 보장)
  */
+@Slf4j
 @Component
 public class JwtUtil {
 
@@ -73,6 +75,8 @@ public class JwtUtil {
                 .getPayload();
     }
 
+    // TODO 나중에 권한(role) 바꿀때 (예를들어 블랙리스트) token도 교체해줘야함 안그러면 refreshToken같은 경우
+    // TODO 오랜기간 가져가므로 권한 오류 발생할 수 있음
     // Access Token을 생성
     public String generateAccessToken(String memberSeq, String role) {
         Date now = new Date();
@@ -86,6 +90,7 @@ public class JwtUtil {
                 .expiration(expiryDate)      // 토큰 만료 시간 (15분 후)
                 .signWith(getSigningKey())   // HMAC-SHA256으로 서명
                 .compact();                  // 최종 JWT 문자열 생성
+
     }
 
     // Refresh Token을 생성합니다.
@@ -111,6 +116,7 @@ public class JwtUtil {
     public String getRoleFromToken(String token) {
         return parseClaims(token).get("role", String.class);
     }
+
 
     /**
      * JWT 토큰의 타입을 확인합니다.

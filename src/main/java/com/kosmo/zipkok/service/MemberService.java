@@ -21,6 +21,8 @@ public interface MemberService {
     String findId (Map<String, String> param);
     String findPwd (Map<String, String> param);
     String findPwdBySeq (String memberSeq);
+    byte[] selectMemberImage (String memberSeq);
+    Map<String, String> selectMemberBasicInfo(String memberSeq);
     // 회원가입
     void insertMember(HelperDTO dto) throws IOException;
     void insertSnsMember(HelperDTO dto, Map<String, String> snsInfo) throws IOException;

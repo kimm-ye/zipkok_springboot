@@ -28,16 +28,6 @@
             비밀번호를 다시 한 번 확인해주세요
         </p>
 
-        <!-- 사용자 정보 -->
-        <div class="user-info">
-            <div class="user-avatar" th:text="${#authentication.name.substring(0,1).toUpperCase()}">
-                K
-            </div>
-            <div class="user-details">
-                <div class="user-name" th:text="${#authentication.name} + ' 님'">홍길동 님</div>
-            </div>
-        </div>
-
         <!-- 시도 횟수 경고 -->
         <div class="attempt-info" id="attemptInfo">
             <i class="fas fa-exclamation-triangle"></i>

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class MemberViewController {
@@ -59,11 +60,14 @@ public class MemberViewController {
 			return new ModelAndView("redirect:/member/login");
 		}
 
+		Map<String, String> basicInfo = memberService.selectMemberBasicInfo(me.getMemberSeq());
+
 		// 공통: 요청한 심부름 내역
 		int missionCount = missionService.getRequestHistoryCount(me.getMemberSeq());
 		PagingDTO requestPaging = PagingDTO.of(1, 5, missionCount);
 		List<MissionDTO> missionHistory = missionService.getRequestHistory(me.getMemberSeq(), requestPaging);
 
+		mv.addObject("basicInfo", basicInfo);
 		mv.addObject("missionCount", missionCount);
 		mv.addObject("mission", missionHistory);  // 철자 수정
 		mv.addObject("history", "request");
@@ -95,15 +99,11 @@ public class MemberViewController {
 	public ModelAndView modify(@AuthenticationPrincipal CustomUserDetail me) {
 		ModelAndView mv = new ModelAndView();
 
-		HelperDTO member;
-		if("ROLE_HELPER".equals(me.getRole())) {
-			// helper 이미지까지 조회해온다.
-			member = memberService.selectMemberWithImageBySeq(me.getMemberSeq());
-		} else {
-			member = memberService.selectMemberBySeq(me.getMemberSeq());
-		}
+		HelperDTO member = memberService.selectMemberWithImageBySeq(me.getMemberSeq());
 
 		if(member != null) {
+			System.out.println(member.getFullImageName());
+
 			mv.addObject("info", member);
 			mv.addObject("isModify", true);      // 수정 모드 플래그
 			mv.setViewName("member/join");

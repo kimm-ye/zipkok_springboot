@@ -31,8 +31,8 @@
               th:attr="onsubmit=|return ${mode == 'edit' ? 'missionUpdate(this)' : 'missionRegister(this)'}|">
 
             <!-- 수정/보기 모드에서만 PK 포함 -->
-            <input type="hidden" name="missionSeq" th:if="${mode == 'edit' || mode == 'view'}" th:value="${mission?.missionSeq}"/>
-            <input type="hidden" name="memberSeq" th:if="${mode == 'edit' || mode == 'view'}" th:value="${mission?.memberSeq}"/>
+            <input type="hidden" id="missionSeq" name="missionSeq" th:if="${mode == 'edit' || mode == 'view'}" th:value="${mission?.missionSeq}"/>
+            <input type="hidden" id="memberSeq" name="memberSeq" th:if="${mode == 'edit' || mode == 'view'}" th:value="${mission?.memberSeq}"/>
 
             <!-- 심부름 항목 -->
             <div class="form-group">
@@ -241,6 +241,14 @@
                         onclick="deleteMission()">
                     <i class="fas fa-trash-alt"></i>
                     <span >심부름 삭제하기</span>
+                </button>
+            </div>
+
+            <!-- 보기모드고, 내가 수행하기로 한 헬퍼고 심부름 상태는 진행 상태일때 -->
+            <div th:if="${mode == 'view' && mission?.helperSeq == memberSeq  && mission?.missionStatus == 1}">
+                <button type="button" class="submit-btn" onclick="missionComplete()">
+                    <i class="fas fa-check-circle"></i>
+                    심부름 수행 완료
                 </button>
             </div>
 

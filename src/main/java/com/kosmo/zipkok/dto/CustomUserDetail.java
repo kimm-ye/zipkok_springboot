@@ -11,10 +11,13 @@ public class CustomUserDetail extends User {
 
     private final String memberSeq;      // 회원 시퀀스 (PK)
 
+
+    // authorities : 권한. 확장성을 위해 단일이 아닌 복수 권한 가능하도록 세팅
     public CustomUserDetail(String memberSeq,
                             Collection<? extends GrantedAuthority> authorities) {
         super(memberSeq,"", authorities);
         this.memberSeq = memberSeq;
+
     }
 
     /**

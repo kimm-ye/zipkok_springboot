@@ -138,7 +138,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void setAuthenticationFromJwt(String memberSeq, String role) {
         // 경량 CustomUserDetail 생성 (DB 조회 X)
         CustomUserDetail userDetails = new CustomUserDetail(
-                memberSeq,              // memberId (JWT에서는 memberSeq 사용)
+                memberSeq,              // JWT에서는 memberSeq 사용
                 Collections.singletonList(new SimpleGrantedAuthority(role))
         );
 

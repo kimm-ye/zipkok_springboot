@@ -2,8 +2,10 @@ package com.kosmo.zipkok.service.impl;
 
 import com.kosmo.zipkok.dao.MemberDAO;
 import com.kosmo.zipkok.dto.HelperDTO;
+import com.kosmo.zipkok.dto.ImageDTO;
 import com.kosmo.zipkok.service.MemberService;
 import com.kosmo.zipkok.util.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.util.Map;
 
+@Slf4j
 @Service
 @Transactional
 public class MemberServiceImpl implements MemberService {
@@ -89,6 +92,35 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public String findPwdBySeq(String memberSeq) {
 		return memberDao.findPwdBySeq(memberSeq);
+	}
+
+	@Override
+	public byte[] selectMemberImage(String memberSeq) {
+
+		try {
+			ImageDTO result = memberDao.selectMemberImage(memberSeq);
+
+			if (result != null) {
+				Object imageObj = result.getImageFile();
+
+				if (imageObj instanceof byte[] imageFile) {
+                    // log.debug("✅ 이미지 발견: size={}KB", imageFile.length / 1024);
+					return imageFile;
+				}
+			}
+
+			//log.debug("⚠️ 이미지 없음: memberSeq={}", memberSeq);
+			return null;
+
+		} catch (Exception e) {
+			log.error("❌ 이미지 조회 실패: memberSeq={}, error={}", memberSeq, e.getMessage(), e);
+			return null;
+		}
+	}
+
+	@Override
+	public Map<String, String> selectMemberBasicInfo(String memberSeq) {
+		return memberDao.selectMemberBasicInfo(memberSeq);
 	}
 
 	@Override

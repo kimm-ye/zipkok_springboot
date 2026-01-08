@@ -95,7 +95,7 @@ public class RedisService {
 
             if (storedToken == null) {
                 log.warn("⚠️ Redis에 Refresh Token 없음: {}", memberSeq);
-                return false;
+                return null; // null이면 Redis 오류인걸로
             }
 
             boolean isValid = refreshToken.equals(storedToken);

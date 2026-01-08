@@ -23,7 +23,7 @@
 		SELECT
 			M.member_seq AS memberSeq,
 			M.member_id AS memberId,
-			M.member_pass AS memberPass,
+			/*M.member_pass AS memberPass,*/
 			M.member_name AS memberName,
 			M.member_email AS memberEmail,
 			M.member_age AS memberAge,
@@ -39,14 +39,14 @@
 			NVL(H.member_missionC, 0) AS memberMissionC,
 			NVL(H.member_point, 0) AS memberPoint,
 			IMG.image_name AS imageFileName,
-			IMG.image_etx AS imageFileEtx,
-			IMG.image_file AS imageFile
+			IMG.image_etx AS imageFileEtx
+			/*IMG.image_file AS imageFile*/
 		FROM
 			MEMBER M
 		LEFT JOIN HELPER H
 		ON M.member_seq = H.member_seq
 		LEFT JOIN MEMBER_IMAGE IMG
-		ON H.member_seq = IMG.member_seq
+		ON M.member_seq = IMG.member_seq
 		WHERE
 			M.member_useYn = 'Y'
 		  AND M.MEMBER_SEQ =#{memberSeq}
@@ -57,7 +57,7 @@
 		SELECT
 			M.member_seq AS memberSeq,
 			M.member_id AS memberId,
-			M.member_pass AS memberPass,
+			/*M.member_pass AS memberPass,*/
 			M.member_name AS memberName,
 			M.member_email AS memberEmail,
 			M.member_age AS memberAge,
@@ -120,7 +120,7 @@
 		SELECT
 			M.member_seq AS memberSeq,
 			M.member_id AS memberId,
-			M.member_pass AS memberPass,
+			/*M.member_pass AS memberPass,*/
 			M.member_name AS memberName,
 			M.member_email AS memberEmail,
 			M.member_age AS memberAge,
@@ -191,6 +191,32 @@
 		WHERE
 			member_seq = #{memberSeq}
 	</select>
+
+	<!-- 회원 프로필 사진 조회 -->
+	<select id="selectMemberImage" parameterType="java.lang.String" resultType="ImageDTO">
+		SELECT
+			IMG.image_file as imageFile
+		FROM
+			MEMBER M
+		LEFT JOIN MEMBER_IMAGE IMG
+		ON M.member_seq = IMG.member_seq
+		WHERE
+			M.member_useYn = 'Y'
+		AND M.member_seq = #{memberSeq}
+		AND IMG.image_file IS NOT NULL
+	</select>
+
+	<!-- 마이페이지에 보여줄 정보 -->
+	<select id="selectMemberBasicInfo" parameterType="java.lang.String" resultType="map">
+		SELECT
+			member_name AS memberName
+		FROM
+			MEMBER
+		WHERE
+			member_useYn = 'Y'
+		AND MEMBER_SEQ = #{memberSeq}
+	</select>
+
 
 	<!-- 사용자 등록 -->
 	<insert id="insertMember" parameterType="HelperDTO" useGeneratedKeys="true" keyProperty="memberSeq">

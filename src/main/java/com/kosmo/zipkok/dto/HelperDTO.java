@@ -19,12 +19,28 @@ public class HelperDTO extends MemberDTO{
 	private int memberMissionC;
 	private int memberPoint;
 
+	// 파일 업로드용
 	private MultipartFile attachFile; // 업로드한 프로필 사진 - MultipartFile은 임시 메모리나 임시 파일에 저장된 상태
+
+	// DB 저장용
 	private byte[] imageFile; // 실제 파일 내용을 바이트 배열로 읽어옴
 	private String imageFileName;
 	private String imageFileEtx;
 
+	// 파일명 조합
 	public String getFullImageName() {
+		if (imageFileName != null && imageFileEtx != null) {
+			return imageFileName + "." + imageFileEtx;
+		}
+		return null;
+	}
+
+	// 이미지 있는지 체크용
+	public boolean hasImage() {
+		return imageFile != null && imageFile.length > 0;
+	}
+
+	/*public String getFullImageName() {
 		if (imageFileName != null && imageFileEtx != null) {
 			return imageFileName + "." + imageFileEtx;
 		}
@@ -70,6 +86,6 @@ public class HelperDTO extends MemberDTO{
 			case "webp": return "image/webp";
 			default: return "image/png";
 		}
-	}
+	}*/
 
 }

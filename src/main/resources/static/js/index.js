@@ -109,8 +109,8 @@ function renderIndexNoticeList(notices) {
 
 // 심부름 카테고리 선택
 function selectService(element, service) {
-    const serviceName = element.querySelector("h3").innerText;
-    alert(serviceName + " 카테고리가 선택되었습니다.");
+    //const serviceName = element.querySelector("h3").innerText;
+    //alert(serviceName + " 카테고리가 선택되었습니다.");
 
     window.location.href = '/zipkok/mission/select?flag=' + service;
 }

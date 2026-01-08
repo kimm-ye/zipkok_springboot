@@ -406,6 +406,7 @@ input[type="file"]:hover {
 .btn_area {
     display: flex;
     flex-direction: column;
+    gap: 13px;
 }
 
 .loginBtn {
