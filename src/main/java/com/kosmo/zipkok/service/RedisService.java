@@ -3,12 +3,12 @@ package com.kosmo.zipkok.service;
 import com.kosmo.zipkok.dto.MemberDTO;
 import com.kosmo.zipkok.dto.TokenDTO;
 import com.kosmo.zipkok.util.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * - Refresh Token: Redis에 저장하여 관리
  * - 블랙리스트: 로그아웃된 토큰 관리
  */
+@Slf4j
 @Service
 public class RedisService {
 
@@ -65,7 +66,7 @@ public class RedisService {
         redisTemplate.opsForValue().set(
                 "refresh:" + memberDTO.getMemberSeq(),
                 refreshToken,
-                2,  // 7일
+                7,  // 7일
                 TimeUnit.DAYS
         );
 
@@ -80,17 +81,31 @@ public class RedisService {
     }
 
     //Refresh Token의 유효성을 검사합니다.
-    public boolean isValidRefreshToken(String memberSeq, String refreshToken) {
-        // 1단계: JWT 유효성 검사 (서명, 만료시간 등)
-        if (!jwtUtil.validateToken(refreshToken) || !jwtUtil.isRefreshToken(refreshToken)) {
-            return false;
-        }
+    public Boolean isValidRefreshToken(String memberSeq, String refreshToken) {
 
-        // 2단계: Redis에서 저장된 Refresh Token과 비교
-        // 이는 사용자가 로그아웃했거나 다른 기기에서 로그인했을 때를 대비한 검증
-        String storedToken = (String) redisTemplate.opsForValue().get("refresh:" + memberSeq);
-        System.out.println("storedToken : " + storedToken);
-        return refreshToken.equals(storedToken);
+        try{
+            // 1단계: JWT 유효성 검사 (서명, 만료시간 등)
+            if (!jwtUtil.validateToken(refreshToken) || !jwtUtil.isRefreshToken(refreshToken)) {
+                log.warn("❌ refreshToken 만료됨");
+                return false;
+            }
+
+            // 2. Redis에서 토큰 조회 (여기서 연결 오류 발생 가능)
+            String storedToken = (String) redisTemplate.opsForValue().get("refresh:" + memberSeq);
+
+            if (storedToken == null) {
+                log.warn("⚠️ Redis에 Refresh Token 없음: {}", memberSeq);
+                return null; // null이면 Redis 오류인걸로
+            }
+
+            boolean isValid = refreshToken.equals(storedToken);
+            log.info("🔍 Refresh Token 검증 결과: {}", isValid);
+            return isValid;
+
+        } catch (Exception e) {
+            log.error("❌ Redis 연결 오류: {}", e.getMessage());
+            return null; // null인 경우는 Redis연결 오류임
+        }
     }
 
 
@@ -157,6 +172,19 @@ public class RedisService {
                     TimeUnit.MILLISECONDS
                 );
             }
+        }
+    }
+
+    // redis 서버 열렸는지 확인
+    public boolean isRedisAvailable() {
+        try {
+            String pong = redisTemplate.getConnectionFactory()
+                    .getConnection()
+                    .ping();
+            return "PONG".equalsIgnoreCase(pong);
+        } catch (Exception e) {
+            log.error("❌ Redis 연결 끊김: {}", e.getMessage());
+            return false;
         }
     }
 

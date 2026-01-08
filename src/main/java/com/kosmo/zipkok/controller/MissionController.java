@@ -34,7 +34,7 @@ public class MissionController {
 
 			result.put("success", true);
 			result.put("message", "심부름 등록 완료!");
-			result.put("redirectUrl", "/zipkok/mission/request/history");
+			result.put("redirectUrl", "/zipkok/mission/add?flag=request");
 
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -52,7 +52,7 @@ public class MissionController {
 		ModelAndView mv = new ModelAndView("mission/register");
 		MissionDTO detail = missionService.getMissionDetail(missionSeq);
 
-		// 본인 심부름인지 확인
+		// 본인 심부름인지 확인 (모드 분기를 위해)
 		boolean isOwner = String.valueOf(detail.getMemberSeq()).equals(me.getMemberSeq());
 
 		mv.addObject("memberSeq", me.getMemberSeq());   // 수정 모드
@@ -75,13 +75,13 @@ public class MissionController {
 				missionService.updateMission(missionDTO);
 
 				result.put("success", true);
-				result.put("message", "심부름 수정 완료!");
-				result.put("redirectUrl", "/zipkok/mission/request/history");
+				result.put("message", "심부름 수정이 완료되었습니다.");
 			} else {
 				result.put("success", true);
-				result.put("message", "다시 로그인해주세요!");
-				result.put("redirectUrl", "/zipkok/mission/request/history");
+				result.put("message", "작성한 사람만 수정이 가능합니다.");
 			}
+
+			result.put("redirectUrl", "/zipkok/mission/add?flag=request");
 
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -133,11 +133,7 @@ public class MissionController {
 
 
 
-
-
-
-
-
+// ================================================================================================================//
 
 	// 헬퍼 - 응모 가능한 수행내역 리스트 조회
 	@GetMapping("/mission/performance/history")

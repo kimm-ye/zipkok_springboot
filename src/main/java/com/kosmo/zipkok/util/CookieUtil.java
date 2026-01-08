@@ -3,6 +3,8 @@ package com.kosmo.zipkok.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,13 +12,17 @@ public class CookieUtil {
 
     public static void createCookie(String tokenName, int exp, String path, String token, HttpServletResponse response) {
 
-        Cookie tokenCookie = new Cookie(tokenName, token);
-        tokenCookie.setHttpOnly(true);
-        tokenCookie.setSecure(false); // HTTPS 환경에서는 true로 설정
-        tokenCookie.setMaxAge(exp);
-        tokenCookie.setPath(path);
-        response.addCookie(tokenCookie);
+        ResponseCookie cookie = ResponseCookie.from(tokenName, token)
+                .httpOnly(true)
+                .path(path)
+                .maxAge(exp)
+                .sameSite("Lax")   // ← 이게 중요
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
+
+
 
     /**
      * 쿠키를 삭제합니다 (만료시간을 0으로 설정)

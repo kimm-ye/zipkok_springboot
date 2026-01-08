@@ -254,34 +254,6 @@ function joinValidate(form) {
     const isModifyMode = window.memberData && window.memberData.isModify;
     if (!isModifyMode) {
         idDoubleCheck();
-        /*// ID 길이 체크
-        if (!(form.memberId.value.length >= 4 && form.memberId.value.length <= 12)) {
-            alert("4자 이상 12자 이내의 값만 입력하세요");
-            form.memberId.value = '';
-            form.memberId.focus();
-            return false;
-        }
-
-        // ID 영문/숫자 체크
-        var whatType = form.memberId.value;
-        for (var i = 0; i < whatType.length; i++) {
-            if (!((whatType[i] >= 'a' && whatType[i] <= 'z') ||
-                (whatType[i] >= 'A' && whatType[i] <= 'Z') ||
-                (whatType[i] >= '0' && whatType[i] <= '9'))) {
-                alert("아이디는 숫자랑 영문자만 입력가능합니다");
-                form.memberId.value = '';
-                form.memberId.focus();
-                return false;
-            }
-        }
-
-        if (isModifyMode) {
-            // 중복체크 확인
-            if (form.idDuplication.value !== "idCheck") {
-                alert("이미 사용 중인 아이디입니다");
-                return false;
-            }
-        }*/
     }
 
     // 비밀번호 검사 (수정 모드에서는 입력했을 때만)
@@ -429,10 +401,10 @@ function resetJoinForm() {
     const form = document.forms['joinForm'];
     if (!form) return;
 
-    // 1️⃣ form의 모든 입력 초기화
+    // form의 모든 입력 초기화
     form.reset();
 
-    // 2️⃣ 파일 입력 초기화 (보안 정책상 직접 처리 필요)
+    // 파일 입력 초기화 (보안 정책상 직접 처리 필요)
     const fileInput = document.getElementById("attachFile");
     if (fileInput) {
         try {

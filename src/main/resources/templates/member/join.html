@@ -18,7 +18,6 @@
 
     <script type="text/javascript" th:src="@{/js/member/join.js}"></script>
     <script type="text/javascript" th:src="@{/js/member/login.js}"></script>
-    <script type="text/javascript" th:src="@{/js/common.js}"></script>
 </head>
 <body>
 <!-- 로딩바 -->
@@ -197,7 +196,7 @@
 
                         <div id="age">
                             <span class="box">
-                                <select id="age_check" class="sel" name="memberAge" required>
+                                <select id="age_check" class="sel" name="memberAge" th:disabled="${isModify}" th:style="${isModify} ? 'background-color: #f5f5f5; cursor: not-allowed;' : ''" required>
                                     <option value="">-나이 선택-</option>
                                     <option value="10" th:selected="${info?.memberAge == '10'}">10대</option>
                                     <option value="20" th:selected="${info?.memberAge == '20'}">20대</option>
@@ -213,7 +212,7 @@
                         <!-- GENDER -->
                         <div id="gender">
                             <span class="box gender_code">
-                                <select id="memberGender" class="sel" name="memberGender" required>
+                                <select id="memberGender" class="sel" name="memberGender" th:disabled="${isModify}" th:style="${isModify} ? 'background-color: #f5f5f5; cursor: not-allowed;' : ''" required>
                                     <option value="">-성별 선택-</option>
                                     <option value="1" th:selected="${info?.memberGender == 1}">남자</option>
                                     <option value="2" th:selected="${info?.memberGender == 2}">여자</option>
@@ -261,11 +260,11 @@
 
                         <!-- 기존 프로필 사진 표시 (수정 모드) -->
                         <div th:if="${isModify}" class="current-image" id="currentProfileContainer">
-                            <img th:src="@{${info.getImageUrl()}}"
+                            <img th:src="@{/member/image/profile(v=${info.imageVersion})}"
                                  id="currentProfileImage"
                                  alt="현재 프로필"
                                  style="max-width: 100px; max-height: 100px; margin-bottom: 10px;">
-                            <p>현재 프로필: <span th:text="${info.fullImageName}"></span></p>
+                            <p>현재 프로필: <span th:text="${info.imageDTO.fullImageName}"></span></p>
                         </div>
 
                         <!-- 미리보기 영역 -->

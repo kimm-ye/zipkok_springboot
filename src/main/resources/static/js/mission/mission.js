@@ -13,19 +13,21 @@ document.addEventListener('DOMContentLoaded', async function () {
     } catch (error) {
         console.error('카카오맵 로드 실패:', error);
     }
-});
 
 
 
-// 라디오 버튼 스타일 변경
-document.querySelectorAll('input[name="missionReservation"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-        document.querySelectorAll('.radio-item').forEach(item => {
-            item.classList.remove('active');
+    // 즉시/예약 신청 구분 라디오 버튼 스타일 변경
+    document.querySelectorAll('input[name="missionReservation"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.radio-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            this.closest('.radio-item').classList.add('active');
         });
-        this.closest('.radio-item').classList.add('active');
     });
 });
+
+
 
 // 날짜 입력 토글
 function toggleDateInput() {
@@ -249,6 +251,7 @@ async function missionUpdate(form){
 // 심부름 수행하기 함수
 async function performMission() {
     event.preventDefault(); // 기본 submit 방지
+    document.getElementById()
     const missionSeq = document.querySelector('input[name="missionSeq"]').value;
 
     if (!confirm('이 심부름을 수행하시겠습니까?')) {
@@ -301,4 +304,13 @@ async function deleteMission() {
         console.error('심부름 수행 오류:', error);
         alert('오류가 발생했습니다.');
     }
+}
+
+
+
+
+/* //////////////////////////////////////////// */
+
+function missionComplete() {
+
 }

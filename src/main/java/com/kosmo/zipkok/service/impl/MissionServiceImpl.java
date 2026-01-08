@@ -100,14 +100,14 @@ public class MissionServiceImpl implements MissionService {
             missionDao.insertMissionLocation(missionDTO);
 
             // mission_file에 insert
-            if(missionDTO.getMissionAttachFile().getSize() > 0) {
-                String fileName = missionDTO.getMissionAttachFile().getOriginalFilename();
+            if(missionDTO.getAttachFile().getSize() > 0) {
+                String fileName = missionDTO.getAttachFile().getOriginalFilename();
                 String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
                 String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
 
-                missionDTO.setMissionImageFile(missionDTO.getMissionAttachFile().getBytes());
-                missionDTO.setMissionImageFileName(originalName);
-                missionDTO.setMissionImageFileEtx(fileEtx);
+                missionDTO.setImageFile(missionDTO.getAttachFile().getBytes());
+                missionDTO.setImageFileName(originalName);
+                missionDTO.setImageFileEtx(fileEtx);
 
                 missionDao.insertMissionImage(missionDTO);
             }
@@ -140,14 +140,14 @@ public class MissionServiceImpl implements MissionService {
             }
 
             // mission_file에 insert
-            if(missionDTO.getMissionAttachFile().getSize() > 0) {
-                String fileName = missionDTO.getMissionAttachFile().getOriginalFilename();
+            if(missionDTO.getAttachFile().getSize() > 0) {
+                String fileName = missionDTO.getAttachFile().getOriginalFilename();
                 String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
                 String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
 
-                missionDTO.setMissionImageFile(missionDTO.getMissionAttachFile().getBytes());
-                missionDTO.setMissionImageFileName(originalName);
-                missionDTO.setMissionImageFileEtx(fileEtx);
+                missionDTO.setImageFile(missionDTO.getAttachFile().getBytes());
+                missionDTO.setImageFileName(originalName);
+                missionDTO.setImageFileEtx(fileEtx);
 
                 missionDao.updateMissionImage(missionDTO);
             }

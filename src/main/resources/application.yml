@@ -16,9 +16,9 @@ spring:
   # 데이터베이스 연결 설정 (MariaDB 사용)
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver    # MariaDB JDBC 드라이버
-    url: ${DB_URL:jdbc:mariadb://localhost:3306/zipkok}    # 데이터베이스 연결 URL
-    username: ${DB_USERNAME:root}                 # 데이터베이스 사용자명
-    password: ${DB_PASSWORD:}                     # 데이터베이스 비밀번호
+    url: ${DB_URL}    # 데이터베이스 연결 URL
+    username: ${DB_USERNAME}                 # 데이터베이스 사용자명
+    password: ${DB_PASSWORD}                     # 데이터베이스 비밀번호
   
 
   thymeleaf:
@@ -56,7 +56,7 @@ logging:
 
 # JWT (JSON Web Token) 설정
 jwt:
-  secret: ${JWT_SECRET:default-secret-key}       # JWT 서명에 사용할 비밀키
+  secret: ${JWT_SECRET}       # JWT 서명에 사용할 비밀키
   access:
     expiration: 900000                            # Access Token 만료 시간: 15분 (밀리초)
   refresh:
@@ -73,8 +73,8 @@ jwt:
 
 # Redis 설정
 redis:
-  host: ${REDIS_HOST:132.145.98.236}                   # Redis 서버 호스트
-  port: ${REDIS_PORT:6379}                       # Redis 서버 포트
+  host: ${REDIS_HOST}                   # Redis 서버 호스트
+  port: ${REDIS_PORT}                       # Redis 서버 포트
 
 
 

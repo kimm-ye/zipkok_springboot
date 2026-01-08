@@ -109,8 +109,9 @@ public class NoticeController {
         }
 
         public void adminCheck(@AuthenticationPrincipal CustomUserDetail me) {
+            log.info(me.getRole());
             // 관리자인지 한번 더 체크
-            if (me.getMemberStatus() != 0) {
+            if (!"ROLE_ADMIN".equals(me.getRole())) {
                 ApiResponse<Void> response =
                         new ApiResponse<>(false, "공지사항에 대한 권한이 없습니다.", null);
 
