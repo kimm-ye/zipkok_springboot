@@ -1,9 +1,6 @@
 package com.kosmo.zipkok.controller;
 
-import com.kosmo.zipkok.dto.CustomUserDetail;
-import com.kosmo.zipkok.dto.HelperDTO;
-import com.kosmo.zipkok.dto.MissionDTO;
-import com.kosmo.zipkok.dto.PagingDTO;
+import com.kosmo.zipkok.dto.*;
 import com.kosmo.zipkok.service.MemberService;
 import com.kosmo.zipkok.service.MissionService;
 import com.kosmo.zipkok.util.JwtUtil;
@@ -67,14 +64,17 @@ public class MemberViewController {
 			basicInfo.put("imageVersion", "0");
 		}
 
+		MissionSearchDTO searchDTO = new MissionSearchDTO();
+		searchDTO.setMemberSeq(me.getMemberSeq());
+
 		// 공통: 요청한 심부름 내역
-		int missionCount = missionService.getRequestHistoryCount(me.getMemberSeq());
+		int missionCount = missionService.getRequestHistoryCount(searchDTO);
 		PagingDTO requestPaging = PagingDTO.of(1, 5, missionCount);
-		List<MissionDTO> missionHistory = missionService.getRequestHistory(me.getMemberSeq(), requestPaging);
+		List<MissionDTO> missionHistory = missionService.getRequestHistory(searchDTO, requestPaging);
 
 		mv.addObject("basicInfo", basicInfo);
 		mv.addObject("missionCount", missionCount);
-		mv.addObject("mission", missionHistory);  // 철자 수정
+		mv.addObject("mission", missionHistory);
 		mv.addObject("history", "request");
 
 		// 헬퍼인 경우: 수행한 심부름 내역 추가
@@ -107,7 +107,9 @@ public class MemberViewController {
 		HelperDTO member = memberService.selectMemberWithImageBySeq(me.getMemberSeq());
 
 		if(member != null) {
-
+			if (member.getImageDTO() == null) {
+				member.setImageDTO(new ImageDTO());
+			}
 			mv.addObject("info", member);
 			mv.addObject("isModify", true);      // 수정 모드 플래그
 			mv.setViewName("member/join");

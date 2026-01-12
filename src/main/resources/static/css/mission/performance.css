@@ -19,7 +19,7 @@ body {
 
 .container {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 10px auto;
 }
 
 .row {
@@ -40,7 +40,7 @@ body {
 .performanceList {
     background: white;
     border-radius: 20px;
-    padding: 50px 40px;
+    padding: 20px 40px;
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
 }
 
@@ -170,7 +170,7 @@ body {
 }
 
 #dataTable tbody td {
-    padding: 22px 15px;
+    /*padding: 22px 15px;*/
     vertical-align: middle;
     border: none !important;
 }
@@ -179,8 +179,10 @@ body {
 #dataTable tbody td:first-child {
     text-align: center;
     font-weight: 600;
-    color: #718096;
-    width: 10%;
+    color: #a0aec0;
+    width: 40px;
+    height: 35px;
+    font-size: 15px;
 }
 
 /* 제목 셀 */
@@ -193,6 +195,7 @@ body {
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
+    font-size: 15px;
 }
 
 #dataTable tbody td:nth-child(2) a:hover {
@@ -203,16 +206,15 @@ body {
 #dataTable tbody td:nth-child(3) {
     text-align: center;
     color: #718096;
-    font-size: 0.95em;
+    font-size: 15px;
     width: 15%;
 }
 
 /* 비용 셀 */
 #dataTable tbody td:last-child {
     text-align: center;
-    font-weight: bold;
     color: #FF4C00;
-    font-size: 1.1em;
+    font-size: 15px;
     width: 10%;
 }
 

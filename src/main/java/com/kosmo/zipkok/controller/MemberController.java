@@ -333,7 +333,6 @@ public class MemberController {
 		CookieUtil.deleteCookie("accessToken", "/", res);
 		CookieUtil.deleteCookie("refreshToken", "/", res);
 
-
 		return new ModelAndView("redirect:/");
 	}
 

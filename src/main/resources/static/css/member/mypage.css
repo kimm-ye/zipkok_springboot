@@ -20,8 +20,8 @@ body {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 20px;
-  padding: 30px;
-  margin-bottom: 20px;
+  padding: 20px 41px 20px;
+  margin-bottom: 13px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
@@ -42,14 +42,14 @@ body {
 }*/
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 36px;
+  /*font-size: 36px;*/
   color: white;
   box-shadow: 0 5px 20px rgba(255, 76, 0, 0.3);
   overflow: hidden;  /* ⭐ 추가: 이미지가 원 밖으로 안 나가게 */
@@ -74,10 +74,10 @@ body {
 }
 
 .profile-name {
-  font-size: 1.6em;
+  font-size: 1.4em;
   font-weight: bold;
   color: #2d3748;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 }
 
 .profile-email {
@@ -116,7 +116,7 @@ body {
 .stat-card {
   background: white;
   border-radius: 15px;
-  padding: 30px;
+  padding: 10px;
   text-align: center;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s;

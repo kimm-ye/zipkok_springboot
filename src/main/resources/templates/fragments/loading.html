@@ -45,24 +45,5 @@
             to { transform: rotate(360deg); }
         }
     </style>
-
-    <!--<script>
-        // 페이지 떠날 때 로딩 표시
-        window.addEventListener('beforeunload', function() {
-            document.getElementById('loadingOverlay').classList.add('active');
-        });
-
-        // 페이지 로드 완료 시 로딩 숨김
-        window.addEventListener('load', function() {
-            document.getElementById('loadingOverlay').classList.remove('active');
-        });
-
-        // 뒤로가기로 돌아왔을 때 로딩 숨김
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                document.getElementById('loadingOverlay').classList.remove('active');
-            }
-        });
-    </script>-->
 </th:block>
 </html>

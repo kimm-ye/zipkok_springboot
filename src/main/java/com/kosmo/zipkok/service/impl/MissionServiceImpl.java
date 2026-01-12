@@ -52,21 +52,21 @@ public class MissionServiceImpl implements MissionService {
         return missionDao.getMyPerformanceHistoryCount(helperSeq);
     }
 
+    @Override
+    public int getRequestHistoryCount(MissionSearchDTO searchDTO) {
+        return missionDao.getRequestHistoryCount(searchDTO);
+    }
+
     // 요청내역 조회
     @Override
-    public List<MissionDTO> getRequestHistory(String memberSeq, PagingDTO paging) {
+    public List<MissionDTO> getRequestHistory(MissionSearchDTO searchDTO, PagingDTO paging) {
 
         Map<String, Object> params = new HashMap<>();
         params.put("offset", paging.getOffset());
         params.put("limit", paging.getLimit());
-        params.put("memberSeq", memberSeq);
+        params.put("searchDTO", searchDTO);
 
         return missionDao.getRequestHistory(params);
-    }
-
-    @Override
-    public int getRequestHistoryCount(String memberSeq) {
-        return missionDao.getRequestHistoryCount(memberSeq);
     }
 
     // 미션 상세페이지
@@ -81,13 +81,8 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public String selectMemberSeq(String missionSeq) {
-        return missionDao.selectMemberSeq(missionSeq);
-    }
-
-    @Override
-    public int selectMissionStatus(String missionSeq) {
-        return missionDao.selectMissionStatus(missionSeq);
+    public MissionDTO selectMissionBySeq(String missionSeq) {
+        return missionDao.selectMissionBySeq(missionSeq);
     }
 
     @Override
@@ -100,7 +95,7 @@ public class MissionServiceImpl implements MissionService {
             missionDao.insertMissionLocation(missionDTO);
 
             // mission_file에 insert
-            if(missionDTO.getAttachFile().getSize() > 0) {
+            if(missionDTO.getAttachFile() != null && missionDTO.getAttachFile().getSize() > 0) {
                 String fileName = missionDTO.getAttachFile().getOriginalFilename();
                 String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
                 String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
@@ -140,7 +135,8 @@ public class MissionServiceImpl implements MissionService {
             }
 
             // mission_file에 insert
-            if(missionDTO.getAttachFile().getSize() > 0) {
+            if(missionDTO.getAttachFile() != null  &&
+                    missionDTO.getAttachFile().getSize() > 0) {
                 String fileName = missionDTO.getAttachFile().getOriginalFilename();
                 String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
                 String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
@@ -161,16 +157,6 @@ public class MissionServiceImpl implements MissionService {
     public void updateMissionStatus(Map<String, Object> param) throws Exception {
         try {
             missionDao.updateMissionStatus(param);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    @Override
-    public void deleteMission(String missionSeq) throws Exception {
-        try {
-            missionDao.deleteMission(missionSeq);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

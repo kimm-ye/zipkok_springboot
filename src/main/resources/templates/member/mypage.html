@@ -19,10 +19,7 @@
         <div class="profile-header">
             <div class="profile-avatar">
                 <!-- ⭐ 이미지로 변경 -->
-                <!--<img th:src="@{/member/image/profile}"
-                     alt="프로필 이미지"
-                     onerror="this.src='/zipkok/img/profile/default.png'">-->
-                <img th:src="@{/member/image/profile(v=${basicInfo.imageVersion})}"
+                <img th:src="@{/member/image/profile/{memberSeq}(memberSeq=${basicInfo.memberSeq}, v=${basicInfo.imageVersion})}"
                      alt="프로필 이미지"
                      id="profilePreview"
                      onerror="this.src='/zipkok/img/profile/default.png'">
@@ -81,7 +78,7 @@
                 <div class="table-title">최근 심부름 내역</div>
 
             <th:block sec:authorize="hasAnyRole('USER')">
-                <button class="view-more-btn" onclick="location.href='/zipkok/mission/add?flag=request'">
+                <button class="view-more-btn" onclick="location.href='/zipkok/mission/history?flag=request'">
                     <i class="fas fa-plus-circle"></i> 더보기
                 </button>
             </th:block>

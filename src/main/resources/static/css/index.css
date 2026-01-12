@@ -12,7 +12,7 @@ body {
 }
 
 /* ===== 히어로 섹션 ===== */
-.hero {
+.zipkok {
     background: linear-gradient(135deg, #FF4C00 0%, #FFC100 100%);
     padding: 100px 20px;
     text-align: center;
@@ -21,7 +21,7 @@ body {
     overflow: hidden;
 }
 
-.hero::before {
+.zipkok::before {
     content: '';
     position: absolute;
     top: 0;
@@ -32,21 +32,21 @@ body {
     opacity: 0.5;
 }
 
-.hero-content {
+.zipkok-content {
     max-width: 800px;
     margin: 0 auto;
     position: relative;
     z-index: 1;
 }
 
-.hero h1 {
+.zipkok h1 {
     font-size: 3.5em;
     margin-bottom: 20px;
     font-weight: 800;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.hero p {
+.zipkok p {
     font-size: 1.3em;
     margin-bottom: 40px;
     opacity: 0.95;
@@ -404,11 +404,11 @@ footer {
         display: none;
     }
 
-    .hero h1 {
+    .zipkok h1 {
         font-size: 2.2em;
     }
 
-    .hero p {
+    .zipkok p {
         font-size: 1.1em;
     }
 

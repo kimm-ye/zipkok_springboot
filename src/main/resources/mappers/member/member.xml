@@ -235,6 +235,7 @@
 	<!-- 마이페이지에 보여줄 정보 -->
 	<select id="selectMemberBasicInfo" parameterType="java.lang.String" resultType="map">
 		SELECT
+		    member_seq AS memberSeq,
 			member_name AS memberName,
 			image_version AS imageVersion
 		FROM

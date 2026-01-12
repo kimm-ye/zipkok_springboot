@@ -1,9 +1,6 @@
 package com.kosmo.zipkok.dto;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Date;
 
 @Data
 public class MissionDTO extends MissionFileDTO {
@@ -41,5 +38,7 @@ public class MissionDTO extends MissionFileDTO {
     private String endPostcode;
     private Double endLatitude;
     private Double endLongitude;
+
+    private ImageDTO imageDTO;
 
 }

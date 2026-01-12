@@ -73,8 +73,9 @@ jwt:
 
 # Redis 설정
 redis:
-  host: ${REDIS_HOST}                   # Redis 서버 호스트
-  port: ${REDIS_PORT}                       # Redis 서버 포트
+  host: ${REDIS_HOST}                     # Redis 서버 호스트
+  port: ${REDIS_PORT}                     # Redis 서버 포트
+  password: ${REDIS_PASSWORD}             # Redis 비밀번호 (없으면 비워두기)
 
 
 
