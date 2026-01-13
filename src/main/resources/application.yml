@@ -61,6 +61,8 @@ jwt:
     expiration: 900000                            # Access Token 만료 시간: 15분 (밀리초)
   refresh:
     expiration: 604800000                         # Refresh Token 만료 시간: 7일 (밀리초)
+  temp:
+    expiration: 300000                            # temp Token 만료 시간: 5분 (밀리초)
 
 # 테스트용
 #jwt:

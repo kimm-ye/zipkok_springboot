@@ -11,6 +11,7 @@ import com.kosmo.zipkok.util.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +42,16 @@ public class MemberController {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Value("${jwt.temp.expiration}") // 5분 (밀리초)
+	private long tempExpiration;
+
+	@Value("${jwt.access.expiration}") // 15분 (밀리초)
+	private long accessExpiration;
+
+	@Value("${jwt.refresh.expiration}") // 7일 (밀리초)
+	private long refreshExpiration;
+
 
 	// 회원가입
 	@PostMapping(value="/member/join/action")
@@ -80,9 +91,9 @@ public class MemberController {
 			TokenDTO tokens = redisService.saveTokenRedis(member);
 
 			// 15분
-			CookieUtil.createCookie("accessToken", 15 * 60, "/", tokens.getAccessToken(), res);
+			CookieUtil.createCookie("accessToken", accessExpiration, "/", tokens.getAccessToken(), res);
 			// 7일
-			CookieUtil.createCookie("refreshToken", 7 * 24 * 60 * 60, "/", tokens.getRefreshToken(), res);
+			CookieUtil.createCookie("refreshToken", refreshExpiration, "/", tokens.getRefreshToken(), res);
 
 			result.put("success", true);
 			result.put("message", "가입완료! 집콕에 오신것을 환영합니다^^");
@@ -131,8 +142,8 @@ public class MemberController {
 			// 로그인 성공시 Redis 세션 생성 및 JWT 토큰 발급
 			TokenDTO tokens = redisService.saveTokenRedis(dto);
 
-			CookieUtil.createCookie("accessToken", 15 * 60, "/", tokens.getAccessToken(), res); // 15분
-			CookieUtil.createCookie("refreshToken", 7 * 24 * 60 * 60, "/", tokens.getRefreshToken(), res); // 7일
+			CookieUtil.createCookie("accessToken", accessExpiration, "/", tokens.getAccessToken(), res); // 15분
+			CookieUtil.createCookie("refreshToken", refreshExpiration, "/", tokens.getRefreshToken(), res); // 7일
 
 			result.put("success", true);
 			result.put("memberId", dto.getMemberId());
@@ -182,8 +193,8 @@ public class MemberController {
 			// 로그인 성공
 			TokenDTO tokens = redisService.saveTokenRedis(member);  // JWT 토큰 생성 및 redis 저장
 
-			CookieUtil.createCookie("accessToken", 15 * 60, "/", tokens.getAccessToken(), res); // 15분
-			CookieUtil.createCookie("refreshToken", 7 * 24 * 60 * 60, "/", tokens.getRefreshToken(), res); // 7일
+			CookieUtil.createCookie("accessToken", accessExpiration, "/", tokens.getAccessToken(), res); // 15분
+			CookieUtil.createCookie("refreshToken", refreshExpiration, "/", tokens.getRefreshToken(), res); // 7일
 
 			result.put("success", true);
 			result.put("memberId", member.getMemberId());
@@ -194,7 +205,7 @@ public class MemberController {
 			// 없는 회원이면 임시 JWT 발급
 			String tempToken = jwtUtil.tempSnsToken(param.get("type"), param.get("snsId"));
 			System.out.println("kakao action : " + tempToken);
-			CookieUtil.createCookie("tempToken", 5 * 60, "/", tempToken, res); // 5분
+			CookieUtil.createCookie("tempToken", tempExpiration, "/", tempToken, res); // 5분
 
 			result.put("success", false);
 			result.put("message", "이전 로그인 정보가 없어 회원가입 페이지로 이동합니다.");

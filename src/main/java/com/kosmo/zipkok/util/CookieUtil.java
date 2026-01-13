@@ -10,7 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class CookieUtil {
 
-    public static void createCookie(String tokenName, int exp, String path, String token, HttpServletResponse response) {
+    public static void createCookie(String tokenName, long expMillis, String path, String token, HttpServletResponse response) {
+
+        // 여기서 계산! (밀리초 -> 초 변환)
+        // 0보다 클 때만 변환하고, 0이면(세션 쿠키 등) 그대로 0 처리
+        long exp = (expMillis > 0) ? (expMillis / 1000) : 0;
 
         ResponseCookie cookie = ResponseCookie.from(tokenName, token)
                 .httpOnly(true)
