@@ -87,6 +87,8 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     public void insertMission(MissionDTO missionDTO) throws IOException {
+
+        System.out.println(missionDTO);
         try{
             //mission 테이블에 데이터 insert
             missionDao.insertMission(missionDTO);

@@ -33,14 +33,17 @@ public class MissionViewController {
 	public ModelAndView detail(@AuthenticationPrincipal CustomUserDetail me,
 							   @RequestParam("missionSeq") String missionSeq) {
 
-		ModelAndView mv = new ModelAndView("mission/register");
 		MissionDTO detail = missionService.getMissionDetail(missionSeq);
-
-		// 본인 심부름인지 확인 (모드 분기를 위해)
 		boolean isOwner = String.valueOf(detail.getMemberSeq()).equals(me.getMemberSeq());
 
-		mv.addObject("memberSeq", me.getMemberSeq());   // 수정 모드
-		mv.addObject("mode", isOwner ? "edit" : "view");  // 본인이면 edit, 아니면 view
+		// 권한 없으면 리다이렉트
+		if(!isOwner && !me.getRole().equals("ROLE_HELPER")) {
+			return new ModelAndView("redirect:/mission/select"); // 신청페이지로
+		}
+
+		ModelAndView mv = new ModelAndView("mission/register");
+		mv.addObject("memberSeq", me.getMemberSeq());
+		mv.addObject("mode", isOwner ? "edit" : "view");
 		mv.addObject("mission", detail);
 
 		return mv;

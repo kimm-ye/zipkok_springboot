@@ -188,7 +188,7 @@ public class MemberController {
 		HelperDTO member = memberService.selectSnsLogin(param);
 
 		// 기존 있는 회원이면 로그인
-		if(!"".equals(member) && member != null) {
+		if(member != null) {
 			// 성공시 Redis 세션 생성
 			// 로그인 성공
 			TokenDTO tokens = redisService.saveTokenRedis(member);  // JWT 토큰 생성 및 redis 저장

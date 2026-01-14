@@ -81,7 +81,7 @@ function goToMissionDetail(element) {
 function changePage(page) {
     loadMissions(page);
 
-    // 페이지 변경 시 스크롤 상단으로 (선택사항)
+    // 페이지 변경 시 스크롤 상단으로
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 

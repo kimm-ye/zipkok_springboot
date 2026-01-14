@@ -108,7 +108,7 @@ public class MissionController {
 		}catch (Exception e) {
 			e.printStackTrace();
 			result.put("success", false);
-			result.put("message", "정보수정 중 오류가 발생하였습니다.\n관리자에게 문의 바랍니다.");
+			result.put("message", "등록 중 오류가 발생하였습니다.\n관리자에게 문의 바랍니다.");
 		}
 		return result;
 	}
@@ -235,7 +235,7 @@ public class MissionController {
 			return null;
 		}
 
-		// 0/1→9 (취소/삭제): 작성자 또는 헬퍼만 가능
+		// 0/1→9 (취소/삭제): 작성자만 가능
 		if (newStatus == 9) {
 			boolean isAuthor = mission.getMemberSeq().equals(memberSeq);
 

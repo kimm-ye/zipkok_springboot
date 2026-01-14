@@ -192,7 +192,7 @@ async function missionRegister(form){
     try {
         const formData = new FormData(form);
 
-        const response = await fetch('./request/register', {
+        const response = await fetch('/zipkok/mission/request/register', {
             method: 'POST',
             body: formData
         });
@@ -211,8 +211,9 @@ async function missionRegister(form){
     } catch (error) {
         console.error('Error:', error);
         alert('처리 중 오류가 발생했습니다.');
-        alert('error :' + error);
-        hideLoading()
+        /*alert('error :' + error);*/
+    } finally {
+        hideLoading();
     }
 }
 
