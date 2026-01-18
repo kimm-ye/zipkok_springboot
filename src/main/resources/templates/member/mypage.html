@@ -43,7 +43,7 @@
                 <div class="stat-label">요청한 심부름</div>
             </div>
 
-        <!-- member_status가 2인 경우 (헬퍼) -->
+        <!-- member_role가 2인 경우 (헬퍼) -->
         <th:block sec:authorize="hasAnyRole('HELPER')">
             <div class="stat-card">
                 <div class="stat-icon">
@@ -82,7 +82,7 @@
                     <i class="fas fa-plus-circle"></i> 더보기
                 </button>
             </th:block>
-            <!--member_status가 2인 경우 (헬퍼)-->
+            <!--member_role가 2인 경우 (헬퍼)-->
             <th:block sec:authorize="hasAnyRole('HELPER')">
                 <div class="filter-tabs">
                     <button class="tab-btn active" onclick="switchTab('request')">요청</button>

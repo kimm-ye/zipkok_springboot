@@ -1,9 +1,6 @@
 package com.kosmo.zipkok.service;
 
-import com.kosmo.zipkok.dto.MissionDTO;
-import com.kosmo.zipkok.dto.MissionFileDTO;
-import com.kosmo.zipkok.dto.MissionSearchDTO;
-import com.kosmo.zipkok.dto.PagingDTO;
+import com.kosmo.zipkok.dto.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,14 +11,14 @@ public interface MissionService {
     List<MissionDTO> getPerformanceHistory(PagingDTO paging);
     int getPerformanceHistoryCount();
 
-    List<MissionDTO> getMyPerformanceHistory(String helperSeq, PagingDTO paging);
-    int getMyPerformanceHistoryCount(String helperSeq);
+    int getMyPerformanceHistoryCount(MissionSearchDTO searchDTO);
+    List<MissionDTO> getMyPerformanceHistory(MissionSearchDTO searchDTO, PagingDTO paging);
 
     int getRequestHistoryCount(MissionSearchDTO searchDTO);
     List<MissionDTO> getRequestHistory(MissionSearchDTO searchDTO, PagingDTO paging);
 
     MissionDTO getMissionDetail(String missionSeq);
-    MissionFileDTO getMissionImage(String missionSeq);
+    ImageDTO getMissionImage(String missionSeq);
 
     MissionDTO selectMissionBySeq(String missionSeq);
 

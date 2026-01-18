@@ -1,6 +1,8 @@
 package com.kosmo.zipkok.controller;
 
+import com.kosmo.zipkok.annotation.LoginUser;
 import com.kosmo.zipkok.dto.*;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.service.MemberService;
 import com.kosmo.zipkok.service.MissionService;
 import com.kosmo.zipkok.util.JwtUtil;
@@ -49,7 +51,10 @@ public class MemberViewController {
 
 	//마이페이지
 	@RequestMapping("/member/mypage")
-	public ModelAndView mypage(@AuthenticationPrincipal CustomUserDetail me) {
+	public ModelAndView mypage(@LoginUser CustomUserDetail me) {
+
+		int page = 1;
+		int pageSize = 10;
 
 		ModelAndView mv = new ModelAndView();
 
@@ -66,10 +71,12 @@ public class MemberViewController {
 
 		MissionSearchDTO searchDTO = new MissionSearchDTO();
 		searchDTO.setMemberSeq(me.getMemberSeq());
+		searchDTO.setRole(me.getRole());
+
 
 		// 공통: 요청한 심부름 내역
 		int missionCount = missionService.getRequestHistoryCount(searchDTO);
-		PagingDTO requestPaging = PagingDTO.of(1, 5, missionCount);
+		PagingDTO requestPaging = PagingDTO.of(page, pageSize, missionCount);
 		List<MissionDTO> missionHistory = missionService.getRequestHistory(searchDTO, requestPaging);
 
 		mv.addObject("basicInfo", basicInfo);
@@ -79,10 +86,9 @@ public class MemberViewController {
 
 		// 헬퍼인 경우: 수행한 심부름 내역 추가
 		if(me.getRole().equals("ROLE_HELPER")) {
-			int performanceCount = missionService.getMyPerformanceHistoryCount(me.getMemberSeq());
-			PagingDTO performancePaging = PagingDTO.of(1, 5, performanceCount);
-			List<MissionDTO> performanceHistory = missionService.getMyPerformanceHistory(me.getMemberSeq(), performancePaging);
-
+			int performanceCount = missionService.getMyPerformanceHistoryCount(searchDTO);
+			PagingDTO performancePaging = PagingDTO.of(page, pageSize, performanceCount);
+			List<MissionDTO> performanceHistory = missionService.getMyPerformanceHistory(searchDTO, performancePaging);
 			mv.addObject("performanceCount", performanceCount);
 			mv.addObject("performance", performanceHistory);
 

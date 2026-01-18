@@ -40,38 +40,72 @@
 	</select>
 
 	<!-- 내가 응모한 심부름 내역 건수 -->
-	<select id="getMyPerformanceHistoryCount" parameterType="String" resultType="java.lang.Integer">
+	<select id="getMyPerformanceHistoryCount" parameterType="MissionSearchDTO" resultType="java.lang.Integer">
 		SELECT
 			COUNT(*)
 		FROM
 			MISSION
 		WHERE
-			helper_seq = #{helperSeq}
+		  helper_seq = #{memberSeq}
+	<if test="missionStatus != null and missionStatus != ''">
+		AND MISSION_STATUS = #{missionStatus}
+	</if>
+	<if test="search != null and search != ''">
+		AND (
+			MISSION_TITLE LIKE CONCAT('%', #{search}, '%')
+			OR
+			MISSION_CONTENT LIKE CONCAT('%', #{search}, '%')
+		)
+	</if>
 	</select>
 
 	<!-- 내가 응모한 심부름 내역 조회 -->
 	<select id="getMyPerformanceHistory" parameterType="Map" resultType="MissionDTO">
 		SELECT
-			A.MISSION_SEQ as missionSeq,
-			A.MEMBER_SEQ as memberSeq,
-			B.MEMBER_ID AS memberId,
-			A.MISSION_CATEGORY as missionCategory,
-			A.MISSION_TITLE as missionTitle,
-			A.MISSION_CONTENT as missionContent,
-			A.MISSION_GENDER as missionGender,
-			A.HELPER_SEQ as helperSeq,
-			A.MISSION_RESERVATION as missionReservation,
-			A.MISSION_RESERVATION_DT as missionReservationDt,
-			A.MISSION_TIME as missionTime,
-			A.MISSION_COST as missionCost,
-			A.MISSION_STATUS as missionStatus,
-			date_format(A.mission_create_dt, '%Y-%m-%d') as missionCreatDt
+		A.MISSION_SEQ as missionSeq,
+		A.MEMBER_SEQ as memberSeq,
+		B.MEMBER_ID AS memberId,
+		A.MISSION_CATEGORY as missionCategory,
+		A.MISSION_TITLE as missionTitle,
+		A.MISSION_CONTENT as missionContent,
+		A.MISSION_GENDER as missionGender,
+		A.HELPER_SEQ as helperSeq,
+		A.MISSION_RESERVATION as missionReservation,
+		A.MISSION_RESERVATION_DT as missionReservationDt,
+		A.MISSION_TIME as missionTime,
+		A.MISSION_COST as missionCost,
+		A.MISSION_STATUS as missionStatus,
+		DATE_FORMAT(A.MISSION_CREATE_DT, '%Y-%m-%d') as missionCreatDt
 		FROM
-			MISSION A, MEMBER B
+		    MISSION A, MEMBER B
 		WHERE
 			A.member_seq = B.member_seq
-		AND helper_seq = #{helperSeq}
-		ORDER BY MISSION_SEQ DESC
+		AND A.HELPER_SEQ = #{searchDTO.memberSeq}
+		<if test="searchDTO.missionStatus != null and searchDTO.missionStatus != ''">
+			AND A.MISSION_STATUS = #{searchDTO.missionStatus}
+		</if>
+		<if test="searchDTO.search != null and searchDTO.search != ''">
+			AND (
+			A.MISSION_TITLE LIKE CONCAT('%', #{searchDTO.search}, '%')
+			OR
+			A.MISSION_CONTENT LIKE CONCAT('%', #{searchDTO.search}, '%')
+			)
+		</if>
+		ORDER BY
+		<choose>
+			<when test="searchDTO.sort == 'old'">
+				A.MISSION_SEQ ASC
+			</when>
+			<when test="searchDTO.sort == 'price_high'">
+				A.MISSION_COST DESC
+			</when>
+			<when test="searchDTO.sort == 'price_low'">
+				A.MISSION_COST ASC
+			</when>
+			<otherwise>
+				A.MISSION_SEQ DESC
+			</otherwise>
+		</choose>
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
@@ -218,12 +252,12 @@
 			A.MISSION_SEQ = #{missionSeq}
 	</select>
 
-	<select id="getMissionImage" parameterType="String" resultType="MissionFileDTO">
+	<select id="getMissionImage" parameterType="String" resultType="ImageDTO">
 		SELECT
-			MISSION_SEQ AS missionSeq,
-			IMAGE_FILE AS missionImageFile,
-			IMAGE_NAME AS missionImageFileName,
-			IMAGE_ETX AS missionImageFileEtx
+--
+			IMAGE_FILE AS imageFile,
+			IMAGE_NAME AS imageFileName,
+			IMAGE_ETX AS imageFileEtx
 		FROM
 			MISSION_IMAGE
 		WHERE

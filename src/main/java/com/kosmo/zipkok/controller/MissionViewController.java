@@ -1,6 +1,6 @@
 package com.kosmo.zipkok.controller;
 
-import com.kosmo.zipkok.dto.CustomUserDetail;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.dto.MissionDTO;
 import com.kosmo.zipkok.service.MissionService;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,11 @@ public class MissionViewController {
 
 		ModelAndView mv = new ModelAndView("mission/register");
 		mv.addObject("memberSeq", me.getMemberSeq());
-		mv.addObject("mode", isOwner ? "edit" : "view");
+
+		// 심부름 상태가 신청이 아닌 경우 모드는 view로 바꾼다.
+		// 모드 결정: 신청 상태(0)이고 작성자일 때만 edit, 나머지는 view
+		String mode = (detail.getMissionStatus() == 0 && isOwner) ? "edit" : "view";
+		mv.addObject("mode", mode);
 		mv.addObject("mission", detail);
 
 		return mv;

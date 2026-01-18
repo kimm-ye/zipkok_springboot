@@ -1,18 +1,14 @@
 package com.kosmo.zipkok.controller;
 
-import com.kosmo.zipkok.dto.CustomUserDetail;
-import com.kosmo.zipkok.service.MissionService;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.service.NoticeService;
-import com.kosmo.zipkok.util.CookieUtil;
 import com.kosmo.zipkok.util.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;

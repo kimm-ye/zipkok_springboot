@@ -36,20 +36,21 @@ public class MissionServiceImpl implements MissionService {
         return missionDao.getPerformanceHistoryCount();
     }
 
+
     @Override
-    public List<MissionDTO> getMyPerformanceHistory(String helperSeq, PagingDTO paging) {
+    public int getMyPerformanceHistoryCount(MissionSearchDTO searchDTO) {
+        return missionDao.getMyPerformanceHistoryCount(searchDTO);
+    }
+
+    @Override
+    public List<MissionDTO> getMyPerformanceHistory(MissionSearchDTO searchDTO, PagingDTO paging) {
 
         Map<String, Object> params = new HashMap<>();
         params.put("offset", paging.getOffset());
         params.put("limit", paging.getLimit());
-        params.put("helperSeq", helperSeq);
+        params.put("searchDTO", searchDTO);
 
         return missionDao.getMyPerformanceHistory(params);
-    }
-
-    @Override
-    public int getMyPerformanceHistoryCount(String helperSeq) {
-        return missionDao.getMyPerformanceHistoryCount(helperSeq);
     }
 
     @Override
@@ -76,7 +77,7 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public MissionFileDTO getMissionImage(String missionSeq) {
+    public ImageDTO getMissionImage(String missionSeq) {
         return missionDao.getMissionImage(missionSeq);
     }
 
@@ -88,7 +89,6 @@ public class MissionServiceImpl implements MissionService {
     @Override
     public void insertMission(MissionDTO missionDTO) throws IOException {
 
-        System.out.println(missionDTO);
         try{
             //mission 테이블에 데이터 insert
             missionDao.insertMission(missionDTO);
@@ -96,15 +96,17 @@ public class MissionServiceImpl implements MissionService {
             // mission_location에 insert
             missionDao.insertMissionLocation(missionDTO);
 
+            ImageDTO imageDTO = missionDTO.getImageDTO();
+
             // mission_file에 insert
-            if(missionDTO.getAttachFile() != null && missionDTO.getAttachFile().getSize() > 0) {
-                String fileName = missionDTO.getAttachFile().getOriginalFilename();
+            if(imageDTO.getAttachFile() != null && imageDTO.getAttachFile().getSize() > 0) {
+                String fileName = imageDTO.getAttachFile().getOriginalFilename();
                 String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
                 String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
 
-                missionDTO.setImageFile(missionDTO.getAttachFile().getBytes());
-                missionDTO.setImageFileName(originalName);
-                missionDTO.setImageFileEtx(fileEtx);
+                imageDTO.setImageFile(imageDTO.getAttachFile().getBytes());
+                imageDTO.setImageFileName(originalName);
+                imageDTO.setImageFileEtx(fileEtx);
 
                 missionDao.insertMissionImage(missionDTO);
             }
@@ -136,16 +138,20 @@ public class MissionServiceImpl implements MissionService {
                 }
             }
 
+            ImageDTO imageDTO = missionDTO.getImageDTO();
+
             // mission_file에 insert
-            if(missionDTO.getAttachFile() != null  &&
-                    missionDTO.getAttachFile().getSize() > 0) {
-                String fileName = missionDTO.getAttachFile().getOriginalFilename();
+            if(imageDTO != null &&
+                imageDTO.getAttachFile() != null  &&
+                imageDTO.getAttachFile().getSize() > 0) {
+
+                String fileName = imageDTO.getAttachFile().getOriginalFilename();
                 String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
                 String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만
 
-                missionDTO.setImageFile(missionDTO.getAttachFile().getBytes());
-                missionDTO.setImageFileName(originalName);
-                missionDTO.setImageFileEtx(fileEtx);
+                imageDTO.setImageFile(imageDTO.getAttachFile().getBytes());
+                imageDTO.setImageFileName(originalName);
+                imageDTO.setImageFileEtx(fileEtx);
 
                 missionDao.updateMissionImage(missionDTO);
             }

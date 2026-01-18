@@ -1,14 +1,10 @@
 package com.kosmo.zipkok.dao;
 
-import com.kosmo.zipkok.dto.MissionDTO;
-import com.kosmo.zipkok.dto.MissionFileDTO;
 import com.kosmo.zipkok.dto.NoticeDTO;
 import com.kosmo.zipkok.dto.PagingDTO;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 
 @Mapper

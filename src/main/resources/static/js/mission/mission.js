@@ -245,6 +245,7 @@ async function missionUpdate(form){
         console.error('Error:', error);
         alert('처리 중 오류가 발생했습니다.');
         alert('error :' + error);
+    } finally {
         hideLoading();
     }
 }
@@ -279,12 +280,12 @@ async function updateMissionStatus(status) {
         } else {
             alert(data.message);
         }
-
-        hideLoading();
-
     } catch (error) {
         console.error('심부름 수행 오류:', error);
         alert('오류가 발생했습니다.');
+
+    } finally {
+        hideLoading();
     }
 }
 
@@ -296,5 +297,16 @@ function getConfirmMessage(status){
         case 9: return '이 심부름을 취소/삭제하시겠습니까?';
         default: return '상태를 변경하시겠습니까?';
     }
+}
+
+// 심부름 평점 남기기
+function rating() {
+    // 팝업띄우고
+
+    // 별점 누를수 있고
+
+    // 해당 점수 컨트롤러로 넘기기
+
+    // 컬럼을 만들어야하나??
 }
 

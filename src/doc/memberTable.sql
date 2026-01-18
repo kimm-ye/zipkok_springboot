@@ -81,7 +81,7 @@ create or replace table member
     member_gender   int                                  not null,
     member_phone    varchar(20)                          not null,
     member_missionN int                                  null,
-    member_status   int      default 1                   not null,
+    member_role   int      default 1                   not null,
     member_useYn    char     default 'Y'                 not null,
     create_dt       datetime default current_timestamp() null,
     constraint member_id
@@ -233,3 +233,5 @@ create or replace table sns_login
 create or replace index idx_member_seq
     on sns_login (member_seq);
 
+ALTER TABLE mission ADD COLUMN rating DECIMAL(2,1) DEFAULT NULL COMMENT '평점 (0.0 ~ 5.0)';
+ALTER TABLE mission ADD COLUMN rating_comment VARCHAR(500) DEFAULT NULL COMMENT '평가 코멘트';

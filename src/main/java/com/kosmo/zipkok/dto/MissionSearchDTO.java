@@ -6,6 +6,7 @@ import lombok.Data;
 public class MissionSearchDTO {
 
     private String memberSeq;
+    private String role;
     private String search;
     private String missionStatus;
     private String sort;

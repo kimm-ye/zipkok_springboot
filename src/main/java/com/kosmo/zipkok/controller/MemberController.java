@@ -1,7 +1,7 @@
 package com.kosmo.zipkok.controller;
 
 
-import com.kosmo.zipkok.dto.CustomUserDetail;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.dto.HelperDTO;
 import com.kosmo.zipkok.dto.TokenDTO;
 import com.kosmo.zipkok.service.MemberService;

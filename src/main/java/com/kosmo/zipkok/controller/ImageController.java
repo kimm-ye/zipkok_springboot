@@ -1,8 +1,7 @@
 package com.kosmo.zipkok.controller;
 
-import com.kosmo.zipkok.dto.CustomUserDetail;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.dto.ImageDTO;
-import com.kosmo.zipkok.dto.MissionFileDTO;
 import com.kosmo.zipkok.service.MemberService;
 import com.kosmo.zipkok.service.MissionService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,27 +32,28 @@ public class ImageController {
 	public ResponseEntity<byte[]> downloadMissionImage(@PathVariable("missionSeq") String missionSeq) {
 		try {
 			// 해당하는 이미지 파일만 조회
-			MissionFileDTO mission = missionService.getMissionImage(missionSeq);
+			ImageDTO image = missionService.getMissionImage(missionSeq);
 
-			if (mission == null || mission.getImageFile() == null) {
+			if (image == null || image.getImageFile() == null) {
 				return ResponseEntity.notFound().build();
 			}
 
 			HttpHeaders headers = new HttpHeaders();
 
 			// Content-Type 설정
-			String ext = mission.getImageFileEtx();
-			getMediaType(ext);
+			String ext = image.getImageFileEtx();
+			MediaType mediaType = getMediaType(ext);
+			headers.setContentType(mediaType); // 반환된 값을 header에 설정해야한다.
 
 			// 파일명 설정 (다운로드용)
-			String fileName = mission.getFullImageName();
+			String fileName = image.getFullImageName();
 			String encodedFileName = UriUtils.encode(fileName, StandardCharsets.UTF_8);
 
 			// Content-Disposition 헤더를 직접 설정
 			headers.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + encodedFileName);
 			headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
-			return new ResponseEntity<>(mission.getImageFile(), headers, HttpStatus.OK);
+			return new ResponseEntity<>(image.getImageFile(), headers, HttpStatus.OK);
 
 		} catch (Exception e) {
 			e.printStackTrace();

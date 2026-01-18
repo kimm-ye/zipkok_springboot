@@ -1,6 +1,7 @@
 package com.kosmo.zipkok.controller;
 
 import com.kosmo.zipkok.dto.*;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.service.NoticeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

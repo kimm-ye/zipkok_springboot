@@ -1,6 +1,6 @@
 package com.kosmo.zipkok.config;
 
-import com.kosmo.zipkok.dto.CustomUserDetail;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.service.RedisService;
 import com.kosmo.zipkok.util.CookieUtil;
 import com.kosmo.zipkok.util.JwtUtil;
@@ -137,7 +137,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      *
      * 개선 방식 (빠름):
      * JWT에서 직접 추출 (5-10ms)
-     * → memberName, memberStatus는 null (필요한 컨트롤러에서만 추가 조회)
+     * → memberName, memberRole는 null (필요한 컨트롤러에서만 추가 조회)
      */
     private void setAuthenticationFromJwt(String memberSeq, String role) {
         // 경량 CustomUserDetail 생성 (DB 조회 X)

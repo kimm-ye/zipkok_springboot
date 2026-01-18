@@ -29,7 +29,7 @@
 		<result property="memberGender" column="memberGender"/>
 		<result property="memberPhone" column="memberPhone"/>
 		<result property="memberMissionN" column="memberMissionN"/>
-		<result property="memberStatus" column="memberStatus"/>
+		<result property="memberRole" column="memberRole"/>
 		<result property="imageVersion" column="imageVersion"/>
 		<result property="memberBank" column="memberBank"/>
 		<result property="memberAccount" column="memberAccount"/>
@@ -56,7 +56,7 @@
 			M.member_gender AS memberGender,
 			M.member_phone AS memberPhone,
 			NVL(M.member_missionN, 0) AS memberMissionN,
-			M.member_status AS memberStatus,
+			M.member_role AS memberRole,
 			M.image_version AS imageVersion,
 			H.member_bank AS memberBank,
 			H.member_account AS memberAccount,
@@ -90,7 +90,7 @@
 			M.member_gender AS memberGender,
 			M.member_phone AS memberPhone,
 			NVL(M.member_missionN, 0) AS memberMissionN,
-			M.member_status AS memberStatus,
+			M.member_role AS memberRole,
 			H.member_bank AS memberBank,
 			H.member_account AS memberAccount,
 			H.member_vehicle AS memberVehicle,
@@ -120,7 +120,7 @@
 			M.member_gender AS memberGender,
 			M.member_phone AS memberPhone,
 			NVL(M.member_missionN, 0) AS memberMissionN,
-			M.member_status AS memberStatus,
+			M.member_role AS memberRole,
 			H.member_bank AS memberBank,
 			H.member_account AS memberAccount,
 			H.member_vehicle AS memberVehicle,
@@ -153,7 +153,7 @@
 			M.member_gender AS memberGender,
 			M.member_phone AS memberPhone,
 			NVL(M.member_missionN, 0) AS memberMissionN,
-			M.member_status AS memberStatus,
+			M.member_role AS memberRole,
 			H.member_bank AS memberBank,
 			H.member_account AS memberAccount,
 			H.member_vehicle AS memberVehicle,
@@ -257,7 +257,7 @@
 		     	MEMBER_AGE,
 		     	MEMBER_GENDER,
 		     	MEMBER_PHONE,
-		     	MEMBER_STATUS,
+		     	member_role,
 		     	CREATE_DT
 			)
 		VALUES
@@ -269,7 +269,7 @@
 				#{memberAge},
 		    	#{memberGender},
 				#{memberPhone},
-				#{memberStatus},
+				#{memberRole},
 		     	NOW()
 			)
 	</insert>

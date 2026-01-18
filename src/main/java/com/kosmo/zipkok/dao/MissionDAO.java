@@ -1,7 +1,7 @@
 package com.kosmo.zipkok.dao;
 
+import com.kosmo.zipkok.dto.ImageDTO;
 import com.kosmo.zipkok.dto.MissionDTO;
-import com.kosmo.zipkok.dto.MissionFileDTO;
 import com.kosmo.zipkok.dto.MissionSearchDTO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -15,14 +15,14 @@ public interface MissionDAO {
 	int getPerformanceHistoryCount();
 	List<MissionDTO> getPerformanceHistory(Map<String, Object> params);
 
-	int getMyPerformanceHistoryCount(String helperSeq);
+	int getMyPerformanceHistoryCount(MissionSearchDTO searchDTO);
 	List<MissionDTO> getMyPerformanceHistory(Map<String, Object> params);
 
 	int getRequestHistoryCount(MissionSearchDTO searchDTO);
 	List<MissionDTO> getRequestHistory(Map<String, Object> params);
 
 	MissionDTO getMissionDetail(String missionSeq);
-	MissionFileDTO getMissionImage(String missionSeq);
+	ImageDTO getMissionImage(String missionSeq);
 	MissionDTO selectMissionBySeq(String missionSeq);
 
 	void insertMission(MissionDTO missionDTO);

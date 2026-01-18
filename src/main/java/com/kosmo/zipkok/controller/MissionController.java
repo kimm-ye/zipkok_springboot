@@ -1,6 +1,6 @@
 package com.kosmo.zipkok.controller;
 
-import com.kosmo.zipkok.dto.CustomUserDetail;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.dto.MissionDTO;
 import com.kosmo.zipkok.dto.MissionSearchDTO;
 import com.kosmo.zipkok.dto.PagingDTO;
@@ -57,6 +57,8 @@ public class MissionController {
 		PagingDTO paging = PagingDTO.of(page, pageSize, totalCount);
 		List<MissionDTO> lists = new ArrayList<>();
 
+		System.out.println(searchDTO);
+
 		// 요청 내역 조회
 		if("request".equals(flag) || "user".equals(flag)) {
 			totalCount = missionService.getRequestHistoryCount(searchDTO);
@@ -67,9 +69,9 @@ public class MissionController {
 		}
 		// 수행 내역 조회 (헬퍼만)
 		else if("perform".equals(flag) || "helper".equals(flag)) {
-			totalCount = missionService.getMyPerformanceHistoryCount(me.getMemberSeq());
+			totalCount = missionService.getMyPerformanceHistoryCount(searchDTO);
 			paging = PagingDTO.of(page, 10, totalCount);
-			lists = missionService.getMyPerformanceHistory(me.getMemberSeq(), paging);
+			lists = missionService.getMyPerformanceHistory(searchDTO, paging);
 
 			mv.addObject("history", "performance");
 		}
@@ -99,6 +101,8 @@ public class MissionController {
 
 		try {
 			missionDTO.setMemberSeq(me.getMemberSeq());
+
+			System.out.println(missionDTO);
 			missionService.insertMission(missionDTO);
 
 			result.put("success", true);
