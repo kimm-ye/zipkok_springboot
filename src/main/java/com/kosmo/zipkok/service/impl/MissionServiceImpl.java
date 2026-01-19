@@ -99,7 +99,9 @@ public class MissionServiceImpl implements MissionService {
             ImageDTO imageDTO = missionDTO.getImageDTO();
 
             // mission_file에 insert
-            if(imageDTO.getAttachFile() != null && imageDTO.getAttachFile().getSize() > 0) {
+            if(imageDTO != null &&
+                    imageDTO.getAttachFile() != null  &&
+                    imageDTO.getAttachFile().getSize() > 0) {
                 String fileName = imageDTO.getAttachFile().getOriginalFilename();
                 String fileEtx = StringUtils.getFilenameExtension(fileName); // 파일 확장자
                 String originalName = StringUtils.stripFilenameExtension(fileName); // 확장자 제외한 파일 이름만

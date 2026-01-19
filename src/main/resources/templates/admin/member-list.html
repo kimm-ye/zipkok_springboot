@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/admin-header :: admin-head}">
+  <title>회원 관리 - 집콕 관리자</title>
+</head>
+<body class="admin-body">
+
+<div th:replace="~{admin/fragments/admin-header :: admin-header}"></div>
+<div th:replace="~{admin/fragments/admin-sidebar :: admin-sidebar}"></div>
+
+<main class="admin-main">
+  <div class="admin-container">
+
+    <div class="page-header">
+      <h2>
+        <i class="fas fa-users"></i>
+        회원 관리
+      </h2>
+      <p class="page-description">회원 목록을 조회하고 관리하세요</p>
+    </div>
+
+    <!-- 검색 및 필터 -->
+    <div class="filter-section">
+      <input type="hidden" id="currentPage" th:value="${paging != null ? paging.page : 1}">
+
+      <div class="filter-row">
+        <div class="search-box">
+          <input type="text"
+                 id="searchInput"
+                 th:value="${search}"
+                 placeholder="아이디, 이름, 이메일로 검색...">
+          <button type="button" class="search-btn" onclick="searchMembers()">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+
+        <select id="roleSelect" class="filter-select" onchange="searchMembers()">
+          <option value="" th:selected="${role == ''}">전체 권한</option>
+          <option value="ROLE_USER" th:selected="${role == 'ROLE_USER'}">일반 회원</option>
+          <option value="ROLE_HELPER" th:selected="${role == 'ROLE_HELPER'}">헬퍼</option>
+          <option value="ROLE_ADMIN" th:selected="${role == 'ROLE_ADMIN'}">관리자</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 회원 목록 -->
+    <div id="memberListContainer">
+      <div th:fragment="memberListFragment">
+
+        <div class="section-card">
+          <div class="section-header">
+            <h3>회원 목록</h3>
+            <span class="count-badge" th:if="${paging != null}">
+                                총 [[${paging.totalCount}]]명
+                            </span>
+          </div>
+
+          <div class="section-body">
+            <!-- 데이터 없음 -->
+            <div th:if="${members == null || members.isEmpty()}" class="empty-state">
+              <i class="fas fa-users" style="font-size: 48px; color: #ddd;"></i>
+              <p>등록된 회원이 없습니다</p>
+            </div>
+
+            <!-- 회원 테이블 -->
+            <table th:unless="${members == null || members.isEmpty()}" class="admin-table">
+              <thead>
+              <tr>
+                <th>번호</th>
+                <th>아이디</th>
+                <th>이름</th>
+                <th>이메일</th>
+                <th>권한</th>
+                <th>상태</th>
+                <th>심부름</th>
+                <th>가입일</th>
+                <th>관리</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="member, loop : ${members}">
+                <td th:text="${paging.totalCount - (paging.page - 1) * paging.size - loop.index}">1</td>
+                <td th:text="${member.memberId}">user123</td>
+                <td th:text="${member.memberName}">홍길동</td>
+                <td th:text="${member.memberEmail}">user@example.com</td>
+                <td>
+                                            <span class="role-badge"
+                                                  th:classappend="${member.memberRole == 'ROLE_USER' ? 'role-user' :
+                                                                   (member.memberRole == 'ROLE_HELPER' ? 'role-helper' : 'role-admin')}"
+                                                  th:text="${member.memberRole == 'ROLE_USER' ? '일반' :
+                                                            (member.memberRole == 'ROLE_HELPER' ? '헬퍼' : '관리자')}">
+                                                일반
+                                            </span>
+                </td>
+                <td>
+                                            <span class="status-badge"
+                                                  th:classappend="${member.memberStatus == 0 ? 'status-active' : 'status-suspended'}"
+                                                  th:text="${member.memberStatus == 0 ? '정상' : '정지'}">
+                                                정상
+                                            </span>
+                </td>
+                <td th:text="${member.completeCount} + '/' + ${member.missionCount}">0/0</td>
+                <td th:text="${#temporals.format(member.createDt, 'yyyy-MM-dd')}">2025-01-10</td>
+                <td>
+                  <button class="btn-small btn-primary"
+                          th:onclick="|location.href='@{/admin/members/{seq}(seq=${member.memberSeq})}'|">
+                    <i class="fas fa-eye"></i> 상세
+                  </button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 페이징 -->
+        <div th:if="${paging != null && paging.totalPage > 0}" class="pagination-wrapper">
+          <nav>
+            <ul class="pagination">
+              <li class="page-item" th:classappend="${!paging.hasPrev} ? 'disabled'">
+                <a class="page-link"
+                   th:if="${paging.hasPrev}"
+                   href="javascript:void(0)"
+                   th:onclick="|changePage(${paging.startPage - 1})|">
+                  «
+                </a>
+                <span class="page-link" th:unless="${paging.hasPrev}">«</span>
+              </li>
+
+              <li class="page-item"
+                  th:each="p : ${#numbers.sequence(paging.startPage, paging.endPage)}"
+                  th:classappend="${p == paging.page} ? 'active'">
+                <a class="page-link"
+                   href="javascript:void(0)"
+                   th:onclick="|changePage(${p})|"
+                   th:text="${p}">1</a>
+              </li>
+
+              <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                <a class="page-link"
+                   th:if="${paging.hasNext}"
+                   href="javascript:void(0)"
+                   th:onclick="|changePage(${paging.endPage + 1})|">
+                  »
+                </a>
+                <span class="page-link" th:unless="${paging.hasNext}">»</span>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script th:replace="~{admin/fragments/admin-sidebar :: sidebar-script}"></script>
+
+<script>
+  let currentRole = '[[${role}]]';
+
+  function searchMembers() {
+    loadMembers(1);
+  }
+
+  function changePage(page) {
+    loadMembers(page);
+  }
+
+  async function loadMembers(page) {
+    const search = document.getElementById('searchInput').value.trim();
+    const role = document.getElementById('roleSelect').value;
+    currentRole = role;
+
+    const params = new URLSearchParams({
+      page: page,
+      search: search,
+      role: role,
+      isAjax: true
+    });
+
+    const displayParams = new URLSearchParams({
+      page: page,
+      ...(search && { search: search }),
+      ...(role && { role: role })
+    });
+
+    const newUrl = `/admin/members?${displayParams.toString()}`;
+    window.history.pushState({}, '', newUrl);
+
+    try {
+      const response = await fetch(`/admin/members?${params}`);
+      const html = await response.text();
+      document.getElementById('memberListContainer').innerHTML = html;
+    } catch (error) {
+      console.error('목록 로드 실패:', error);
+      alert('목록을 불러오는데 실패했습니다.');
+    }
+  }
+
+  document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      searchMembers();
+    }
+  });
+</script>
+</body>
+</html>

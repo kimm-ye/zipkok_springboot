@@ -398,9 +398,12 @@
 	
 	<update id="updateMissionStatus" parameterType="Map">
 		UPDATE mission
-		SET
-		    helper_seq = #{helperSeq},
-		    mission_status = #{missionStatus}
+		<set>
+			<if test="helperSeq != null">
+				helper_seq = #{helperSeq},
+			</if>
+			mission_status = #{missionStatus}
+		</set>
 		WHERE
 		    mission_seq = #{missionSeq}
 	</update>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="admin-head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ?: '집콕 관리자'">집콕 관리자</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Admin CSS -->
+    <link rel="stylesheet" th:href="@{/css/admin/admin.css}">
+</head>
+
+<body>
+<!-- 관리자 헤더 -->
+<header th:fragment="admin-header" class="admin-header">
+    <div class="header-left">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="admin-logo">
+            <i class="fas fa-hand-holding-heart"></i>
+            집콕 관리자
+        </h1>
+    </div>
+
+    <div class="header-right">
+        <div class="admin-user">
+            <i class="fas fa-user-shield"></i>
+            <span sec:authentication="principal.username">Admin</span>
+        </div>
+        <form th:action="@{/member/logout/action}" method="post" style="display: inline;">
+            <button type="submit" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                로그아웃
+            </button>
+        </form>
+    </div>
+</header>
+</body>
+</html>
