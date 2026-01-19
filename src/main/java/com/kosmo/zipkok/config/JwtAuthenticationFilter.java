@@ -1,6 +1,6 @@
 package com.kosmo.zipkok.config;
 
-import com.kosmo.zipkok.dto.CustomUserDetail;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.service.RedisService;
 import com.kosmo.zipkok.util.CookieUtil;
 import com.kosmo.zipkok.util.JwtUtil;
@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,6 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private RedisService redisService;
+
+    @Value("${jwt.access.expiration}") // 15분 (밀리초)
+    private long accessExpiration;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -106,14 +110,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     // 새 Access Token 발급
                     String newAccessToken = jwtUtil.generateAccessToken(memberSeq, role);
-                    CookieUtil.createCookie("accessToken", 15 * 60, "/", newAccessToken, response);
+                    CookieUtil.createCookie("accessToken", accessExpiration, "/", newAccessToken, response);
 
                     // ⚡ 핵심: DB 조회 없이 JWT에서 직접 인증
                     setAuthenticationFromJwt(memberSeq, role);
                     log.info("✅ Access Token 자동 갱신 완료 (DB 조회 X) memberSeq: {}", memberSeq);
                 } else {
                     log.warn("❌ 유효하지 않은 Refresh Token - 쿠키 삭제");
-                    CookieUtil.deleteCookie("refreshToken", "/", response); // TODO 이부분을 어떻게 해야할지 해결 필요
+                    CookieUtil.deleteCookie("refreshToken", "/", response); // TODO 이부분을 어떻게 해야할지 해결 필요 << 일단 redis 서버 오류부터 고치고 수정하자
                 }
             }
 
@@ -133,7 +137,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      *
      * 개선 방식 (빠름):
      * JWT에서 직접 추출 (5-10ms)
-     * → memberName, memberStatus는 null (필요한 컨트롤러에서만 추가 조회)
+     * → memberName, memberRole는 null (필요한 컨트롤러에서만 추가 조회)
      */
     private void setAuthenticationFromJwt(String memberSeq, String role) {
         // 경량 CustomUserDetail 생성 (DB 조회 X)

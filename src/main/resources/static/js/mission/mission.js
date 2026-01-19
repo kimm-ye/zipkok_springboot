@@ -14,8 +14,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.error('카카오맵 로드 실패:', error);
     }
 
-
-
     // 즉시/예약 신청 구분 라디오 버튼 스타일 변경
     document.querySelectorAll('input[name="missionReservation"]').forEach(radio => {
         radio.addEventListener('change', function() {
@@ -194,7 +192,7 @@ async function missionRegister(form){
     try {
         const formData = new FormData(form);
 
-        const response = await fetch('./request/register', {
+        const response = await fetch('/zipkok/mission/request/register', {
             method: 'POST',
             body: formData
         });
@@ -213,7 +211,9 @@ async function missionRegister(form){
     } catch (error) {
         console.error('Error:', error);
         alert('처리 중 오류가 발생했습니다.');
-        alert('error :' + error);
+        /*alert('error :' + error);*/
+    } finally {
+        hideLoading();
     }
 }
 
@@ -245,22 +245,31 @@ async function missionUpdate(form){
         console.error('Error:', error);
         alert('처리 중 오류가 발생했습니다.');
         alert('error :' + error);
+    } finally {
+        hideLoading();
     }
 }
 
 // 심부름 수행하기 함수
-async function performMission() {
+async function updateMissionStatus(status) {
     event.preventDefault(); // 기본 submit 방지
-    document.getElementById()
-    const missionSeq = document.querySelector('input[name="missionSeq"]').value;
+    const missionSeq = document.getElementById('missionSeq').value;
 
-    if (!confirm('이 심부름을 수행하시겠습니까?')) {
+    // 확인 메시지
+    const confirmMsg = getConfirmMessage(status);
+    if (!confirm(confirmMsg)) {
         return;
     }
 
+    showLoading();
+
     try {
-        const response = await fetch(`../perform/${missionSeq}`, {
-            method: 'PATCH'
+        const response = await fetch(`../status`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body : JSON.stringify({ missionSeq: missionSeq, missionStatus: status })
         });
 
         const data = await response.json();
@@ -271,46 +280,33 @@ async function performMission() {
         } else {
             alert(data.message);
         }
-
     } catch (error) {
         console.error('심부름 수행 오류:', error);
         alert('오류가 발생했습니다.');
+
+    } finally {
+        hideLoading();
     }
 }
 
-// 심부름 삭제하기 버튼 클릭
-async function deleteMission() {
-    const missionSeq = document.querySelector('input[name="missionSeq"]').value;
-
-    if (!confirm('이 심부름을 삭제하시겠습니까?')) {
-        return;
-    }
-
-    try {
-        const response = await fetch(`../delete/${missionSeq}`, {
-            method: 'DELETE'
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            alert(data.message);
-            location.href = data.redirectUrl;
-        } else {
-            alert(data.message);
-        }
-
-    } catch (error) {
-        console.error('심부름 수행 오류:', error);
-        alert('오류가 발생했습니다.');
+// 심부름 상태에 따른 메시지 출력
+function getConfirmMessage(status){
+    switch(status) {
+        case 1: return '이 심부름을 수행하시겠습니까?';
+        case 2: return '이 심부름을 완료하시겠습니까?';
+        case 9: return '이 심부름을 취소/삭제하시겠습니까?';
+        default: return '상태를 변경하시겠습니까?';
     }
 }
 
+// 심부름 평점 남기기
+function rating() {
+    // 팝업띄우고
 
+    // 별점 누를수 있고
 
+    // 해당 점수 컨트롤러로 넘기기
 
-/* //////////////////////////////////////////// */
-
-function missionComplete() {
-
+    // 컬럼을 만들어야하나??
 }
+

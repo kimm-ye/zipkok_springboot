@@ -4,7 +4,7 @@ server:
   servlet:
     context-path: /zipkok
 
-# Spring 프레임워크 설정
+############################################ Spring 프레임워크 설정 ######################################################
 spring:
   # .env 파일에서 환경 변수를 가져와 애플리케이션 설정에 적용
   config:
@@ -41,6 +41,13 @@ spring:
       max-file-size: 10MB        # 단일 파일 최대 크기
       max-request-size: 10MB     # multipart 요청 전체 최대 크기 (파일 여러 개일 때)
 
+  security:
+    user:
+      name: disabled
+      password: disabled
+
+######################################## spring 설정 끝 ###################################################
+
 # MyBatis 설정
 mybatis:
   mapper-locations: classpath:/mappers/**/*.xml    # SQL 매퍼 XML 파일 위치
@@ -61,20 +68,23 @@ jwt:
     expiration: 900000                            # Access Token 만료 시간: 15분 (밀리초)
   refresh:
     expiration: 604800000                         # Refresh Token 만료 시간: 7일 (밀리초)
+  temp:
+    expiration: 300000                            # temp Token 만료 시간: 5분 (밀리초)
 
-# 테스트용
-#jwt:
-#  secret: ${JWT_SECRET:default-secret-key}
-#  access:
-#    expiration: 120000          # 2분 (2 * 60 * 1000)
-#  refresh:
-#    expiration: 86400000        # 1일 (24 * 60 * 60 * 1000)
+  # 테스트용
+  #jwt:
+  #  secret: ${JWT_SECRET:default-secret-key}
+  #  access:
+  #    expiration: 120000          # 2분 (2 * 60 * 1000)
+  #  refresh:
+  #    expiration: 86400000        # 1일 (24 * 60 * 60 * 1000)
 
 
 # Redis 설정
 redis:
-  host: ${REDIS_HOST}                   # Redis 서버 호스트
-  port: ${REDIS_PORT}                       # Redis 서버 포트
+  host: ${REDIS_HOST}                     # Redis 서버 호스트
+  port: ${REDIS_PORT}                     # Redis 서버 포트
+  password: ${REDIS_PASSWORD}             # Redis 비밀번호 (없으면 비워두기)
 
 
 

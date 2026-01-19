@@ -1,8 +1,7 @@
 package com.kosmo.zipkok.controller;
 
-import com.kosmo.zipkok.dto.CustomUserDetail;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.dto.MissionDTO;
-import com.kosmo.zipkok.dto.PagingDTO;
 import com.kosmo.zipkok.service.MissionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +9,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -33,41 +28,27 @@ public class MissionViewController {
 		return "mission/register";
     }
 
-	// 유저 - 심부름 요청내역 더보기
-	// 헬퍼 - 심부름 요청/수행 내역 더보기
-	@GetMapping("/mission/add")
-	public ModelAndView addMission(@AuthenticationPrincipal CustomUserDetail me,
-								   @RequestParam(defaultValue = "request") String flag,
-								   @RequestParam(defaultValue = "1") int page,
-								   @RequestParam(defaultValue = "") String search,
-								   @RequestParam(defaultValue = "") String status) {
+	// 상세페이지 이동 (이동시 본인이 작성한 글이 아니면 view, 맞으면 edit)
+	@GetMapping("/mission/request/detail")
+	public ModelAndView detail(@AuthenticationPrincipal CustomUserDetail me,
+							   @RequestParam("missionSeq") String missionSeq) {
 
-		ModelAndView mv = new ModelAndView("mission/list");
+		MissionDTO detail = missionService.getMissionDetail(missionSeq);
+		boolean isOwner = String.valueOf(detail.getMemberSeq()).equals(me.getMemberSeq());
 
-		// 요청 내역 조회
-		if("request".equals(flag) || "user".equals(flag)) {
-			int totalCount = missionService.getRequestHistoryCount(me.getMemberSeq());
-			PagingDTO paging = PagingDTO.of(page, 10, totalCount);
-			List<MissionDTO> lists = missionService.getRequestHistory(me.getMemberSeq(), paging);
-
-			mv.addObject("lists", lists);
-			mv.addObject("paging", paging);
-			mv.addObject("history", "request");
-		}
-		// 수행 내역 조회 (헬퍼만)
-		else if("perform".equals(flag) || "helper".equals(flag)) {
-			int totalCount = missionService.getMyPerformanceHistoryCount(me.getMemberSeq());
-			PagingDTO paging = PagingDTO.of(page, 10, totalCount);
-			List<MissionDTO> lists = missionService.getMyPerformanceHistory(me.getMemberSeq(), paging);
-
-			mv.addObject("lists", lists);
-			mv.addObject("paging", paging);
-			mv.addObject("history", "performance");
+		// 권한 없으면 리다이렉트
+		if(!isOwner && !me.getRole().equals("ROLE_HELPER")) {
+			return new ModelAndView("redirect:/mission/select"); // 신청페이지로
 		}
 
-		mv.addObject("flag", flag);
-		mv.addObject("search", search);
-		mv.addObject("status", status);
+		ModelAndView mv = new ModelAndView("mission/register");
+		mv.addObject("memberSeq", me.getMemberSeq());
+
+		// 심부름 상태가 신청이 아닌 경우 모드는 view로 바꾼다.
+		// 모드 결정: 신청 상태(0)이고 작성자일 때만 edit, 나머지는 view
+		String mode = (detail.getMissionStatus() == 0 && isOwner) ? "edit" : "view";
+		mv.addObject("mode", mode);
+		mv.addObject("mission", detail);
 
 		return mv;
 	}

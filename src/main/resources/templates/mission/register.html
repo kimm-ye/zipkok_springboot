@@ -1,21 +1,24 @@
-<!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
+<html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:with="mode=${mode} ?: 'create'">
+<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${mode == 'edit' ? '심부름 수정하기' : (mode == 'view' ? '심부름 상세보기' : '심부름 요청하기')}">심부름 요청하기</title>
 
     <th:block th:replace="~{fragments/header :: header}"></th:block>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/mission/mission.css}">
     <script type="text/javascript" th:src="@{/js/mission/mission.js}"></script>
+
+    <!--카카오지도 오픈api-->
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 
 <body>
+
+<div th:replace="~{fragments/nav :: nav}"></div>
+
 <div class="container">
     <div class="header">
         <h1>
@@ -173,30 +176,35 @@
             </div>
 
             <!-- 첨부파일 -->
-            <div class="form-group">
-                <label class="form-label"><i class="fas fa-paperclip"></i> 첨부파일 <span th:if="${mode != 'view'}">(선택사항)</span></label>
+            <div class="form-group" >
+                <label class="form-label">
+                    <i class="fas fa-paperclip"></i>
+                    첨부파일
+                    <span style="color: #a0aec0; font-weight: normal;">(선택사항)</span>
+                </label>
 
                 <!-- 수정/보기 모드에서 기존 첨부 노출 -->
-                <div th:if="${(mode == 'edit' || mode == 'view') && mission.missionImageFileName != null}" style="margin-bottom:10px;">
+                <div  style="margin-bottom:10px;" th:if="${(mode == 'edit' || mode == 'view') && mission.imageDTO != null}">
                     <div class="current-file">
                         <i class="fas fa-image"></i>
                         <a th:href="@{/mission/image/{seq}(seq=${mission.missionSeq})}"
                            target="_blank"
-                           th:text="'현재 첨부: ' + ${mission.missionImageFileName + '.' + mission.missionImageFileEtx}">
+                           th:text="'현재 첨부: ' + ${mission.imageDTO.fullImageName}">
                             현재 첨부 보기
                         </a>
                     </div>
                 </div>
 
                 <!-- 새로 선택한 파일명 표시 영역 -->
-                <div id="selectedFileName" style="margin-bottom:10px; display:none;">
+                <div id="selectedFileName" style="margin-bottom:10px; display:none;" >
                     <div class="current-file">
                         <i class="fas fa-file"></i>
                         <span id="fileNameText"></span>
                     </div>
                 </div>
 
-                <div class="file-upload" th:if="${mode != 'view'}">
+                <!-- 보기모드가 아니거나 심부름 상태가 신청인 경우 -->
+                <div class="file-upload" th:if="${mode != 'view' || mission?.missionStatus == 0}">
                     <input type="file" name="missionAttachFile" accept="image/*" id="missionAttachFile">
                     <div class="file-upload-label">
                         <i class="fas fa-cloud-upload-alt"></i>
@@ -204,6 +212,7 @@
                     </div>
                 </div>
             </div>
+
 
             <!-- 심부름 가격 -->
             <div class="form-group">
@@ -218,44 +227,62 @@
                 <div class="helper-text" th:if="${mode != 'view'}">최소 금액은 3,000원입니다</div>
             </div>
 
-            <!-- 등록/수정/수행 버튼 -->
-            <!-- 내가 작성한 글이 아니고 (mode = view), 심부름 상태가 신청(0)인 상태 -->
-            <div th:if="${mode == 'view' && mission?.missionStatus == 0}">
-                <!-- 보기 모드: 수행하기 버튼 -->
-                <button type="button" class="submit-btn" onclick="performMission()">
-                    <i class="fas fa-check-circle"></i>
-                    이 심부름 수행하기
-                </button>
-            </div>
 
-            <!-- 수정 모드인 경우 수정하기 버튼 /  -->
-            <div th:if="${mode != 'view'}">
-                <!-- 등록/수정 모드: 기존 버튼 -->
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <i class="fas fa-paper-plane"></i>
-                    <span th:text="${mode == 'edit' ? '심부름 수정하기' : '심부름 등록하기'}">심부름 등록하기</span>
-                </button>
-                <button type="button"
-                        th:if="${mode == 'edit' && mission?.missionStatus == 0}"
-                        class="submit-btn delete-btn"
-                        onclick="deleteMission()">
-                    <i class="fas fa-trash-alt"></i>
-                    <span >심부름 삭제하기</span>
-                </button>
-            </div>
-
-            <!-- 보기모드고, 내가 수행하기로 한 헬퍼고 심부름 상태는 진행 상태일때 -->
-            <div th:if="${mode == 'view' && mission?.helperSeq == memberSeq  && mission?.missionStatus == 1}">
-                <button type="button" class="submit-btn" onclick="missionComplete()">
-                    <i class="fas fa-check-circle"></i>
-                    심부름 수행 완료
-                </button>
-            </div>
-
+            <!-- 이전으로 버튼 (모든 경우에 공통) -->
             <button type="button" class="submit-btn back-btn" style="background: #6c757d;" onclick="history.back()">
                 <i class="fas fa-arrow-left"></i>
                 이전으로
             </button>
+
+            <!-- 등록/수정 모드 (백엔드에서 이미 missionStatus == 0 검증됨) -->
+            <div th:if="${mode == 'create' || mode == 'edit'}" style="display: inline">
+                <button type="submit"
+                        class="submit-btn"
+                        th:id="${mode == 'create' ? 'createBtn' : 'editBtn'}">
+                    <i class="fas fa-paper-plane"></i>
+                    <span th:text="${mode == 'create' ? '심부름 등록하기' : '심부름 수정하기'}">심부름 등록하기</span>
+                </button>
+
+                <!-- 수정 모드일 때만 삭제 버튼 -->
+                <button type="button"
+                        th:if="${mode == 'edit'}"
+                        class="submit-btn delete-btn"
+                        onclick="updateMissionStatus(9)">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>심부름 삭제하기</span>
+                </button>
+            </div>
+
+            <!-- 보기 모드 -->
+            <div th:if="${mode == 'view'}" style="display: inline">
+                <!-- 신청 상태(0): 수행하기 버튼 -->
+                <button type="button"
+                        class="submit-btn"
+                        th:if="${mission?.missionStatus == 0}"
+                        onclick="updateMissionStatus(1)">
+                    <i class="fas fa-check-circle"></i>
+                    이 심부름 수행하기
+                </button>
+
+                <!-- 내가 헬퍼이고 진행 상태(1): 완료 버튼 -->
+                <button type="button"
+                        class="submit-btn"
+                        th:if="${mission?.helperSeq == memberSeq && mission?.missionStatus == 1}"
+                        onclick="updateMissionStatus(2)">
+                    <i class="fas fa-check-circle"></i>
+                    심부름 수행 완료
+                </button>
+
+                <!-- 완료 상태(2): 평가하기 버튼 -->
+                <button type="button"
+                        class="submit-btn"
+                        style="background: #28a745;"
+                        th:if="${mission?.missionStatus == 2}"
+                        th:onclick="'openRatingModal(' + ${mission.missionSeq} + ')'">
+                    <i class="fas fa-star"></i>
+                    심부름 평가하기
+                </button>
+            </div>
         </form>
     </div>
 </div>

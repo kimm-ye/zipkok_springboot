@@ -1,7 +1,6 @@
 package com.kosmo.zipkok.service;
 
 import com.kosmo.zipkok.dto.*;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,17 +10,20 @@ public interface MissionService {
 
     List<MissionDTO> getPerformanceHistory(PagingDTO paging);
     int getPerformanceHistoryCount();
-    List<MissionDTO> getMyPerformanceHistory(String helperSeq, PagingDTO paging);
-    int getMyPerformanceHistoryCount(String helperSeq);
-    List<MissionDTO> getRequestHistory(String memberSeq, PagingDTO paging);
-    int getRequestHistoryCount(String memberSeq);
+
+    int getMyPerformanceHistoryCount(MissionSearchDTO searchDTO);
+    List<MissionDTO> getMyPerformanceHistory(MissionSearchDTO searchDTO, PagingDTO paging);
+
+    int getRequestHistoryCount(MissionSearchDTO searchDTO);
+    List<MissionDTO> getRequestHistory(MissionSearchDTO searchDTO, PagingDTO paging);
+
     MissionDTO getMissionDetail(String missionSeq);
-    MissionFileDTO getMissionImage(String missionSeq);
-    String selectMemberSeq(String missionSeq);
-    int selectMissionStatus(String missionSeq);
+    ImageDTO getMissionImage(String missionSeq);
+
+    MissionDTO selectMissionBySeq(String missionSeq);
+
     void insertMission(MissionDTO missionDTO) throws IOException;
     void updateMission(MissionDTO missionDTO) throws IOException;
     void updateMissionStatus(Map<String, Object> param) throws Exception;
-    void deleteMission(String missionSeq) throws Exception;
 
 }

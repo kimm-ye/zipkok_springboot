@@ -1,6 +1,10 @@
 package com.kosmo.zipkok.dto;
 
+import lombok.Getter;
+
+@Getter
 public class PagingDTO {
+    // getters
     private final int page;         // 1-based
     private final int size;         // page size
     private final int totalCount;   // 총 레코드 수
@@ -37,16 +41,4 @@ public class PagingDTO {
         return new PagingDTO(page, size, totalCount, blockSize);
     }
 
-    // getters
-    public int getPage() { return page; }
-    public int getSize() { return size; }
-    public int getTotalCount() { return totalCount; }
-    public int getTotalPages() { return totalPages; }
-    public int getOffset() { return offset; }
-    public int getLimit() { return limit; }
-    public int getBlockSize() { return blockSize; }
-    public int getStartPage() { return startPage; }
-    public int getEndPage() { return endPage; }
-    public boolean isHasPrev() { return hasPrev; }
-    public boolean isHasNext() { return hasNext; }
 }

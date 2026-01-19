@@ -1,6 +1,7 @@
 package com.kosmo.zipkok.controller;
 
-import com.kosmo.zipkok.dto.*;
+import com.kosmo.zipkok.security.CustomUserDetail;
+import com.kosmo.zipkok.dto.ImageDTO;
 import com.kosmo.zipkok.service.MemberService;
 import com.kosmo.zipkok.service.MissionService;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
@@ -29,27 +32,28 @@ public class ImageController {
 	public ResponseEntity<byte[]> downloadMissionImage(@PathVariable("missionSeq") String missionSeq) {
 		try {
 			// 해당하는 이미지 파일만 조회
-			MissionFileDTO mission = missionService.getMissionImage(missionSeq);
+			ImageDTO image = missionService.getMissionImage(missionSeq);
 
-			if (mission == null || mission.getImageFile() == null) {
+			if (image == null || image.getImageFile() == null) {
 				return ResponseEntity.notFound().build();
 			}
 
 			HttpHeaders headers = new HttpHeaders();
 
 			// Content-Type 설정
-			String ext = mission.getImageFileEtx();
-			getMediaType(ext);
+			String ext = image.getImageFileEtx();
+			MediaType mediaType = getMediaType(ext);
+			headers.setContentType(mediaType); // 반환된 값을 header에 설정해야한다.
 
 			// 파일명 설정 (다운로드용)
-			String fileName = mission.getFullImageName();
+			String fileName = image.getFullImageName();
 			String encodedFileName = UriUtils.encode(fileName, StandardCharsets.UTF_8);
 
 			// Content-Disposition 헤더를 직접 설정
 			headers.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + encodedFileName);
 			headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
-			return new ResponseEntity<>(mission.getImageFile(), headers, HttpStatus.OK);
+			return new ResponseEntity<>(image.getImageFile(), headers, HttpStatus.OK);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -62,23 +66,28 @@ public class ImageController {
 	 *
 	 * URL: /image/profile/{memberSeq}
 	 * 반환: 이미지 바이트 배열 (JPEG, PNG 등)
-	 * 캐싱: 1시간 (브라우저 캐시) << 캐싱을 사용하는 이유는 프로필 이미지는 자주 안바뀌고 여러곳에서 사용하기 때문
+	 * 캐싱: 24시간 (브라우저 캐시) << 캐싱을 사용하는 이유는 프로필 이미지는 자주 안바뀌고 여러곳에서 사용하기 때문
 	 *      db 조회하지 않으니 성능도 향상됨, 트래픽도 방지
-	 *      그리고 마이페이지 말고 여기저기 페이지에서 이미지 사용하기 때문
+	 *      그리고 마이페이지 말고 여기저기 페이지에서 이미지 사용할 예정
 	 */
 	@GetMapping(
-			value = "/member/image/profile",
+			value = "/member/image/profile/{memberSeq}",
 			produces = MediaType.ALL_VALUE
 	)
-	public ResponseEntity<byte[]> getProfileImage(@AuthenticationPrincipal CustomUserDetail me) {
+	public ResponseEntity<byte[]> getProfileImage(@AuthenticationPrincipal CustomUserDetail me,
+												  @PathVariable String memberSeq) {
 		try {
 
 			if (me == null) {
 				return getErrorImage();
 			}
 
+			if (!me.getMemberSeq().equals(memberSeq)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+			}
+
 			// 1. 이미지 파일 조회
-			ImageDTO imageDTO = memberService.selectMemberImage(me.getMemberSeq());
+			ImageDTO imageDTO = memberService.selectMemberImage(memberSeq);
 
 			// 2. DB에 이미지가 있는 경우
 			if (imageDTO.getImageFile() != null && imageDTO.getImageFile().length > 0) {
@@ -86,13 +95,13 @@ public class ImageController {
 				log.debug("✅ DB 프로필 이미지 제공: memberSeq={}, size={}KB",
 						me.getMemberSeq(), imageDTO.getImageFile().length / 1024);
 
-				return new ResponseEntity<>(imageDTO.getImageFile(), headerSetting(imageDTO.getImageFileEtx()), HttpStatus.OK);
+				return new ResponseEntity<>(imageDTO.getImageFile(), headerSetting(imageDTO.getImageFileEtx(), false), HttpStatus.OK);
 			}
 
 			// 3. 이미지 없으면 기본 이미지
 			byte[] defaultImage = getDefaultImageBytes();
 
-			return new ResponseEntity<>(defaultImage, headerSetting("png"), HttpStatus.OK);
+			return new ResponseEntity<>(defaultImage, headerSetting("png", true), HttpStatus.OK);
 
 		} catch (Exception e) {
             assert me != null;
@@ -140,7 +149,7 @@ public class ImageController {
 		try {
 			byte[] defaultImageBytes = getDefaultImageBytes();
 
-			return new ResponseEntity<>(defaultImageBytes, headerSetting("png"), HttpStatus.OK);
+			return new ResponseEntity<>(defaultImageBytes, headerSetting("png", true), HttpStatus.OK);
 
 		} catch (IOException e) {
 			log.error("❌ 기본 이미지도 로드 실패: {}", e.getMessage());
@@ -148,16 +157,28 @@ public class ImageController {
 		}
 	}
 
-	// 확장자 별로 HTTP 응답 헤더에 캐시 정책을 설정 (캐시된 이미지가 있는 경우 더 이상 해당 함수를 호출하지 않음)
-	private HttpHeaders headerSetting(String imageFileEtx) {
+	// 확장자 별로 HTTP 응답 헤더에 캐시 정책을 설정
+	private HttpHeaders headerSetting(String imageFileExt, boolean isDefaultImage) {
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(getMediaType(imageFileEtx)); // 확장자 별로 세팅한다.
+		headers.setContentType(getMediaType(imageFileExt));
+
+		/*if (isDefaultImage) {
+			// 기본 이미지 / 에러 이미지 → 캐시 금지
+			headers.setCacheControl(CacheControl.noStore());
+		} else {
+			// 실제 프로필 이미지 → 캐시 허용
+			headers.setCacheControl(
+					CacheControl.maxAge(24, TimeUnit.HOURS).cachePublic()
+			);
+		}*/
+
 		headers.setCacheControl(
 				CacheControl.maxAge(24, TimeUnit.HOURS).cachePublic()
 		);
 
 		return headers;
 	}
+
 
 }

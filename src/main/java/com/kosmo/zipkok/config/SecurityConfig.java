@@ -18,10 +18,18 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    // 2. filterChain이 interceptor보다 먼저 동작해 사용자가 인증되었는지, 권한이 있는지 확인
+    /**
+     * filterChain이 interceptor보다 먼저 동작해 사용자가 인증되었는지, 권한이 있는지 확인
+     * 사용자 정보를 DB 조회하지 않고 JWT만 사용해서 인증할거니까 httpBasic, formLogin 을 disable한다.
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .httpBasic(httpBasic -> httpBasic.disable())  // 기본 HTTP Basic 인증 비활성화
+            .formLogin(formLogin -> formLogin.disable())   // 기본 Form 로그인 비활성화
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/", "/member/login/**", "/member/logout/**", "/member/join/**", "/member/find/**",

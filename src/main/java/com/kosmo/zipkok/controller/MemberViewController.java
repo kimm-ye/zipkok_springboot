@@ -1,9 +1,8 @@
 package com.kosmo.zipkok.controller;
 
-import com.kosmo.zipkok.dto.CustomUserDetail;
-import com.kosmo.zipkok.dto.HelperDTO;
-import com.kosmo.zipkok.dto.MissionDTO;
-import com.kosmo.zipkok.dto.PagingDTO;
+import com.kosmo.zipkok.annotation.LoginUser;
+import com.kosmo.zipkok.dto.*;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.service.MemberService;
 import com.kosmo.zipkok.service.MissionService;
 import com.kosmo.zipkok.util.JwtUtil;
@@ -52,7 +51,10 @@ public class MemberViewController {
 
 	//마이페이지
 	@RequestMapping("/member/mypage")
-	public ModelAndView mypage(@AuthenticationPrincipal CustomUserDetail me) {
+	public ModelAndView mypage(@LoginUser CustomUserDetail me) {
+
+		int page = 1;
+		int pageSize = 10;
 
 		ModelAndView mv = new ModelAndView();
 
@@ -67,22 +69,26 @@ public class MemberViewController {
 			basicInfo.put("imageVersion", "0");
 		}
 
+		MissionSearchDTO searchDTO = new MissionSearchDTO();
+		searchDTO.setMemberSeq(me.getMemberSeq());
+		searchDTO.setRole(me.getRole());
+
+
 		// 공통: 요청한 심부름 내역
-		int missionCount = missionService.getRequestHistoryCount(me.getMemberSeq());
-		PagingDTO requestPaging = PagingDTO.of(1, 5, missionCount);
-		List<MissionDTO> missionHistory = missionService.getRequestHistory(me.getMemberSeq(), requestPaging);
+		int missionCount = missionService.getRequestHistoryCount(searchDTO);
+		PagingDTO requestPaging = PagingDTO.of(page, pageSize, missionCount);
+		List<MissionDTO> missionHistory = missionService.getRequestHistory(searchDTO, requestPaging);
 
 		mv.addObject("basicInfo", basicInfo);
 		mv.addObject("missionCount", missionCount);
-		mv.addObject("mission", missionHistory);  // 철자 수정
+		mv.addObject("mission", missionHistory);
 		mv.addObject("history", "request");
 
 		// 헬퍼인 경우: 수행한 심부름 내역 추가
 		if(me.getRole().equals("ROLE_HELPER")) {
-			int performanceCount = missionService.getMyPerformanceHistoryCount(me.getMemberSeq());
-			PagingDTO performancePaging = PagingDTO.of(1, 5, performanceCount);
-			List<MissionDTO> performanceHistory = missionService.getMyPerformanceHistory(me.getMemberSeq(), performancePaging);
-
+			int performanceCount = missionService.getMyPerformanceHistoryCount(searchDTO);
+			PagingDTO performancePaging = PagingDTO.of(page, pageSize, performanceCount);
+			List<MissionDTO> performanceHistory = missionService.getMyPerformanceHistory(searchDTO, performancePaging);
 			mv.addObject("performanceCount", performanceCount);
 			mv.addObject("performance", performanceHistory);
 
@@ -107,7 +113,9 @@ public class MemberViewController {
 		HelperDTO member = memberService.selectMemberWithImageBySeq(me.getMemberSeq());
 
 		if(member != null) {
-
+			if (member.getImageDTO() == null) {
+				member.setImageDTO(new ImageDTO());
+			}
 			mv.addObject("info", member);
 			mv.addObject("isModify", true);      // 수정 모드 플래그
 			mv.setViewName("member/join");

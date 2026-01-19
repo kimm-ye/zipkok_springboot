@@ -142,7 +142,7 @@ public class MemberServiceImpl implements MemberService {
 			}
 
 			// 헬퍼인 경우 helper 테이블 저장
-			if(dto.getMemberStatus() == 2) {
+			if(dto.getMemberRole() == 2) {
 				memberDao.insertHelper(dto);
 			}
 
@@ -170,7 +170,7 @@ public class MemberServiceImpl implements MemberService {
 			}
 
 			// 헬퍼인 경우 추가 정보 저장
-			if(dto.getMemberStatus() == 2) {
+			if(dto.getMemberRole() == 2) {
 				memberDao.insertHelper(dto);
 			}
 		} catch (Exception e) {
@@ -223,7 +223,7 @@ public class MemberServiceImpl implements MemberService {
 			}
 
 			// 헬퍼인 경우 helper 테이블 수정
-			if(dto.getMemberStatus() == 2) {
+			if(dto.getMemberRole() == 2) {
 				memberDao.updateHelper(dto);
 			}
 

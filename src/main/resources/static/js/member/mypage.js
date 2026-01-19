@@ -63,9 +63,9 @@ function switchTab(type) {
 function showMoreMenu() {
     const currentTab = document.querySelector('.tab-btn.active').textContent.trim();
     if(currentTab === '요청') {
-        location.href = '/zipkok/mission/add?flag=request';
+        location.href = '/zipkok/mission/history?flag=request';
     } else {
-        location.href = '/zipkok/mission/add?flag=perform';
+        location.href = '/zipkok/mission/history?flag=perform';
     }
 }
 

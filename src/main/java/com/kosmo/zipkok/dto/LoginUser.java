@@ -1,8 +1,9 @@
 package com.kosmo.zipkok.dto;
 
 import lombok.Data;
+
 @Data
-public class MemberDTO {
+public class LoginUser {
 
 	private String memberSeq;
 	private String memberId; //아이디

@@ -70,13 +70,14 @@ public class RedisService {
                 TimeUnit.DAYS
         );
 
-        // 사용자별 활성 Refresh Token 목록 관리 (동시 로그인 제한 등에 활용)
+        // TODO 사용자별 활성 Refresh Token 목록 관리 (추후 동시 로그인 제한 등에 활용예정)
         //redisTemplate.opsForSet().add("user_refresh:" + memberDTO.getMemberId(), refreshToken);
         //redisTemplate.expire("user_refresh:" + memberDTO.getMemberId(), 7, TimeUnit.DAYS);
 
         tokenDTO.setAccessToken(accessToken);
         tokenDTO.setRefreshToken(refreshToken);
-        System.out.println("JWT : Access Token 및 Refresh Token 생성 / Redis :  refresh Token 저장");
+
+        log.info("JWT : Access Token 및 Refresh Token 생성 / Redis :  refresh Token 저장");
         return tokenDTO;
     }
 

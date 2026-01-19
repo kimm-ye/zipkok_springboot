@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{admin/fragments/admin-header :: admin-head}">
+    <title>대시보드 - 집콕 관리자</title>
+</head>
+<body class="admin-body">
+
+<!-- 헤더 -->
+<div th:replace="~{admin/fragments/admin-header :: admin-header}"></div>
+
+<!-- 사이드바 -->
+<div th:replace="~{admin/fragments/admin-sidebar :: admin-sidebar}"></div>
+
+<!-- 메인 컨텐츠 -->
+<main class="admin-main">
+    <div class="admin-container">
+
+        <!-- 페이지 타이틀 -->
+        <div class="page-header">
+            <h2>
+                <i class="fas fa-chart-line"></i>
+                대시보드
+            </h2>
+            <p class="page-description">집콕 서비스 현황을 한눈에 확인하세요</p>
+        </div>
+
+        <!-- 통계 카드 -->
+        <div class="stats-grid">
+            <!-- 전체 회원 -->
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #4e73df;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">전체 회원</div>
+                    <div class="stat-value" th:text="${stats.totalMembers}">0</div>
+                    <div class="stat-sub">
+                        오늘 가입: <span th:text="${stats.todayJoins}">0</span>명
+                    </div>
+                </div>
+            </div>
+
+            <!-- 일반 회원 -->
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #1cc88a;">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">일반 회원</div>
+                    <div class="stat-value" th:text="${stats.totalUsers}">0</div>
+                </div>
+            </div>
+
+            <!-- 헬퍼 -->
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #36b9cc;">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">헬퍼</div>
+                    <div class="stat-value" th:text="${stats.totalHelpers}">0</div>
+                </div>
+            </div>
+
+            <!-- 전체 심부름 -->
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #f6c23e;">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">전체 심부름</div>
+                    <div class="stat-value" th:text="${stats.totalMissions}">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 심부름 상태 통계 -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3><i class="fas fa-tasks"></i> 심부름 현황</h3>
+            </div>
+            <div class="section-body">
+                <div class="mission-stats">
+                    <div class="mission-stat-item">
+                        <div class="mission-stat-label">대기중</div>
+                        <div class="mission-stat-value waiting" th:text="${stats.waitingMissions}">0</div>
+                    </div>
+                    <div class="mission-stat-item">
+                        <div class="mission-stat-label">진행중</div>
+                        <div class="mission-stat-value progress" th:text="${stats.progressMissions}">0</div>
+                    </div>
+                    <div class="mission-stat-item">
+                        <div class="mission-stat-label">완료</div>
+                        <div class="mission-stat-value complete" th:text="${stats.completeMissions}">0</div>
+                    </div>
+                    <div class="mission-stat-item">
+                        <div class="mission-stat-label">취소</div>
+                        <div class="mission-stat-value cancel" th:text="${stats.cancelMissions}">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 일별 통계 -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3><i class="fas fa-chart-bar"></i> 최근 7일 통계</h3>
+            </div>
+            <div class="section-body">
+                <table class="daily-stats-table">
+                    <thead>
+                    <tr>
+                        <th>날짜</th>
+                        <th>신규 회원</th>
+                        <th>신규 심부름</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${stats.dailyStats == null || stats.dailyStats.isEmpty()}">
+                        <td colspan="3" style="text-align: center; color: #999;">데이터가 없습니다</td>
+                    </tr>
+                    <tr th:each="day : ${stats.dailyStats}">
+                        <td th:text="${day.date}">2025-01-10</td>
+                        <td th:text="${day.new_members}">0</td>
+                        <td th:text="${day.new_missions}">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 빠른 링크 -->
+        <div class="quick-links">
+            <a th:href="@{/admin/members}" class="quick-link-card">
+                <i class="fas fa-users"></i>
+                <span>회원 관리</span>
+            </a>
+            <a th:href="@{/admin/missions}" class="quick-link-card">
+                <i class="fas fa-clipboard-list"></i>
+                <span>심부름 관리</span>
+            </a>
+            <a href="#" onclick="alert('준비중입니다'); return false;" class="quick-link-card">
+                <i class="fas fa-bell"></i>
+                <span>공지사항</span>
+            </a>
+            <a href="#" onclick="alert('준비중입니다'); return false;" class="quick-link-card">
+                <i class="fas fa-chart-bar"></i>
+                <span>통계 분석</span>
+            </a>
+        </div>
+
+    </div>
+</main>
+
+<script th:replace="~{admin/fragments/admin-sidebar :: sidebar-script}"></script>
+</body>
+</html>

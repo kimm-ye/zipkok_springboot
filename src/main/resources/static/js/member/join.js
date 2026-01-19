@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 회원정보 수정인 경우 thymeleaf로 정보 전달
     if (window.memberData && window.memberData.isModify) {
         // 회원 유형에 따른 헬퍼 필드 표시
-        const memberStatus = window.memberData.info.memberStatus;
-        if (memberStatus === 2) {
+        const memberRole = window.memberData.info.memberRole;
+        if (memberRole === 2) {
             document.getElementById('helper_fields').style.display = 'block';
         }
 
@@ -263,8 +263,8 @@ function joinValidate(form) {
     }
 
     // 통합 폼에서 헬퍼 선택시 추가 유효성 검사
-    var memberStatusInput = document.querySelector('input[name="memberStatus"]:checked');
-    if (memberStatusInput && memberStatusInput.value === "2") {
+    var memberRoleInput = document.querySelector('input[name="memberRole"]:checked');
+    if (memberRoleInput && memberRoleInput.value === "2") {
         if (form.memberBank && !form.memberBank.value) {
             alert("은행을 선택해주세요.");
             return false;
@@ -338,14 +338,14 @@ async function submitFormWithFetch(form) {
 
 // 회원 유형 변경시 폼 표시/숨김 처리 (통합 폼용)
 function toggleMemberType() {
-    var memberStatusInput = document.querySelector('input[name="memberStatus"]:checked');
-    if (!memberStatusInput) return; // 통합 폼이 아닌 경우 실행하지 않음
+    var memberRoleInput = document.querySelector('input[name="memberRole"]:checked');
+    if (!memberRoleInput) return; // 통합 폼이 아닌 경우 실행하지 않음
 
-    var memberStatus = memberStatusInput.value;
+    var memberRole = memberRoleInput.value;
     var helperFields = document.getElementById('helper_fields');
     var form = document.forms['joinForm'];
 
-    if (memberStatus === "2") { // 헬퍼 선택
+    if (memberRole === "2") { // 헬퍼 선택
         if (helperFields) helperFields.style.display = 'block';
 
         // 헬퍼 필수 필드 설정
@@ -353,7 +353,7 @@ function toggleMemberType() {
         if (form.memberAccount) form.memberAccount.required = true;
         if (form.memberIntroduce) form.memberIntroduce.required = true;
 
-    } else { // 일반 사용자 선택 (memberStatus == "1")
+    } else { // 일반 사용자 선택 (memberRole == "1")
         if (helperFields) helperFields.style.display = 'none';
 
         // 헬퍼 필드 필수 해제
