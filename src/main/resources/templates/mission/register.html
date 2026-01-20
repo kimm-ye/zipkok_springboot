@@ -94,10 +94,10 @@
                     <input type="text" id="wayPostcode" name="wayPostcode" class="form-control"
                            placeholder="우편번호"
                            th:readonly="${mode == 'view'}"
-                           th:value="${mission?.wayPostcode}">
+                           th:value="${mission?.wayLocation?.postcode}">
                     <input type="text" id="wayAddress1" name="wayAddress1" class="form-control"
                            placeholder="우편번호 검색 후 주소가 입력됩니다" readonly
-                           th:value="${mission?.wayAddress1}">
+                           th:value="${mission?.wayLocation?.address1}">
                     <button type="button" class="search-btn"
                             th:if="${mode != 'view'}"
                             onclick="wayPostCode()">
@@ -108,9 +108,9 @@
                        placeholder="상세주소를 입력해주세요"
                        style="margin-top:10px;"
                        th:readonly="${mode == 'view'}"
-                       th:value="${mission?.wayAddress2}">
-                <input type="hidden" id="wayLatitude"  name="wayLatitude"  th:value="${mission?.wayLatitude}">
-                <input type="hidden" id="wayLongitude" name="wayLongitude" th:value="${mission?.wayLongitude}">
+                       th:value="${mission?.wayLocation?.address2}">
+                <input type="hidden" id="wayLatitude"  name="wayLatitude"> <!-- th:value="${mission?.wayLatitude}"-->
+                <input type="hidden" id="wayLongitude" name="wayLongitude"> <!--th:value="${mission?.wayLongitude}"-->
             </div>
 
             <!-- 도착지 -->
@@ -120,11 +120,11 @@
                     <input type="text" id="endPostcode" name="endPostcode" class="form-control"
                            placeholder="우편번호"
                            th:readonly="${mode == 'view'}"
-                           th:value="${mission?.endPostcode}">
+                           th:value="${mission?.endLocation?.postcode}">
                     <input type="text" id="endAddress1" name="endAddress1" class="form-control"
                            th:required="${mode != 'view'}"
                            placeholder="우편번호 검색 후 주소가 입력됩니다" readonly
-                           th:value="${mission?.endAddress1}">
+                           th:value="${mission?.endLocation?.address1}">
                     <button type="button" class="search-btn"
                             th:if="${mode != 'view'}"
                             onclick="endPostCode()">
@@ -136,9 +136,9 @@
                        placeholder="상세주소를 입력해주세요"
                        style="margin-top:10px;"
                        th:readonly="${mode == 'view'}"
-                       th:value="${mission?.endAddress2}">
-                <input type="hidden" id="endLatitude"  name="endLatitude"  th:value="${mission?.endLatitude}">
-                <input type="hidden" id="endLongitude" name="endLongitude" th:value="${mission?.endLongitude}">
+                       th:value="${mission?.endLocation?.address2}">
+                <input type="hidden" id="endLatitude"  name="endLatitude"  > <!--th:value="${mission?.endLatitude}" -->
+                <input type="hidden" id="endLongitude" name="endLongitude" > <!-- th:value="${mission?.endLongitude}" -->
             </div>
 
             <!-- 요청일시 -->
@@ -180,13 +180,12 @@
             <!-- 첨부파일 -->
             <div class="form-group" >
                 <label class="form-label">
-                    <i class="fas fa-paperclip"></i>
-                    첨부파일
-                    <span style="color: #a0aec0; font-weight: normal;">(선택사항)</span>
+                    <i class="fas fa-paperclip"></i> 첨부파일 (선택사항)
+                    <span style="color: #a0aec0; font-size: 0.9em;">(이미지 파일만, 최대 5장, 장당 5MB 이하)</span>
                 </label>
 
                 <!-- 수정/보기 모드에서 기존 첨부 노출 -->
-                <div  style="margin-bottom:10px;" th:if="${(mode == 'edit' || mode == 'view') && mission.imageDTO != null}">
+                <!--<div  style="margin-bottom:10px;" th:if="${(mode == 'edit' || mode == 'view') && mission.imageDTO != null}">
                     <div class="current-file">
                         <i class="fas fa-image"></i>
                         <a th:href="@{/mission/image/{seq}(seq=${mission.missionSeq})}"
@@ -195,16 +194,43 @@
                             현재 첨부 보기
                         </a>
                     </div>
-                </div>
+                </div>-->
 
-                <!-- 새로 선택한 파일명 표시 영역 -->
-                <div id="selectedFileName" style="margin-bottom:10px; display:none;" >
-                    <div class="current-file">
-                        <i class="fas fa-file"></i>
-                        <span id="fileNameText"></span>
+                <div id="existingFileArea"
+                     th:if="${(mode == 'edit' || mode == 'view') && mission.imageList != null && !mission.imageList.isEmpty()}">
+                    <label class="sub-label">📂 기존 첨부 파일</label>
+
+                    <div class="current-file existing-file-item"
+                         th:each="img : ${mission.imageList}"
+                         th:id="'img-row-' + ${img?.imageSeq}"
+                         style="gap: 10px;">
+
+                        <i class="fas fa-image"></i>
+                        <a th:href="@{/mission/image/{seq}(seq=${img?.imageSeq})}"
+                           target="_blank"
+                           th:text="' ' + ${img?.imageFileName} + '.' + ${img?.imageFileEtx}">
+                            파일명.jpg
+                        </a>
+                        <button type="button"
+                                th:if="${mode == 'edit'}"
+                                class="btn-delete-img"
+                                th:attr="data-seq=${img?.imageSeq}"
+                                onclick="removeExistingImage(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
                 </div>
 
+                <!-- 삭제한 이미지seq 리스트로 넘겨서 전달 -->
+                <div id="deleteImageContainer"></div>
+
+                <!-- 새로 선택한 파일명 표시 영역 -->
+                <!--<div id="selectedFileName" style="margin-bottom:10px; display:none;" >
+                </div>
+
+                &lt;!&ndash; 보기모드가 아니거나 심부름 상태가 신청인 경우 &ndash;&gt;
+                <div class="file-upload" th:if="${mode != 'view' || mission?.missionStatus == 0}">
+                    <input type="file" name="attachFiles" accept="image/*" id="attachFiles" multiple>
                 <!-- 보기모드가 아니거나 심부름 상태가 신청인 경우 -->
                 <div class="file-upload" th:if="${(mode != 'view' && mission?.missionStatus == 0) || mode =='create'}">
                     <input type="file" name="missionAttachFile" accept="image/*" id="missionAttachFile">
@@ -212,6 +238,22 @@
                         <i class="fas fa-cloud-upload-alt"></i>
                         <span th:text="${mode == 'edit' ? '클릭하여 파일을 교체하세요 (선택)' : '클릭하여 파일을 업로드하세요'}">클릭하여 파일을 업로드하세요</span>
                     </div>
+                </div>-->
+
+                <hr th:if="${mode == 'create' || (mode == 'edit' && mission?.missionStatus == 0)}"
+                    style="margin: 10px 0; border: 0; border-top: 1px dashed #ddd;">
+
+                <div id="newFileArea" style="display:none;">
+                    <label class="sub-label">🆕 새로 추가된 파일</label>
+                    <div id="newFileList"></div> </div>
+
+                <div class="file-upload"th:if="${mode == 'create' || (mode == 'edit' && mission?.missionStatus == 0)}">
+                    <input type="file" id="attachFiles" accept="image/*" multiple style="display: none;">
+
+                    <label for="attachFiles" class="file-upload-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>파일 추가하기 (클릭)</span>
+                    </label>
                 </div>
             </div>
 
@@ -279,6 +321,8 @@
                 <button type="button"
                         class="submit-btn"
                         style="background: #28a745;"
+                        th:if="${mission?.missionStatus == 2}">
+                    <!--onclick="openRatingModal(this.getAttribute('data-seq'))">-->
                         th:if="${mission?.missionStatus == 2 && mission?.rating == null}"
                         onclick="openRatingModal()">
                     <i class="fas fa-star"></i>

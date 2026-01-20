@@ -1,3 +1,6 @@
+// 전역(혹은 함수 스코프) 변수로 새로 추가된 파일들을 관리
+let newFilesArr = [];
+
 document.addEventListener('DOMContentLoaded', async function () {
 
     // 페이지 로드 시 카테고리 선택된 값 설정
@@ -40,10 +43,10 @@ function toggleDateInput() {
     }
 }
 
-
-// 파일 업로드 피드백
-document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.getElementById('missionAttachFile');
+///////////////////////// 파일 ///////////////////////////////////////
+// 파일 업로드 - 단일
+/*document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('attachFiles');
     const selectedFileNameDiv = document.getElementById('selectedFileName');
     const fileNameText = document.getElementById('fileNameText');
 
@@ -61,7 +64,123 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+});*/
+
+// 파일 업로드 (다중 파일 지원)
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('attachFiles');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const selectedFiles = Array.from(e.target.files); // 방금 선택한 파일들
+
+            // 유효성 검사 및 배열 추가
+            addFiles(selectedFiles);
+
+            // 중요: input 값을 초기화해야 동일한 파일을 다시 선택해도 change 이벤트가 발생함
+            // 또한 "취소"를 눌렀을 때 기존 목록이 날아가는 문제를 방지함 (우리는 배열로 관리하니까)
+            fileInput.value = '';
+        });
+    }
 });
+
+// 파일 추가 처리 함수
+function addFiles(files) {
+    // 1. 현재 갯수 체크 (기존 파일 + 이미 추가된 새 파일)
+    const existingCount = document.querySelectorAll('.existing-file-item').length;
+    const currentTotal = existingCount + newFilesArr.length;
+
+    if (currentTotal + files.length > 5) {
+        alert('최대 5개까지만 업로드 가능합니다.');
+        return;
+    }
+
+    for (const file of files) {
+        // 2. 파일 타입 검사 (이미지)
+        if (!file.type.match('image.*')) {
+            alert('이미지 파일만 업로드 가능합니다: ' + file.name);
+            continue;
+        }
+
+        // 3. 용량 검사 (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('파일 사이즈는 5MB를 초과할 수 없습니다: ' + file.name);
+            continue;
+        }
+
+        // 4. 중복 검사 (이름과 사이즈가 같으면 중복으로 간주)
+        const isDuplicate = newFilesArr.some(f => f.name === file.name && f.size === file.size);
+        if (isDuplicate) {
+            continue;
+        }
+
+        // 통과된 파일만 배열에 저장
+        newFilesArr.push(file);
+    }
+
+    // UI 다시 그리기
+    renderNewFiles();
+}
+
+// 새 파일 목록 UI 렌더링
+function renderNewFiles() {
+    const newFileArea = document.getElementById('newFileArea');
+    const newFileList = document.getElementById('newFileList');
+
+    newFileList.innerHTML = ''; // 초기화
+
+    if (newFilesArr.length === 0) {
+        newFileArea.style.display = 'none';
+        return;
+    }
+
+    newFileArea.style.display = 'block';
+
+    newFilesArr.forEach((file, index) => {
+        const div = document.createElement('div');
+        div.className = 'current-file';
+        div.innerHTML = `
+            <div class="file-info">
+                <i class="fas fa-file-image" style="color: #48bb78;"></i> 
+                <span>${file.name}</span>
+                <span style="font-size:0.8em; color:#888;">(${(file.size/1024/1024).toFixed(2)}MB)</span>
+            </div>
+            <button type="button" class="btn-delete-img" onclick="removeNewFile(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        newFileList.appendChild(div);
+    });
+
+
+}
+
+// 신규 추가된 파일 삭제 (배열에서 제거)
+function removeNewFile(index) {
+    newFilesArr.splice(index, 1); // 배열에서 해당 인덱스 삭제
+    renderNewFiles(); // UI 갱신
+}
+
+// 기존 파일 삭제 (서버 전송용 hidden input 생성 + 화면 숨김)
+function removeExistingImage(btn) {
+    if(!confirm('등록된 파일을 삭제하시겠습니까?')) return;
+
+    const seq = btn.getAttribute('data-seq');
+    const row = document.getElementById('img-row-' + seq);
+
+    // 화면에서 제거
+    row.remove();
+
+    // 서버로 보낼 삭제 리스트에 추가
+    const container = document.getElementById('deleteImageContainer');
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'deleteImageSeqs'; // DTO의 필드명과 일치해야 함
+    input.value = seq;
+    container.appendChild(input);
+}
+
+/////////////////////////////////////////////
 
 
 // 폼 유효성 검사
@@ -172,12 +291,22 @@ function settingAdress(data){
 
 }
 
+
+////////////////////// 버튼/////////////////////////////////
+
 //심부름 등록하기 버튼 클릭
 async function missionRegister(form){
     event.preventDefault(); // 기본 submit 방지
 
     try {
         const formData = new FormData(form);
+
+        // 신규 이미지 파일 추가되는 부분은 dto로 넘길 수 없어서 별도로 append 한다
+        if (newFilesArr.length > 0) {
+            newFilesArr.forEach(file => {
+                formData.append("attachFiles", file);
+            });
+        }
 
         const response = await fetch('/zipkok/mission/request/register', {
             method: 'POST',
@@ -211,9 +340,14 @@ async function missionUpdate(form){
 
     try {
         const formData = new FormData(form);
+        if (newFilesArr.length > 0) {
+            newFilesArr.forEach(file => {
+                formData.append("attachFiles", file);
+            });
+        }
 
-        const response = await fetch('./update', {
-            method: 'POST',
+        const response = await fetch('/zipkok/mission/request/update', {
+            method: 'PATCH',
             body: formData
         });
 

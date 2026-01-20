@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Data
-public class MissionDTO {
+public class MissionResponse {
 
     private String memberSeq;
     private String missionSeq;
@@ -30,28 +30,9 @@ public class MissionDTO {
     // -------------------------------
     // 위치 관련 필드 추가
     // -------------------------------
+    private LocationInfo wayLocation; // 경유지
+    private LocationInfo endLocation; // 도착지
 
-    // 경유지 (1개만 받는다면)
-    private String wayAddress1;
-    private String wayAddress2;
-    private String wayPostcode;
-    private Double wayLatitude;
-    private Double wayLongitude;
-
-    // 도착지
-    private String endAddress1;
-    private String endAddress2;
-    private String endPostcode;
-    private Double endLatitude;
-    private Double endLongitude;
-
-    // 1. 새 파일 받을 리스트
-    private List<MultipartFile> attachFiles;
-
-    // 2. 삭제할 이미지 번호 받을 리스트
-    private List<Integer> deleteImageSeqs;
-
-    // 3. 보여주기용 리스트
     private List<ImageDTO> imageList;
 
 }

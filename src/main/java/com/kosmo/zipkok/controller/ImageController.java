@@ -4,6 +4,7 @@ import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.dto.ImageDTO;
 import com.kosmo.zipkok.service.MemberService;
 import com.kosmo.zipkok.service.MissionService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -20,19 +21,18 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class ImageController {
-	@Autowired
-	MissionService missionService;
 
-	@Autowired
-	MemberService memberService;
+	private final MissionService missionService;
+	private final MemberService memberService;
 
 	// 심부름에 첨부한 파일 다운로드
-	@GetMapping("/mission/image/{missionSeq}")
-	public ResponseEntity<byte[]> downloadMissionImage(@PathVariable("missionSeq") String missionSeq) {
+	@GetMapping("/mission/image/{imageSeq}")
+	public ResponseEntity<byte[]> downloadMissionImage(@PathVariable("imageSeq") String imageSeq) {
 		try {
 			// 해당하는 이미지 파일만 조회
-			ImageDTO image = missionService.getMissionImage(missionSeq);
+			ImageDTO image = missionService.getMissionImage(imageSeq);
 
 			if (image == null || image.getImageFile() == null) {
 				return ResponseEntity.notFound().build();

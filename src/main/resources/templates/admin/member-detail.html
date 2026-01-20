@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments/admin-header :: admin-head}">
+    <title>회원 상세 - 집콕 관리자</title>
+</head>
+<body class="admin-body">
+
+<div th:replace="~{admin/fragments/admin-header :: admin-header}"></div>
+<div th:replace="~{admin/fragments/admin-sidebar :: admin-sidebar}"></div>
+
+<main class="admin-main">
+    <div class="admin-container">
+
+        <div class="page-header">
+            <div>
+                <h2>
+                    <i class="fas fa-user"></i>
+                    회원 상세 정보
+                </h2>
+                <p class="page-description">회원의 상세 정보를 확인하고 관리하세요</p>
+            </div>
+            <button class="btn-back" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i> 목록으로
+            </button>
+        </div>
+
+        <!-- 회원 기본 정보 -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3><i class="fas fa-user-circle"></i> 기본 정보</h3>
+                <div>
+                        <span class="role-badge"
+                              th:classappend="${member.memberRole == 'ROLE_USER' ? 'role-user' :
+                                               (member.memberRole == 'ROLE_HELPER' ? 'role-helper' : 'role-admin')}"
+                              th:text="${member.memberRole == 'ROLE_USER' ? '일반 회원' :
+                                        (member.memberRole == 'ROLE_HELPER' ? '헬퍼' : '관리자')}">
+                        </span>
+                    <span class="status-badge"
+                          th:classappend="${member.memberStatus == 0 ? 'status-active' : 'status-suspended'}"
+                          th:text="${member.memberStatus == 0 ? '정상' : '정지'}">
+                        </span>
+                </div>
+            </div>
+
+            <div class="section-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>회원번호</label>
+                        <div th:text="${member.memberSeq}">1</div>
+                    </div>
+                    <div class="info-item">
+                        <label>아이디</label>
+                        <div th:text="${member.memberId}">user123</div>
+                    </div>
+                    <div class="info-item">
+                        <label>이름</label>
+                        <div th:text="${member.memberName}">홍길동</div>
+                    </div>
+                    <div class="info-item">
+                        <label>닉네임</label>
+                        <div th:text="${member.memberNick}">길동이</div>
+                    </div>
+                    <div class="info-item">
+                        <label>이메일</label>
+                        <div th:text="${member.memberEmail}">user@example.com</div>
+                    </div>
+                    <div class="info-item">
+                        <label>전화번호</label>
+                        <div th:text="${member.memberPhone}">010-1234-5678</div>
+                    </div>
+                    <div class="info-item">
+                        <label>가입일</label>
+                        <div th:text="${#temporals.format(member.createDt, 'yyyy-MM-dd HH:mm')}">2025-01-10</div>
+                    </div>
+                    <div class="info-item">
+                        <label>최종수정</label>
+                        <div th:text="${member.updateDt != null ? #temporals.format(member.updateDt, 'yyyy-MM-dd HH:mm') : '-'}">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 헬퍼 정보 (헬퍼인 경우만) -->
+        <div th:if="${member.memberRole == 'ROLE_HELPER'}" class="section-card">
+            <div class="section-header">
+                <h3><i class="fas fa-user-tie"></i> 헬퍼 정보</h3>
+            </div>
+            <div class="section-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>은행</label>
+                        <div th:text="${member.memberBank ?: '-'}">-</div>
+                    </div>
+                    <div class="info-item">
+                        <label>계좌번호</label>
+                        <div th:text="${member.memberAccount ?: '-'}">-</div>
+                    </div>
+                    <div class="info-item">
+                        <label>차량</label>
+                        <div th:text="${member.memberVehicle == 1 ? '있음' : '없음'}">없음</div>
+                    </div>
+                    <div class="info-item full-width">
+                        <label>소개</label>
+                        <div th:text="${member.memberIntroduce ?: '-'}">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 활동 통계 -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3><i class="fas fa-chart-bar"></i> 활동 통계</h3>
+            </div>
+            <div class="section-body">
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-label">총 심부름</div>
+                        <div class="stat-number" th:text="${member.missionCount}">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">완료한 심부름</div>
+                        <div class="stat-number" th:text="${member.completeCount}">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">완료율</div>
+                        <div class="stat-number">
+                            <span th:text="${member.missionCount > 0 ? #numbers.formatDecimal(member.completeCount * 100.0 / member.missionCount, 1, 1) : 0}">0</span>%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 관리 기능 -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3><i class="fas fa-tools"></i> 회원 관리</h3>
+            </div>
+            <div class="section-body">
+                <div class="management-buttons">
+                    <div class="button-group">
+                        <label>권한 변경</label>
+                        <button class="btn-action" onclick="changeRole('ROLE_USER')">
+                            <i class="fas fa-user"></i> 일반 회원으로
+                        </button>
+                        <button class="btn-action" onclick="changeRole('ROLE_HELPER')">
+                            <i class="fas fa-user-tie"></i> 헬퍼로
+                        </button>
+                        <button class="btn-action" onclick="changeRole('ROLE_ADMIN')">
+                            <i class="fas fa-user-shield"></i> 관리자로
+                        </button>
+                    </div>
+
+                    <div class="button-group">
+                        <label>계정 상태</label>
+                        <button class="btn-warning"
+                                th:if="${member.memberStatus == 0}"
+                                onclick="suspendMember()">
+                            <i class="fas fa-ban"></i> 계정 정지
+                        </button>
+                        <button class="btn-success"
+                                th:if="${member.memberStatus == 1}"
+                                onclick="activateMember()">
+                            <i class="fas fa-check-circle"></i> 정지 해제
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script th:replace="~{admin/fragments/admin-sidebar :: sidebar-script}"></script>
+
+<script th:inline="javascript">
+    const memberSeq = [[${member.memberSeq}]];
+    const currentRole = [[${member.memberRole}]];
+    const currentStatus = [[${member.memberStatus}]];
+
+    // 권한 변경
+    async function changeRole(newRole) {
+        if (currentRole === newRole) {
+            alert('이미 해당 권한입니다.');
+            return;
+        }
+
+        const roleNames = {
+            'ROLE_USER': '일반 회원',
+            'ROLE_HELPER': '헬퍼',
+            'ROLE_ADMIN': '관리자'
+        };
+
+        if (!confirm(`권한을 "${roleNames[newRole]}"로 변경하시겠습니까?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/admin/members/${memberSeq}/role`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role: newRole })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.message);
+                location.reload();
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            console.error('권한 변경 실패:', error);
+            alert('권한 변경 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 계정 정지
+    async function suspendMember() {
+        const reason = prompt('정지 사유를 입력해주세요:');
+        if (!reason) return;
+
+        try {
+            const response = await fetch(`/admin/members/${memberSeq}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 1, reason: reason })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.message);
+                location.reload();
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            console.error('계정 정지 실패:', error);
+            alert('처리 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 정지 해제
+    async function activateMember() {
+        if (!confirm('계정 정지를 해제하시겠습니까?')) return;
+
+        try {
+            const response = await fetch(`/admin/members/${memberSeq}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 0, reason: null })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.message);
+                location.reload();
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            console.error('정지 해제 실패:', error);
+            alert('처리 중 오류가 발생했습니다.');
+        }
+    }
+</script>

@@ -180,8 +180,7 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
-	<resultMap id="missionWithImageMap" type="MissionDTO">
-
+	<resultMap id="missionWithImageMap" type="MissionResponse">
 		<id property="missionSeq" column="missionSeq"/>
 		<result property="memberSeq" column="memberSeq"/>
 		<result property="missionCategory" column="missionCategory"/>
@@ -202,11 +201,23 @@
 		<result property="endAddress1" column="endAddress1"/>
 		<result property="endAddress2" column="endAddress2"/>
 
-		<!-- ImageDTO 매핑 -->
-		<association property="imageDTO" javaType="ImageDTO">
+		<association property="wayLocation" javaType="LocationInfo">
+			<result property="postcode" column="wayPostcode"/>
+			<result property="address1" column="wayAddress1"/>
+			<result property="address2" column="wayAddress2"/>
+		</association>
+
+		<association property="endLocation" javaType="LocationInfo">
+			<result property="postcode" column="endPostcode"/>
+			<result property="address1" column="endAddress1"/>
+			<result property="address2" column="endAddress2"/>
+		</association>
+
+		<collection property="imageList" ofType="ImageDTO">
+			<id property="imageSeq" column="imageSeq"/>
 			<result property="imageFileName" column="imageFileName"/>
 			<result property="imageFileEtx" column="imageFileEtx"/>
-		</association>
+		</collection>
 	</resultMap>
 	<select id="getMissionDetail" parameterType="String" resultMap="missionWithImageMap">
 		SELECT
@@ -229,6 +240,7 @@
 			L.endPostcode,
 			L.endAddress1,
 			L.endAddress2,
+			IMG.image_seq AS imageSeq,
 			IMG.image_name AS imageFileName,
 			IMG.image_etx AS imageFileEtx
 		FROM MISSION A
@@ -258,14 +270,13 @@
 
 	<select id="getMissionImage" parameterType="String" resultType="ImageDTO">
 		SELECT
---
 			IMAGE_FILE AS imageFile,
 			IMAGE_NAME AS imageFileName,
 			IMAGE_ETX AS imageFileEtx
 		FROM
 			MISSION_IMAGE
 		WHERE
-			MISSION_SEQ =  #{missionSeq}
+			IMAGE_SEQ =  #{imageSeq}
 	</select>
 
 
@@ -352,7 +363,7 @@
 			(#{missionSeq}, 'END', #{endPostcode}, #{endAddress1}, #{endAddress2}, #{endLatitude}, #{endLongitude})
 	</insert>
 
-	<insert id="insertMissionImage" parameterType="MissionDTO">
+	<insert id="insertMissionImage" parameterType="ImageDTO">
 		INSERT INTO mission_image
 			(
 				mission_seq,
@@ -364,9 +375,9 @@
 		VALUES
 		    (
 				#{missionSeq},
-				#{missionImageFileName},
-		     	#{missionImageFileEtx},
-		     	#{missionImageFile},
+				#{imageFileName},
+		     	#{imageFileEtx},
+		     	#{imageFile},
 		     	NOW()
 			)
 	</insert>
@@ -415,17 +426,6 @@
 		AND mission_seq = #{missionSeq}
 	</update>
 
-	<update id="updateMissionImage" parameterType="MissionDTO">
-		UPDATE mission_image
-		SET
-			image_name = #{missionImageFileName},
-			image_etx = #{missionImageFileEtx},
-			image_file = #{missionImageFile},
-			create_dt = NOW()
-		WHERE
-		    mission_seq = #{missionSeq}
-	</update>
-	
 	<update id="updateMissionStatus" parameterType="Map">
 		UPDATE mission
 		<set>
@@ -448,6 +448,10 @@
 		AND mission_seq = #{missionSeq}
 	</update>
 
+	<delete id="deleteMissionImages" parameterType="int">
+		DELETE FROM mission_image
+		WHERE image_seq = #{imageSeq}
+	</delete>
 	<!-- 평가 등록 -->
 	<insert id="insertMissionRating" parameterType="MissionRatingDTO">
 		INSERT INTO mission_rating (
