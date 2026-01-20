@@ -1,5 +1,6 @@
 package com.kosmo.zipkok.controller;
 
+import com.kosmo.zipkok.dto.MissionResponse;
 import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.dto.MissionDTO;
 import com.kosmo.zipkok.service.MissionService;
@@ -33,7 +34,7 @@ public class MissionViewController {
 	public ModelAndView detail(@AuthenticationPrincipal CustomUserDetail me,
 							   @RequestParam("missionSeq") String missionSeq) {
 
-		MissionDTO detail = missionService.getMissionDetail(missionSeq);
+		MissionResponse detail = missionService.getMissionDetail(missionSeq);
 		boolean isOwner = String.valueOf(detail.getMemberSeq()).equals(me.getMemberSeq());
 
 		// 권한 없으면 리다이렉트

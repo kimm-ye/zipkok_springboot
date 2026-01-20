@@ -73,7 +73,7 @@ public class MissionServiceImpl implements MissionService {
 
     // 미션 상세페이지
     @Override
-    public MissionDTO getMissionDetail(String missionSeq) {
+    public MissionResponse getMissionDetail(String missionSeq) {
         return missionDao.getMissionDetail(missionSeq);
     }
 

@@ -180,8 +180,7 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
-	<resultMap id="missionWithImageMap" type="MissionDTO">
-
+	<resultMap id="missionWithImageMap" type="MissionResponse">
 		<id property="missionSeq" column="missionSeq"/>
 		<result property="memberSeq" column="memberSeq"/>
 		<result property="missionCategory" column="missionCategory"/>
@@ -194,12 +193,18 @@
 		<result property="missionTime" column="missionTime"/>
 		<result property="missionCost" column="missionCost"/>
 		<result property="missionStatus" column="missionStatus"/>
-		<result property="wayPostcode" column="wayPostcode"/>
-		<result property="wayAddress1" column="wayAddress1"/>
-		<result property="wayAddress2" column="wayAddress2"/>
-		<result property="endPostcode" column="endPostcode"/>
-		<result property="endAddress1" column="endAddress1"/>
-		<result property="endAddress2" column="endAddress2"/>
+
+		<association property="wayLocation" javaType="LocationInfo">
+			<result property="postcode" column="wayPostcode"/>
+			<result property="address1" column="wayAddress1"/>
+			<result property="address2" column="wayAddress2"/>
+		</association>
+
+		<association property="endLocation" javaType="LocationInfo">
+			<result property="postcode" column="endPostcode"/>
+			<result property="address1" column="endAddress1"/>
+			<result property="address2" column="endAddress2"/>
+		</association>
 
 		<collection property="imageList" ofType="ImageDTO">
 			<id property="imageSeq" column="imageSeq"/>
@@ -231,9 +236,9 @@
 			IMG.image_name AS imageFileName,
 			IMG.image_etx AS imageFileEtx
 		FROM MISSION A
-				 JOIN MEMBER B
-					  ON A.MEMBER_SEQ = B.MEMBER_SEQ
-				 JOIN (
+		JOIN MEMBER B
+			ON A.MEMBER_SEQ = B.MEMBER_SEQ
+		JOIN (
 			SELECT
 				MISSION_SEQ,
 				MAX(CASE WHEN LOCATION_TYPE='WAY' THEN POSTCODE END)  AS wayPostcode,

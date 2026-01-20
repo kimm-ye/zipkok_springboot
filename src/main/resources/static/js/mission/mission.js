@@ -150,6 +150,8 @@ function renderNewFiles() {
         `;
         newFileList.appendChild(div);
     });
+
+
 }
 
 // 신규 추가된 파일 삭제 (배열에서 제거)
