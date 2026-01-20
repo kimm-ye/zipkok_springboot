@@ -22,8 +22,11 @@ public interface MissionService {
 
     MissionDTO selectMissionBySeq(String missionSeq);
 
+    boolean hasRating(int missionSeq, int raterSeq, String ratingType);
+
     void insertMission(MissionDTO missionDTO) throws IOException;
     void updateMission(MissionDTO missionDTO) throws IOException;
     void updateMissionStatus(Map<String, Object> param) throws Exception;
 
+    void insertMissionRating(MissionRatingDTO param);
 }

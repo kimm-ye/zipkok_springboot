@@ -233,5 +233,20 @@ create or replace table sns_login
 create or replace index idx_member_seq
     on sns_login (member_seq);
 
-ALTER TABLE mission ADD COLUMN rating DECIMAL(2,1) DEFAULT NULL COMMENT '평점 (0.0 ~ 5.0)';
-ALTER TABLE mission ADD COLUMN rating_comment VARCHAR(500) DEFAULT NULL COMMENT '평가 코멘트';
+CREATE TABLE mission_rating (
+    rating_seq INT AUTO_INCREMENT PRIMARY KEY,
+    mission_seq INT NOT NULL,
+    rater_seq INT NOT NULL COMMENT '평가자 seq',
+    ratee_seq INT NOT NULL COMMENT '피평가자 seq',
+    rating_type VARCHAR(20) NOT NULL COMMENT 'CLIENT_TO_HELPER, HELPER_TO_CLIENT',
+    rating DECIMAL(2,1) NOT NULL COMMENT '평점 (1.0 ~ 5.0)',
+    rating_comment VARCHAR(500) COMMENT '평가 코멘트',
+    rating_create_dt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (mission_seq) REFERENCES mission(mission_seq) ON DELETE CASCADE,
+    FOREIGN KEY (rater_seq) REFERENCES member(member_seq) ON DELETE CASCADE,
+    FOREIGN KEY (ratee_seq) REFERENCES member(member_seq) ON DELETE CASCADE,
+    UNIQUE KEY uk_mission_rater_type (mission_seq, rater_seq, rating_type)
+);
+
+-- 인덱스 추가
+CREATE INDEX idx_ratee_seq ON mission_rating(ratee_seq);

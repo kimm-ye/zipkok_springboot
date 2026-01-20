@@ -9,7 +9,9 @@
 
     <th:block th:replace="~{fragments/header :: header}"></th:block>
     <link rel="stylesheet" th:href="@{/css/mission/mission.css}">
+    <link rel="stylesheet" th:href="@{/css/mission/ratingModal.css}">
     <script type="text/javascript" th:src="@{/js/mission/mission.js}"></script>
+    <script type="text/javascript" th:src="@{/js/mission/ratingModal.js}"></script>
 
     <!--카카오지도 오픈api-->
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
@@ -204,7 +206,7 @@
                 </div>
 
                 <!-- 보기모드가 아니거나 심부름 상태가 신청인 경우 -->
-                <div class="file-upload" th:if="${mode != 'view' || mission?.missionStatus == 0}">
+                <div class="file-upload" th:if="${(mode != 'view' && mission?.missionStatus == 0) || mode =='create'}">
                     <input type="file" name="missionAttachFile" accept="image/*" id="missionAttachFile">
                     <div class="file-upload-label">
                         <i class="fas fa-cloud-upload-alt"></i>
@@ -273,16 +275,55 @@
                     심부름 수행 완료
                 </button>
 
-                <!-- 완료 상태(2): 평가하기 버튼 -->
+                <!-- 완료 상태(2), 이전에 평가한 적 없음: 평가하기 버튼 -->
                 <button type="button"
                         class="submit-btn"
                         style="background: #28a745;"
-                        th:if="${mission?.missionStatus == 2}"
-                        th:onclick="'openRatingModal(' + ${mission.missionSeq} + ')'">
+                        th:if="${mission?.missionStatus == 2 && mission?.rating == null}"
+                        onclick="openRatingModal()">
                     <i class="fas fa-star"></i>
                     심부름 평가하기
                 </button>
             </div>
+
+
+            <!-- 평가 모달 -->
+            <div id="ratingModal" class="rating-modal">
+                <div class="rating-modal-content">
+                    <span class="rating-close">&times;</span>
+                    <h2><i class="fas fa-star"></i> 심부름 평가하기</h2>
+
+                    <!-- 별점 선택 -->
+                    <div class="star-rating">
+                        <i class="far fa-star" data-rating="1"></i>
+                        <i class="far fa-star" data-rating="2"></i>
+                        <i class="far fa-star" data-rating="3"></i>
+                        <i class="far fa-star" data-rating="4"></i>
+                        <i class="far fa-star" data-rating="5"></i>
+                    </div>
+
+                    <div class="rating-score">
+                        <span id="ratingScore">별점을 선택해주세요</span>
+                    </div>
+
+                    <!-- 코멘트 입력 -->
+                    <label class="form-label">평가 코멘트 (선택사항)</label>
+                    <textarea id="ratingComment" class="rating-comment"
+                              placeholder="심부름에 대한 평가를 남겨주세요 (선택사항)"></textarea>
+
+                    <!-- 버튼 -->
+                    <div class="rating-buttons">
+                        <button type="button" class="rating-btn rating-btn-cancel" onclick="closeRatingModal()">
+                            취소
+                        </button>
+                        <button type="button" class="rating-btn rating-btn-submit" id="submitRatingBtn"
+                                onclick="submitRating()">
+                            평가 등록
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </form>
     </div>
 </div>
