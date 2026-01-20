@@ -38,6 +38,7 @@
             <!-- 수정/보기 모드에서만 PK 포함 -->
             <input type="hidden" id="missionSeq" name="missionSeq" th:if="${mode == 'edit' || mode == 'view'}" th:value="${mission?.missionSeq}"/>
             <input type="hidden" id="memberSeq" name="memberSeq" th:if="${mode == 'edit' || mode == 'view'}" th:value="${mission?.memberSeq}"/>
+            <input type="hidden" id="helperSeq" name="helperSeq" th:if="${mode == 'edit' || mode == 'view'}" th:value="${mission?.helperSeq}"/>
 
             <!-- 심부름 항목 -->
             <div class="form-group">
@@ -228,10 +229,9 @@
                 <!--<div id="selectedFileName" style="margin-bottom:10px; display:none;" >
                 </div>
 
-                &lt;!&ndash; 보기모드가 아니거나 심부름 상태가 신청인 경우 &ndash;&gt;
                 <div class="file-upload" th:if="${mode != 'view' || mission?.missionStatus == 0}">
                     <input type="file" name="attachFiles" accept="image/*" id="attachFiles" multiple>
-                <!-- 보기모드가 아니거나 심부름 상태가 신청인 경우 -->
+                보기모드가 아니거나 심부름 상태가 신청인 경우
                 <div class="file-upload" th:if="${(mode != 'view' && mission?.missionStatus == 0) || mode =='create'}">
                     <input type="file" name="missionAttachFile" accept="image/*" id="missionAttachFile">
                     <div class="file-upload-label">
@@ -321,11 +321,9 @@
                 <button type="button"
                         class="submit-btn"
                         style="background: #28a745;"
-                        th:if="${mission?.missionStatus == 2}">
-                    <!--onclick="openRatingModal(this.getAttribute('data-seq'))">-->
                         th:if="${mission?.missionStatus == 2 && mission?.rating == null}"
-                        onclick="openRatingModal()">
-                    <i class="fas fa-star"></i>
+                        onclick="openRatingModal(this.getAttribute('data-seq'))">
+                <i class="fas fa-star"></i>
                     심부름 평가하기
                 </button>
             </div>

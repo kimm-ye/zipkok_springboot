@@ -28,5 +28,5 @@ public interface MissionService {
     void updateMission(MissionDTO missionDTO) throws IOException;
     void updateMissionStatus(Map<String, Object> param) throws Exception;
 
-    void insertMissionRating(MissionRatingDTO param);
+    void insertMissionRating(MissionRatingDTO param) throws Exception;
 }

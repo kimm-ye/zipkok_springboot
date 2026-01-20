@@ -100,7 +100,6 @@ public class MissionServiceImpl implements MissionService {
             missionDao.insertMission(missionDTO);
 
             // 2. 위치 정보 저장
-            missionDao.insertMissionLocation(missionDTO);
             // mission_location에 insert
             //missionDao.insertMissionLocation(missionDTO);
             // way 위치가 있으면
@@ -134,8 +133,6 @@ public class MissionServiceImpl implements MissionService {
 
             // 2. 위치 정보 Upsert update/insert (merge문이 없어서)
             if(missionDTO.getWayLatitude() != null && missionDTO.getWayLongitude() != null) {
-                if(missionDao.updateMissionWayLocation(missionDTO) == 0) {
-                    missionDao.insertMissionLocation(missionDTO);
                 int wayUpdated = missionDao.updateMissionWayLocation(missionDTO);
                 if(wayUpdated == 0) {
                     missionDao.insertMissionWayLocation(missionDTO);
@@ -143,8 +140,6 @@ public class MissionServiceImpl implements MissionService {
             }
 
             if(missionDTO.getEndLatitude() != null && missionDTO.getEndLongitude() != null) {
-                if(missionDao.updateMissionEndLocation(missionDTO) == 0) {
-                    missionDao.insertMissionLocation(missionDTO);
                 int endUpdated = missionDao.updateMissionEndLocation(missionDTO);
                 if(endUpdated == 0) {
                     missionDao.insertMissionEndLocation(missionDTO);
@@ -215,7 +210,7 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public void insertMissionRating(MissionRatingDTO dto) {
+    public void insertMissionRating(MissionRatingDTO dto) throws Exception{
         try {
             missionDao.insertMissionRating(dto);
         } catch (Exception e) {

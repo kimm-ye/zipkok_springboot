@@ -9,7 +9,6 @@ import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.service.MissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -285,7 +284,6 @@ public class MissionController {
 		Map<String, Object> result = new HashMap<>();
 
 		try{
-
 			// 권한 체크 (의뢰인만 헬퍼를 평가 가능)
 			if (!String.valueOf(rat.getRaterSeq()).equals(me.getMemberSeq())) {
 				result.put("success", false);
@@ -295,19 +293,22 @@ public class MissionController {
 
 			// 이미 평가했는지 체크
 			if (missionService.hasRating(rat.getMissionSeq(),
-											Integer.parseInt(me.getMemberSeq()),
-											"CLIENT_TO_HELPER")) {
+										Integer.parseInt(me.getMemberSeq()),
+								"CLIENT_TO_HELPER")) {
 				result.put("success", false);
 				result.put("message", "이미 평가한 심부름입니다.");
 				return result;
 			}
 
+			System.out.println(rat);
+			rat.setRatingType("CLIENT_TO_HELPER");
 			missionService.insertMissionRating(rat);
 			result.put("success", true);
 			result.put("message", "심부름 별점 등록이 완료되었습니다");
 			result.put("redirectUrl", "/zipkok/mission/history?flag=request");
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			result.put("success", false);
 			result.put("message", "평점 등록에 실패했습니다.\n관리자에게 문의 바랍니다.");
 		}

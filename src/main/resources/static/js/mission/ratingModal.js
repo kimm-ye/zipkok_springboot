@@ -85,7 +85,8 @@ async function submitRating() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                memberSeq : document.getElementById('memberSeq').value,
+                raterSeq : document.getElementById('memberSeq').value,
+                rateeSeq : document.getElementById('helperSeq').value,
                 missionSeq: missionSeq,
                 rating: selectedRating,
                 ratingComment: document.getElementById('ratingComment').value

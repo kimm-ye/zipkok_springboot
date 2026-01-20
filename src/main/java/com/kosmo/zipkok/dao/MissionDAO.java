@@ -33,13 +33,13 @@ public interface MissionDAO {
 	void insertMissionWayLocation(MissionDTO missionDTO);
 	void insertMissionEndLocation(MissionDTO missionDTO);
 
-	void insertMissionImage(MissionDTO missionDTO);
+	void insertMissionImage(ImageDTO imageDTO);
 
 	void updateMission(MissionDTO missionDTO);
 	int updateMissionWayLocation(MissionDTO missionDTO);
 	int updateMissionEndLocation(MissionDTO missionDTO);
 
-	void updateMissionImage(MissionDTO missionDTO);
+	void deleteMissionImages(int imageSeq);
 	void updateMissionStatus(Map<String, Object> param);
 
 	void insertMissionRating(MissionRatingDTO dto);

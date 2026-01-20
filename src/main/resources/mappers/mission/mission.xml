@@ -194,12 +194,6 @@
 		<result property="missionCost" column="missionCost"/>
 		<result property="missionStatus" column="missionStatus"/>
 		<result property="rating" column="rating"/>
-		<result property="wayPostcode" column="wayPostcode"/>
-		<result property="wayAddress1" column="wayAddress1"/>
-		<result property="wayAddress2" column="wayAddress2"/>
-		<result property="endPostcode" column="endPostcode"/>
-		<result property="endAddress1" column="endAddress1"/>
-		<result property="endAddress2" column="endAddress2"/>
 
 		<association property="wayLocation" javaType="LocationInfo">
 			<result property="postcode" column="wayPostcode"/>
@@ -292,7 +286,7 @@
 	</select>
 
 	<!-- 평가 여부 확인 -->
-	<select id="hasRating" resultType="int">
+	<select id="hasRating" resultType="boolean">
 		SELECT
 		    COUNT(*)
 		FROM
@@ -452,6 +446,7 @@
 		DELETE FROM mission_image
 		WHERE image_seq = #{imageSeq}
 	</delete>
+
 	<!-- 평가 등록 -->
 	<insert id="insertMissionRating" parameterType="MissionRatingDTO">
 		INSERT INTO mission_rating (
