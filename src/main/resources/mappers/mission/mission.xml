@@ -62,20 +62,20 @@
 	<!-- 내가 응모한 심부름 내역 조회 -->
 	<select id="getMyPerformanceHistory" parameterType="Map" resultType="MissionDTO">
 		SELECT
-		A.MISSION_SEQ as missionSeq,
-		A.MEMBER_SEQ as memberSeq,
-		B.MEMBER_ID AS memberId,
-		A.MISSION_CATEGORY as missionCategory,
-		A.MISSION_TITLE as missionTitle,
-		A.MISSION_CONTENT as missionContent,
-		A.MISSION_GENDER as missionGender,
-		A.HELPER_SEQ as helperSeq,
-		A.MISSION_RESERVATION as missionReservation,
-		A.MISSION_RESERVATION_DT as missionReservationDt,
-		A.MISSION_TIME as missionTime,
-		A.MISSION_COST as missionCost,
-		A.MISSION_STATUS as missionStatus,
-		DATE_FORMAT(A.MISSION_CREATE_DT, '%Y-%m-%d') as missionCreatDt
+			A.MISSION_SEQ as missionSeq,
+			A.MEMBER_SEQ as memberSeq,
+			B.MEMBER_ID AS memberId,
+			A.MISSION_CATEGORY as missionCategory,
+			A.MISSION_TITLE as missionTitle,
+			A.MISSION_CONTENT as missionContent,
+			A.MISSION_GENDER as missionGender,
+			A.HELPER_SEQ as helperSeq,
+			A.MISSION_RESERVATION as missionReservation,
+			A.MISSION_RESERVATION_DT as missionReservationDt,
+			A.MISSION_TIME as missionTime,
+			A.MISSION_COST as missionCost,
+			A.MISSION_STATUS as missionStatus,
+			DATE_FORMAT(A.MISSION_CREATE_DT, '%Y-%m-%d') as missionCreatDt
 		FROM
 		    MISSION A, MEMBER B
 		WHERE
@@ -194,6 +194,7 @@
 		<result property="missionTime" column="missionTime"/>
 		<result property="missionCost" column="missionCost"/>
 		<result property="missionStatus" column="missionStatus"/>
+		<result property="rating" column="rating"/>
 		<result property="wayPostcode" column="wayPostcode"/>
 		<result property="wayAddress1" column="wayAddress1"/>
 		<result property="wayAddress2" column="wayAddress2"/>
@@ -221,6 +222,7 @@
 			A.MISSION_TIME       AS missionTime,
 			A.MISSION_COST       AS missionCost,
 			A.MISSION_STATUS     AS missionStatus,
+			R.RATING 			 AS rating,
 			L.wayPostcode,
 			L.wayAddress1,
 			L.wayAddress2,
@@ -230,9 +232,9 @@
 			IMG.image_name AS imageFileName,
 			IMG.image_etx AS imageFileEtx
 		FROM MISSION A
-				 JOIN MEMBER B
-					  ON A.MEMBER_SEQ = B.MEMBER_SEQ
-				 JOIN (
+		JOIN MEMBER B
+			ON A.MEMBER_SEQ = B.MEMBER_SEQ
+		JOIN (
 			SELECT
 				MISSION_SEQ,
 				MAX(CASE WHEN LOCATION_TYPE='WAY' THEN POSTCODE END)  AS wayPostcode,
@@ -245,9 +247,11 @@
 				MISSION_LOCATION
 			GROUP BY MISSION_SEQ
 		) L
-					  ON L.MISSION_SEQ = A.MISSION_SEQ
-				 LEFT JOIN MISSION_IMAGE IMG
-						   ON A.MISSION_SEQ = IMG.MISSION_SEQ
+	  	ON L.MISSION_SEQ = A.MISSION_SEQ
+		LEFT JOIN MISSION_IMAGE IMG
+			ON A.MISSION_SEQ = IMG.MISSION_SEQ
+		LEFT JOIN MISSION_RATING R
+			ON A.MISSION_SEQ = R.MISSION_SEQ
 		WHERE
 			A.MISSION_SEQ = #{missionSeq}
 	</select>
@@ -274,6 +278,18 @@
 		    mission
 		WHERE
 		    mission_seq = #{missionSeq}
+	</select>
+
+	<!-- 평가 여부 확인 -->
+	<select id="hasRating" resultType="int">
+		SELECT
+		    COUNT(*)
+		FROM
+		    mission_rating
+		WHERE
+		    mission_seq = #{missionSeq}
+		AND rater_seq = #{raterSeq}
+		AND rating_type = #{ratingType}
 	</select>
 
 	<insert id="insertMission" parameterType="MissionDTO" useGeneratedKeys="true" keyProperty="missionSeq">
@@ -308,7 +324,7 @@
 
 	</insert>
 
-	<insert id="insertMissionLocation" parameterType="MissionDTO">
+	<!--<insert id="insertMissionLocation" parameterType="MissionDTO">
 		INSERT INTO mission_location
 		(mission_seq, location_type, postcode, address1, address2, latitude, longitude)
 		VALUES
@@ -320,6 +336,20 @@
 				(#{missionSeq}, 'END', #{endPostcode}, #{endAddress1}, #{endAddress2}, #{endLatitude}, #{endLongitude}),
 			</if>
 		</trim>
+	</insert>-->
+
+	<insert id="insertMissionWayLocation" parameterType="MissionDTO">
+		INSERT INTO mission_location
+		(mission_seq, location_type, postcode, address1, address2, latitude, longitude)
+		VALUES
+			(#{missionSeq}, 'WAY', #{wayPostcode}, #{wayAddress1}, #{wayAddress2}, #{wayLatitude}, #{wayLongitude})
+	</insert>
+
+	<insert id="insertMissionEndLocation" parameterType="MissionDTO">
+		INSERT INTO mission_location
+		(mission_seq, location_type, postcode, address1, address2, latitude, longitude)
+		VALUES
+			(#{missionSeq}, 'END', #{endPostcode}, #{endAddress1}, #{endAddress2}, #{endLatitude}, #{endLongitude})
 	</insert>
 
 	<insert id="insertMissionImage" parameterType="MissionDTO">
@@ -417,5 +447,16 @@
 		    mission_status = 0
 		AND mission_seq = #{missionSeq}
 	</update>
+
+	<!-- 평가 등록 -->
+	<insert id="insertMissionRating" parameterType="MissionRatingDTO">
+		INSERT INTO mission_rating (
+			mission_seq, rater_seq, ratee_seq, rating_type,
+			rating, rating_comment
+		) VALUES (
+			 #{missionSeq}, #{raterSeq}, #{rateeSeq}, #{ratingType},
+			 #{rating}, #{ratingComment}
+		 )
+	</insert>
 </mapper>
 

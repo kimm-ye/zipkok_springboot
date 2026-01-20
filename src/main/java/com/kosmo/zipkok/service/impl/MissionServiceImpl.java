@@ -87,6 +87,11 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
+    public boolean hasRating(int missionSeq, int raterSeq, String ratingType) {
+        return missionDao.hasRating(missionSeq, raterSeq, ratingType);
+    }
+
+    @Override
     public void insertMission(MissionDTO missionDTO) throws IOException {
 
         try{
@@ -94,7 +99,20 @@ public class MissionServiceImpl implements MissionService {
             missionDao.insertMission(missionDTO);
 
             // mission_location에 insert
-            missionDao.insertMissionLocation(missionDTO);
+            //missionDao.insertMissionLocation(missionDTO);
+            // way 위치가 있으면
+            if(missionDTO.getWayAddress1() != null &&
+                    missionDTO.getWayLatitude() != null &&
+                    missionDTO.getWayLongitude() != null) {
+                missionDao.insertMissionWayLocation(missionDTO);
+            }
+
+            // end 위치가 있으면
+            if(missionDTO.getEndAddress1() != null &&
+                    missionDTO.getEndLatitude() != null &&
+                    missionDTO.getEndLongitude() != null) {
+                missionDao.insertMissionEndLocation(missionDTO);
+            }
 
             ImageDTO imageDTO = missionDTO.getImageDTO();
 
@@ -129,14 +147,14 @@ public class MissionServiceImpl implements MissionService {
             if(missionDTO.getWayLatitude() != null && missionDTO.getWayLongitude() != null) {
                 int wayUpdated = missionDao.updateMissionWayLocation(missionDTO);
                 if(wayUpdated == 0) {
-                    missionDao.insertMissionLocation(missionDTO);
+                    missionDao.insertMissionWayLocation(missionDTO);
                 }
             }
 
             if(missionDTO.getEndLatitude() != null && missionDTO.getEndLongitude() != null) {
                 int endUpdated = missionDao.updateMissionEndLocation(missionDTO);
                 if(endUpdated == 0) {
-                    missionDao.insertMissionLocation(missionDTO);
+                    missionDao.insertMissionEndLocation(missionDTO);
                 }
             }
 
@@ -167,6 +185,16 @@ public class MissionServiceImpl implements MissionService {
     public void updateMissionStatus(Map<String, Object> param) throws Exception {
         try {
             missionDao.updateMissionStatus(param);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Override
+    public void insertMissionRating(MissionRatingDTO dto) {
+        try {
+            missionDao.insertMissionRating(dto);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

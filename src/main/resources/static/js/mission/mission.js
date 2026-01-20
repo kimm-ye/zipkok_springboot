@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     try {
         await loadKakaoMapScript();
+        console.log('카카오맵 로드 성공');  // 로드 확인
     } catch (error) {
         console.error('카카오맵 로드 실패:', error);
     }
@@ -95,34 +96,27 @@ async function loadKakaoMapScript() {
     });
 }
 
-/* 위도,경도 가져오기 */
-/*const geocoder = new kakao.maps.services.Geocoder();*/
-
-<!-- 카카오 우편번호 검색 api  -->
-//본 예제에서는 도로명 주소 표기 방식에 대한 법령에 따라, 내려오는 데이터를 조합하여 올바른 주소를 구성하는 방법을 설명합니다.
 function wayPostCode() {
     new daum.Postcode({
         oncomplete: function(data) {
-
             settingAdress(data);
 
             // 좌표 변환 (카카오맵이 로드된 경우에만)
             if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
-                const geocoder = new kakao.maps.services.Geocoder();
+                const geocoder = new kakao.maps.services.Geocoder();  // ✅ 여기서 생성
                 geocoder.addressSearch(data.address, function(result, status) {
                     if (status === kakao.maps.services.Status.OK) {
-
-                        // // 필요시 좌표를 hidden input에 저장
                         const latField = document.getElementById('wayLatitude');
                         const lngField = document.getElementById('wayLongitude');
 
                         if (latField) latField.value = result[0].y;
                         if (lngField) lngField.value = result[0].x;
+
+                        console.log('Way 좌표:', result[0].y, result[0].x);  // 확인용
                     }
                 });
             }
 
-            // 우편번호와 주소 정보를 해당 필드에 넣는다.
             document.getElementById('wayPostcode').value = data.zonecode;
             document.getElementById("wayAddress1").value = data.address;
             document.getElementById("wayAddress2").focus();
@@ -133,31 +127,24 @@ function wayPostCode() {
 function endPostCode() {
     new daum.Postcode({
         oncomplete: function(data) {
-
-            var callback = function(result, status) {
-                if (status === kakao.maps.services.Status.OK) {
-                }
-            };
-
             settingAdress(data);
 
             // 좌표 변환 (카카오맵이 로드된 경우에만)
             if (window.kakao && window.kakao.maps && window.kakao.maps.services) {
-                const geocoder = new kakao.maps.services.Geocoder();
+                const geocoder = new kakao.maps.services.Geocoder();  // ✅ 여기서 생성
                 geocoder.addressSearch(data.address, function(result, status) {
                     if (status === kakao.maps.services.Status.OK) {
-
-                        // // 필요시 좌표를 hidden input에 저장
                         const latField = document.getElementById('endLatitude');
                         const lngField = document.getElementById('endLongitude');
 
                         if (latField) latField.value = result[0].y;
                         if (lngField) lngField.value = result[0].x;
+
+                        console.log('End 좌표:', result[0].y, result[0].x);  // 확인용
                     }
                 });
             }
 
-            // 우편번호와 주소 정보를 해당 필드에 넣는다.
             document.getElementById('endPostcode').value = data.zonecode;
             document.getElementById("endAddress1").value = data.address;
             document.getElementById("endAddress2").focus();
@@ -297,16 +284,5 @@ function getConfirmMessage(status){
         case 9: return '이 심부름을 취소/삭제하시겠습니까?';
         default: return '상태를 변경하시겠습니까?';
     }
-}
-
-// 심부름 평점 남기기
-function rating() {
-    // 팝업띄우고
-
-    // 별점 누를수 있고
-
-    // 해당 점수 컨트롤러로 넘기기
-
-    // 컬럼을 만들어야하나??
 }
 

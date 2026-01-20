@@ -1,0 +1,139 @@
+.rating-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* 모달 컨텐츠 */
+.rating-modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 닫기 버튼 */
+.rating-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 20px;
+}
+
+.rating-close:hover,
+.rating-close:focus {
+    color: #000;
+}
+
+/* 모달 제목 */
+.rating-modal h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* 별점 영역 */
+.star-rating {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.star-rating i {
+    font-size: 45px;
+    color: #ddd;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: all 0.2s ease;
+}
+
+.star-rating i:hover,
+.star-rating i.active {
+    color: #ffd700;
+    transform: scale(1.1);
+}
+
+/* 선택된 평점 표시 */
+.rating-score {
+    text-align: center;
+    font-size: 20px;
+    color: #666;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* 코멘트 입력 */
+.rating-comment {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: vertical;
+    min-height: 100px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.rating-comment:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+/* 버튼 영역 */
+.rating-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.rating-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.rating-btn-submit {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.rating-btn-submit:hover {
+    background-color: #45a049;
+}
+
+.rating-btn-submit:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.rating-btn-cancel {
+    background-color: #f44336;
+    color: white;
+}
+
+.rating-btn-cancel:hover {
+    background-color: #da190b;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+}
