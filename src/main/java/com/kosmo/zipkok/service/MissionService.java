@@ -18,7 +18,7 @@ public interface MissionService {
     List<MissionDTO> getRequestHistory(MissionSearchDTO searchDTO, PagingDTO paging);
 
     MissionDTO getMissionDetail(String missionSeq);
-    ImageDTO getMissionImage(String missionSeq);
+    ImageDTO getMissionImage(String imageSeq);
 
     MissionDTO selectMissionBySeq(String missionSeq);
 

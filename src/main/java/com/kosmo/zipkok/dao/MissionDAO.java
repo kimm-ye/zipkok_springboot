@@ -22,15 +22,15 @@ public interface MissionDAO {
 	List<MissionDTO> getRequestHistory(Map<String, Object> params);
 
 	MissionDTO getMissionDetail(String missionSeq);
-	ImageDTO getMissionImage(String missionSeq);
+	ImageDTO getMissionImage(String imageSeq);
 	MissionDTO selectMissionBySeq(String missionSeq);
 
 	void insertMission(MissionDTO missionDTO);
 	void insertMissionLocation(MissionDTO missionDTO);
-	void insertMissionImage(MissionDTO missionDTO);
+	void insertMissionImage(ImageDTO imageDTO);
 	void updateMission(MissionDTO missionDTO);
 	int updateMissionWayLocation(MissionDTO missionDTO);
 	int updateMissionEndLocation(MissionDTO missionDTO);
-	void updateMissionImage(MissionDTO missionDTO);
 	void updateMissionStatus(Map<String, Object> param);
+	void deleteMissionImages(int imageSeq);
 }

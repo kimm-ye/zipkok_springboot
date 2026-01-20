@@ -148,14 +148,18 @@ create or replace index idx_mission_member_seq
 
 create or replace table mission_image
 (
+    image_seq INT NOT NULL AUTO_INCREMENT,
     mission_seq int                                   not null,
     image_name  varchar(255)                          null,
     image_etx   varchar(20)                           null,
     image_file  longblob                              null,
     create_dt   timestamp default current_timestamp() not null,
+    PRIMARY KEY (image_seq),                -- 여기가 핵심!
+    KEY idx_mission_seq (mission_seq),       -- 검색 속도를 위해 인덱스 추가
     constraint mission_image_ibfk_1
         foreign key (mission_seq) references mission (mission_seq)
             on delete cascade
+
 );
 
 create or replace table mission_location
@@ -235,3 +239,4 @@ create or replace index idx_member_seq
 
 ALTER TABLE mission ADD COLUMN rating DECIMAL(2,1) DEFAULT NULL COMMENT '평점 (0.0 ~ 5.0)';
 ALTER TABLE mission ADD COLUMN rating_comment VARCHAR(500) DEFAULT NULL COMMENT '평가 코멘트';
+

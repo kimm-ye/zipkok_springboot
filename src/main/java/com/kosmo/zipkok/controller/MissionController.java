@@ -5,6 +5,7 @@ import com.kosmo.zipkok.dto.MissionDTO;
 import com.kosmo.zipkok.dto.MissionSearchDTO;
 import com.kosmo.zipkok.dto.PagingDTO;
 import com.kosmo.zipkok.service.MissionService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,11 +20,10 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class MissionController {
 
-	@Autowired
-	MissionService missionService;
-
+	private final MissionService missionService;
 
 	/**
 	 * 유저 - 심부름 요청내역 더보기
@@ -57,8 +57,6 @@ public class MissionController {
 		PagingDTO paging = PagingDTO.of(page, pageSize, totalCount);
 		List<MissionDTO> lists = new ArrayList<>();
 
-		System.out.println(searchDTO);
-
 		// 요청 내역 조회
 		if("request".equals(flag) || "user".equals(flag)) {
 			totalCount = missionService.getRequestHistoryCount(searchDTO);
@@ -83,7 +81,7 @@ public class MissionController {
 		mv.addObject("lists", lists);
 		mv.addObject("paging", paging);
 
-		// ✅ View 설정 (AJAX 여부에 따라)
+		// View 설정 (AJAX 여부에 따라) : 검색 부분은 두고 검색결과만 내용 바꿀 수 있게
 		if(isAjax) {
 			mv.setViewName("mission/history :: missionListFragment");
 		} else {
@@ -102,7 +100,6 @@ public class MissionController {
 		try {
 			missionDTO.setMemberSeq(me.getMemberSeq());
 
-			System.out.println(missionDTO);
 			missionService.insertMission(missionDTO);
 
 			result.put("success", true);
@@ -118,9 +115,9 @@ public class MissionController {
 	}
 
 	// 심부름 내용 수정
-	@PostMapping("/mission/request/update")
+	@PatchMapping("/mission/request/update")
 	public Map<String, Object> update(@AuthenticationPrincipal CustomUserDetail me,
-									  MissionDTO missionDTO) throws IOException {
+									  @ModelAttribute MissionDTO missionDTO) throws IOException {
 
 		Map<String, Object> result = new HashMap<>();
 

@@ -6,6 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class ImageDTO {
 
+	private int imageSeq;
+	private String missionSeq;
 	// 업로드용
 	private MultipartFile attachFile;
 
