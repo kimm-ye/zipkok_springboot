@@ -1,9 +1,11 @@
 package com.kosmo.zipkok.controller;
 
-import com.kosmo.zipkok.security.CustomUserDetail;
+import com.kosmo.zipkok.annotation.LoginUser;
 import com.kosmo.zipkok.dto.MissionDTO;
+import com.kosmo.zipkok.dto.MissionRatingDTO;
 import com.kosmo.zipkok.dto.MissionSearchDTO;
 import com.kosmo.zipkok.dto.PagingDTO;
+import com.kosmo.zipkok.security.CustomUserDetail;
 import com.kosmo.zipkok.service.MissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -273,5 +275,43 @@ public class MissionController {
 		}
 		// 헬퍼가 수행/완료한 경우
 		return "/zipkok/mission/history?flag=perform";
+	}
+
+	// 심부름 별점 남기기
+	@PostMapping("/mission/rating")
+	private Map<String, Object> rating(@LoginUser CustomUserDetail me,
+									   @RequestBody MissionRatingDTO rat) {
+
+		Map<String, Object> result = new HashMap<>();
+
+		try{
+
+			// 권한 체크 (의뢰인만 헬퍼를 평가 가능)
+			if (!String.valueOf(rat.getRaterSeq()).equals(me.getMemberSeq())) {
+				result.put("success", false);
+				result.put("message", "평가 권한이 없습니다.");
+				return result;
+			}
+
+			// 이미 평가했는지 체크
+			if (missionService.hasRating(rat.getMissionSeq(),
+											Integer.parseInt(me.getMemberSeq()),
+											"CLIENT_TO_HELPER")) {
+				result.put("success", false);
+				result.put("message", "이미 평가한 심부름입니다.");
+				return result;
+			}
+
+			missionService.insertMissionRating(rat);
+			result.put("success", true);
+			result.put("message", "심부름 별점 등록이 완료되었습니다");
+			result.put("redirectUrl", "/zipkok/mission/history?flag=request");
+
+		} catch (Exception e) {
+			result.put("success", false);
+			result.put("message", "평점 등록에 실패했습니다.\n관리자에게 문의 바랍니다.");
+		}
+
+		return result;
 	}
 }

@@ -3,6 +3,7 @@ package com.kosmo.zipkok.dao;
 import com.kosmo.zipkok.dto.ImageDTO;
 import com.kosmo.zipkok.dto.MissionDTO;
 import com.kosmo.zipkok.dto.MissionResponse;
+import com.kosmo.zipkok.dto.MissionRatingDTO;
 import com.kosmo.zipkok.dto.MissionSearchDTO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -26,12 +27,20 @@ public interface MissionDAO {
 	ImageDTO getMissionImage(String imageSeq);
 	MissionDTO selectMissionBySeq(String missionSeq);
 
+	boolean hasRating(int missionSeq, int raterSeq, String ratingType);
+
 	void insertMission(MissionDTO missionDTO);
-	void insertMissionLocation(MissionDTO missionDTO);
-	void insertMissionImage(ImageDTO imageDTO);
+	void insertMissionWayLocation(MissionDTO missionDTO);
+	void insertMissionEndLocation(MissionDTO missionDTO);
+
+	void insertMissionImage(MissionDTO missionDTO);
+
 	void updateMission(MissionDTO missionDTO);
 	int updateMissionWayLocation(MissionDTO missionDTO);
 	int updateMissionEndLocation(MissionDTO missionDTO);
+
+	void updateMissionImage(MissionDTO missionDTO);
 	void updateMissionStatus(Map<String, Object> param);
-	void deleteMissionImages(int imageSeq);
+
+	void insertMissionRating(MissionRatingDTO dto);
 }
