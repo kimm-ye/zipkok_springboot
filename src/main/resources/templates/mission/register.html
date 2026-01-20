@@ -317,7 +317,7 @@
                         class="submit-btn"
                         style="background: #28a745;"
                         th:if="${mission?.missionStatus == 2}">
-                        <!--th:onclick="'openRatingModal(' + ${mission?.missionSeq} + ')'"-->
+                    <!--onclick="openRatingModal(this.getAttribute('data-seq'))">-->
                     <i class="fas fa-star"></i>
                     심부름 평가하기
                 </button>

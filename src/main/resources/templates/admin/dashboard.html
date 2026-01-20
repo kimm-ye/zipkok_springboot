@@ -34,9 +34,9 @@
                 </div>
                 <div class="stat-content">
                     <div class="stat-label">전체 회원</div>
-                    <div class="stat-value" th:text="${stats.totalMembers}">0</div>
+                    <div class="stat-value" th:text="${stats?.totalMembers}">0</div>
                     <div class="stat-sub">
-                        오늘 가입: <span th:text="${stats.todayJoins}">0</span>명
+                        오늘 가입: <span th:text="${stats?.todayJoins}">0</span>명
                     </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                 </div>
                 <div class="stat-content">
                     <div class="stat-label">일반 회원</div>
-                    <div class="stat-value" th:text="${stats.totalUsers}">0</div>
+                    <div class="stat-value" th:text="${stats?.totalUsers}">0</div>
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
                 </div>
                 <div class="stat-content">
                     <div class="stat-label">헬퍼</div>
-                    <div class="stat-value" th:text="${stats.totalHelpers}">0</div>
+                    <div class="stat-value" th:text="${stats?.totalHelpers}">0</div>
                 </div>
             </div>
 
@@ -70,7 +70,7 @@
                 </div>
                 <div class="stat-content">
                     <div class="stat-label">전체 심부름</div>
-                    <div class="stat-value" th:text="${stats.totalMissions}">0</div>
+                    <div class="stat-value" th:text="${stats?.totalMissions}">0</div>
                 </div>
             </div>
         </div>
@@ -84,19 +84,19 @@
                 <div class="mission-stats">
                     <div class="mission-stat-item">
                         <div class="mission-stat-label">대기중</div>
-                        <div class="mission-stat-value waiting" th:text="${stats.waitingMissions}">0</div>
+                        <div class="mission-stat-value waiting" th:text="${stats?.waitingMissions}">0</div>
                     </div>
                     <div class="mission-stat-item">
                         <div class="mission-stat-label">진행중</div>
-                        <div class="mission-stat-value progress" th:text="${stats.progressMissions}">0</div>
+                        <div class="mission-stat-value progress" th:text="${stats?.progressMissions}">0</div>
                     </div>
                     <div class="mission-stat-item">
                         <div class="mission-stat-label">완료</div>
-                        <div class="mission-stat-value complete" th:text="${stats.completeMissions}">0</div>
+                        <div class="mission-stat-value complete" th:text="${stats?.completeMissions}">0</div>
                     </div>
                     <div class="mission-stat-item">
                         <div class="mission-stat-label">취소</div>
-                        <div class="mission-stat-value cancel" th:text="${stats.cancelMissions}">0</div>
+                        <div class="mission-stat-value cancel" th:text="${stats?.cancelMissions}">0</div>
                     </div>
                 </div>
             </div>
@@ -117,10 +117,10 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:if="${stats.dailyStats == null || stats.dailyStats.isEmpty()}">
+                    <tr th:if="${stats?.dailyStats == null || stats?.dailystats?.isEmpty()}">
                         <td colspan="3" style="text-align: center; color: #999;">데이터가 없습니다</td>
                     </tr>
-                    <tr th:each="day : ${stats.dailyStats}">
+                    <tr th:each="day : ${stats?.dailyStats}">
                         <td th:text="${day.date}">2025-01-10</td>
                         <td th:text="${day.new_members}">0</td>
                         <td th:text="${day.new_missions}">0</td>
